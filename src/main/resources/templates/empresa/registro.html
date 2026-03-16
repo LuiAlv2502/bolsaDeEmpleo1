@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro Empresa - Bolsa de Empleo</title>
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+
+<header>
+  <h1>Bolsa de Empleo</h1>
+  <nav>
+    <a th:href="@{/}">Inicio</a>
+    <a th:href="@{/empresa/login}">Empresa</a>
+    <a th:href="@{/oferente/login}">Oferente</a>
+    <a th:href="@{/admin/login}">Administrador</a>
+  </nav>
+</header>
+
+<main class="auth-main">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-header">
+      <h2>Registro de Empresa</h2>
+      <p>Completa los datos para registrar tu empresa</p>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error">
+      <span th:text="${error}">Error en el registro</span>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success">
+      <span th:text="${success}">Registro exitoso</span>
+    </div>
+
+    <form class="auth-form" th:action="@{/empresa/registro}" method="post" th:object="${empresa}">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre de la empresa</label>
+          <input type="text" id="nombre" name="nombre" th:field="*{nombre}"
+                 placeholder="Ej: Tech Solutions S.A." required>
+        </div>
+        <div class="form-group">
+          <label for="localizacion">Localización</label>
+          <input type="text" id="localizacion" name="localizacion" th:field="*{localizacion}"
+                 placeholder="Ej: San José, Costa Rica" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="correo">Correo electrónico</label>
+          <input type="email" id="correo" name="correo" th:field="*{correo}"
+                 placeholder="empresa@correo.com" required>
+        </div>
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input type="tel" id="telefono" name="telefono" th:field="*{telefono}"
+                 placeholder="Ej: +506 8888-8888" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" th:field="*{descripcion}"
+                  placeholder="Describe brevemente tu empresa, su misión y áreas de trabajo..."
+                  rows="4"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password"
+                 placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmarPassword">Confirmar contraseña</label>
+          <input type="password" id="confirmarPassword" name="confirmarPassword"
+                 placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p>⚠️ Tu registro será revisado por un administrador antes de poder ingresar al sistema.</p>
+      </div>
+
+      <button type="submit" class="btn-submit">Registrar Empresa</button>
+    </form>
+
+    <div class="auth-footer">
+      <p>¿Ya tienes cuenta? <a th:href="@{/empresa/login}">Iniciar sesión</a></p>
+      <p><a th:href="@{/}">← Volver al inicio</a></p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>

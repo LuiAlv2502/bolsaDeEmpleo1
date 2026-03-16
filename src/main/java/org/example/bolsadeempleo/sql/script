@@ -1,0 +1,90 @@
+CREATE DATABASE bolsa_empleo;
+USE bolsa_empleo;
+
+-- =========================
+-- EMPRESAS
+-- =========================
+CREATE TABLE empresa (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    localizacion VARCHAR(150),
+    correo VARCHAR(100) UNIQUE,
+    telefono VARCHAR(20),
+    descripcion TEXT,
+    aprobada BOOLEAN DEFAULT FALSE
+);
+
+-- =========================
+-- OFERENTES
+-- =========================
+CREATE TABLE oferente (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    identificacion VARCHAR(50) UNIQUE,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    nacionalidad VARCHAR(100),
+    telefono VARCHAR(20),
+    correo VARCHAR(100) UNIQUE,
+    residencia VARCHAR(150),
+    aprobado BOOLEAN DEFAULT FALSE,
+    cv_pdf VARCHAR(255)
+);
+
+-- =========================
+-- ADMINISTRADORES
+-- =========================
+CREATE TABLE administrador (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    identificacion VARCHAR(50) UNIQUE,
+    nombre VARCHAR(100),
+    correo VARCHAR(100),
+    password VARCHAR(255)
+);
+
+-- =========================
+-- CARACTERISTICAS (JERARQUICAS)
+-- =========================
+CREATE TABLE caracteristica (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    parent_id BIGINT,
+    FOREIGN KEY (parent_id) REFERENCES caracteristica(id)
+);
+
+-- =========================
+-- PUESTOS
+-- =========================
+CREATE TABLE puesto (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id BIGINT,
+    descripcion TEXT,
+    salario DECIMAL(10,2),
+    tipo_publicacion ENUM('PUBLICO','PRIVADO'),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (empresa_id) REFERENCES empresa(id)
+);
+
+-- =========================
+-- REQUISITOS DEL PUESTO
+-- =========================
+CREATE TABLE puesto_caracteristica (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    puesto_id BIGINT,
+    caracteristica_id BIGINT,
+    nivel_requerido INT,
+    FOREIGN KEY (puesto_id) REFERENCES puesto(id),
+    FOREIGN KEY (caracteristica_id) REFERENCES caracteristica(id)
+);
+
+-- =========================
+-- HABILIDADES DEL OFERENTE
+-- =========================
+CREATE TABLE habilidad (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    oferente_id BIGINT,
+    caracteristica_id BIGINT,
+    nivel INT,
+    FOREIGN KEY (oferente_id) REFERENCES oferente(id),
+    FOREIGN KEY (caracteristica_id) REFERENCES caracteristica(id)
+);
