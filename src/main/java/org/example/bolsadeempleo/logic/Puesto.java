@@ -46,4 +46,6 @@ public class Puesto {
     @OneToMany(mappedBy = "puesto")
     private Set<PuestoCaracteristica> puestoCaracteristicas = new LinkedHashSet<>();
 
+    public void setPublica(boolean publica) {
+    }
 }

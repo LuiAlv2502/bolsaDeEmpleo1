@@ -1,6 +1,7 @@
 package org.example.bolsadeempleo.logic;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,4 +59,13 @@ public class Oferente {
     @OneToMany(mappedBy = "oferente")
     private Set<Habilidad> habilidads = new LinkedHashSet<>();
 
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "clave", nullable = false)
+    private String clave;
+
+    public boolean isAprobado() {
+        if (aprobado == null) return false;
+        return aprobado;
+    }
 }

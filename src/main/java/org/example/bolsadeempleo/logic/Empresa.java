@@ -48,4 +48,16 @@ public class Empresa {
     @OneToMany(mappedBy = "empresa")
     private Set<Puesto> puestos = new LinkedHashSet<>();
 
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "clave", nullable = false)
+    private String clave;
+
+    public void setAprobado(boolean b) {
+        this.aprobada = b;
+    }
+    public boolean isAprobado() {
+        if (aprobada == null) return false;
+        return aprobada;
+    }
 }
