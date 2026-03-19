@@ -15,7 +15,6 @@ public class Empresacontroller {
     @Autowired
     private EmpresaService empresaService;
 
-    // ==================== REGISTRO ====================
 
     @GetMapping("/registro")
     public String mostrarRegistro(Model model) {
@@ -69,42 +68,11 @@ public class Empresacontroller {
         return "empresa/registro";
     }
 
-    // ==================== LOGIN ====================
+    // ==================== LOGIN (redirige al login unificado) ====================
 
     @GetMapping("/login")
-    public String mostrarLogin(@RequestParam(value = "error", required = false) String error, Model model) {
-        if (error != null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos, o empresa no aprobada.");
-        }
-        return "empresa/login";
-    }
-
-    @PostMapping("/login")
-    public String procesarLogin(
-            @RequestParam("correo") String correo,
-            @RequestParam("password") String password,
-            HttpSession session,
-            Model model) {
-
-        // Validar campos vacíos
-        if (correo == null || correo.isBlank() || password == null || password.isBlank()) {
-            model.addAttribute("error", "Por favor ingresa tu correo y contraseña.");
-            return "empresa/login";
-        }
-
-        Empresa empresa = empresaService.login(correo, password);
-
-        if (empresa == null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos, o tu empresa aún no ha sido aprobada.");
-            return "empresa/login";
-        }
-
-        // Guardar en sesión
-        session.setAttribute("empresaId", empresa.getId());
-        session.setAttribute("empresaNombre", empresa.getNombre());
-        session.setAttribute("tipoUsuario", "empresa");
-
-        return "redirect:/empresa/dashboard";
+    public String mostrarLogin() {
+        return "redirect:/login";
     }
 
     // ==================== DASHBOARD ====================
@@ -112,7 +80,7 @@ public class Empresacontroller {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         if (session.getAttribute("empresaId") == null) {
-            return "redirect:/empresa/login";
+            return "redirect:/login";
         }
         model.addAttribute("nombre", session.getAttribute("empresaNombre"));
         return "empresa/dashboard";

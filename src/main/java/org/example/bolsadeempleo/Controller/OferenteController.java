@@ -74,42 +74,11 @@ public class OferenteController {
         return "oferente/registro";
     }
 
-    // ==================== LOGIN ====================
+    // ==================== LOGIN (redirige al login unificado) ====================
 
     @GetMapping("/login")
-    public String mostrarLogin(@RequestParam(value = "error", required = false) String error, Model model) {
-        if (error != null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos, o cuenta no aprobada.");
-        }
-        return "oferente/login";
-    }
-
-    @PostMapping("/login")
-    public String procesarLogin(
-            @RequestParam("correo") String correo,
-            @RequestParam("password") String password,
-            HttpSession session,
-            Model model) {
-
-        // Validar campos vacíos
-        if (correo == null || correo.isBlank() || password == null || password.isBlank()) {
-            model.addAttribute("error", "Por favor ingresa tu correo y contraseña.");
-            return "oferente/login";
-        }
-
-        Oferente oferente = oferenteService.login(correo, password);
-
-        if (oferente == null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos, o tu cuenta aún no ha sido aprobada.");
-            return "oferente/login";
-        }
-
-        // Guardar en sesión
-        session.setAttribute("oferenteId", oferente.getIdentificacion());
-        session.setAttribute("oferenteNombre", oferente.getNombre());
-        session.setAttribute("tipoUsuario", "oferente");
-
-        return "redirect:/oferente/dashboard";
+    public String mostrarLogin() {
+        return "redirect:/login";
     }
 
     // ==================== DASHBOARD ====================
@@ -117,7 +86,7 @@ public class OferenteController {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         if (session.getAttribute("oferenteId") == null) {
-            return "redirect:/oferente/login";
+            return "redirect:/login";
         }
         model.addAttribute("nombre", session.getAttribute("oferenteNombre"));
         return "oferente/dashboard";

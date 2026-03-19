@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Empresa - Bolsa de Empleo</title>
+    <title>Iniciar Sesión - Bolsa de Empleo</title>
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
@@ -13,37 +13,44 @@
     <h1>Bolsa de Empleo</h1>
     <nav>
         <a th:href="@{/}">Inicio</a>
-        <a th:href="@{/empresa/login}">Empresa</a>
-        <a th:href="@{/oferente/login}">Oferente</a>
-        <a th:href="@{/admin/login}">Administrador</a>
+        <a th:href="@{/login}" class="nav-active">Iniciar Sesión</a>
+        <a th:href="@{/empresa/registro}">Registrar Empresa</a>
+        <a th:href="@{/oferente/registro}">Registrar Oferente</a>
     </nav>
 </header>
 
 <main class="auth-main">
     <div class="auth-card">
         <div class="auth-header">
-            <h2>Acceso Empresa</h2>
-            <p>Ingresa con tu correo y contraseña</p>
+            <h2>Iniciar Sesión</h2>
+            <p>Ingresa tus credenciales para acceder</p>
         </div>
 
         <div th:if="${error}" class="alert alert-error">
             <span th:text="${error}">Error de autenticación</span>
         </div>
 
-        <form class="auth-form" th:action="@{/empresa/login}" method="post">
+        <form class="auth-form" th:action="@{/login}" method="post">
+
             <div class="form-group">
-                <label for="correo">Correo electrónico</label>
-                <input type="email" id="correo" name="correo" placeholder="empresa@correo.com" required>
+                <label for="credencial">Correo electrónico o identificación</label>
+                <input type="text" id="credencial" name="credencial"
+                       placeholder="tu@correo.com o número de identificación"
+                       required autocomplete="username">
             </div>
+
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <input type="password" id="password" name="password"
+                       placeholder="••••••••" required autocomplete="current-password">
             </div>
+
             <button type="submit" class="btn-submit">Ingresar</button>
         </form>
 
         <div class="auth-footer">
-            <p>¿No tienes cuenta? <a th:href="@{/empresa/registro}">Registrar empresa</a></p>
+            <p>¿No tienes cuenta? <a th:href="@{/empresa/registro}">Registrar empresa</a>
+                | <a th:href="@{/oferente/registro}">Registrarse como oferente</a></p>
             <p><a th:href="@{/}">← Volver al inicio</a></p>
         </div>
     </div>
@@ -53,5 +60,7 @@
     <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
 </footer>
 
+
 </body>
 </html>
+
