@@ -73,6 +73,8 @@ public class OferenteService {
             habilidadRepository.save(habilidadExistente.get());
         } else {
             Habilidad habilidad = new Habilidad();
+            // ← Solo faltaba esta línea:
+            habilidad.setOferente(oferente.get());
             habilidad.setCaracteristica(caracteristica.get());
             habilidad.setNivel(nivel);
             habilidadRepository.save(habilidad);

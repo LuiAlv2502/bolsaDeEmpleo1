@@ -36,7 +36,7 @@ public class AdminService {
 
     // EMPRESAS
     public List<Empresa> listarEmpresasPendientes() {
-        return empresaRepository.findByAprobado(false);
+        return empresaRepository.findByAprobada(false);
     }
 
     public boolean autorizarEmpresa(Long id) {
@@ -53,7 +53,7 @@ public class AdminService {
     }
 
     public boolean autorizarOferente(String identificacion) {
-        Optional<Oferente> oferente = oferenteRepository.findById(identificacion);
+        Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacion);
         if (oferente.isEmpty()) return false;
         oferente.get().setAprobado(true);
         oferenteRepository.save(oferente.get());

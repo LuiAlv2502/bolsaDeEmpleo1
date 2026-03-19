@@ -12,4 +12,5 @@ public interface OferenteRepository extends JpaRepository<Oferente, String> {
     Optional<Oferente> findByCorreo(String correo);
     boolean existsByCorreo(String correo);
     List<Oferente> findByAprobado(boolean aprobado);
+    Optional<Oferente> findByIdentificacion(String identificacion);
 }

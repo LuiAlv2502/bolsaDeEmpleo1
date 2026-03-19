@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empresa - Bolsa de Empleo</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+
+<header>
+    <h1>Bolsa de Empleo</h1>
+    <nav>
+        <a th:href="@{/}">Inicio</a>
+        <span>Bienvenido, <strong th:text="${nombre}">Empresa</strong></span>
+        <a th:href="@{/empresa/logout}">Cerrar sesión</a>
+    </nav>
+</header>
+
+<main class="auth-main">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-header">
+            <h2>Panel de Empresa</h2>
+            <p>Gestioná tus puestos y candidatos</p>
+        </div>
+
+        <div class="registro-section" style="margin-top: 0;">
+            <div class="registro-card">
+                <h3>🏢 Mi Empresa</h3>
+                <p>Actualizá los datos de tu empresa.</p>
+                <a href="#" class="btn btn-primary">Ver perfil</a>
+            </div>
+            <div class="registro-card">
+                <h3>📋 Mis Puestos</h3>
+                <p>Publicá nuevos puestos y gestioná los existentes.</p>
+                <a href="#" class="btn btn-secondary">Ver puestos</a>
+            </div>
+            <div class="registro-card">
+                <h3>🔍 Buscar Candidatos</h3>
+                <p>Encontrá oferentes que cumplan tus requisitos.</p>
+                <a href="#" class="btn btn-primary">Buscar</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>

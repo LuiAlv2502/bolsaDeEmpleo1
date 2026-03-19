@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>3.3.5</version>
         <relativePath/>
     </parent>
     <groupId>org.example</groupId>
@@ -79,11 +79,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- PDF iText -->
+        <!-- iText PDF -->
         <dependency>
             <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-            <version>5.5.13.3</version>
+            <artifactId>itext7-core</artifactId>
+            <version>8.0.5</version>
+            <type>pom</type>
         </dependency>
 
         <!-- Test -->

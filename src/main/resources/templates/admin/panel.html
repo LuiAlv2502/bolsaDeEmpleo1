@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador - Bolsa de Empleo</title>
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <style>
+    .panel-main { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .panel-header h2 { color: #2c3e50; font-size: 1.5rem; }
+    .section-card { background: white; border-radius: 8px; padding: 28px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .section-card h3 { color: #2c3e50; font-size: 1.1rem; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: #f0f4f8; color: #555; padding: 10px 14px; text-align: left; font-weight: 600; }
+    td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; color: #444; }
+    tr:last-child td { border-bottom: none; }
+    .btn-aprobar { background: #27ae60; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .btn-aprobar:hover { background: #1e8449; }
+    .btn-eliminar { background: #e74c3c; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .btn-eliminar:hover { background: #c0392b; }
+    .empty-msg { color: #aaa; font-size: 0.9rem; text-align: center; padding: 20px; }
+    .nueva-caracteristica { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-top: 16px; }
+    .nueva-caracteristica .form-group { flex: 1; min-width: 180px; }
+    .nueva-caracteristica label { font-size: 0.85rem; color: #555; font-weight: 600; display: block; margin-bottom: 6px; }
+    .nueva-caracteristica input, .nueva-caracteristica select {
+      padding: 9px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; width: 100%;
+    }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; background: #eaf4fb; color: #2980b9; }
+    .logout-link { color: #e74c3c; text-decoration: none; font-size: 0.9rem; }
+    .logout-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Bolsa de Empleo</h1>
+  <nav>
+    <a th:href="@{/}">Inicio</a>
+    <a th:href="@{/admin/logout}" class="logout-link">Cerrar sesión</a>
+  </nav>
+</header>
+
+<div class="panel-main">
+  <div class="panel-header">
+    <h2>Panel de Administrador</h2>
+    <span>Bienvenido, <strong th:text="${nombre}">Admin</strong></span>
+  </div>
+
+  <!-- EMPRESAS PENDIENTES -->
+  <div class="section-card">
+    <h3>🏢 Empresas Pendientes de Aprobación</h3>
+    <div th:if="${#lists.isEmpty(empresasPendientes)}" class="empty-msg">
+      No hay empresas pendientes.
+    </div>
+    <table th:unless="${#lists.isEmpty(empresasPendientes)}">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Localización</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="empresa : ${empresasPendientes}">
+          <td th:text="${empresa.nombre}">Empresa</td>
+          <td th:text="${empresa.correo}">correo@empresa.com</td>
+          <td th:text="${empresa.telefono}">+506</td>
+          <td th:text="${empresa.localizacion}">San José</td>
+          <td>
+            <form th:action="@{/admin/empresa/aprobar/{id}(id=${empresa.id})}" method="post" style="display:inline;">
+              <button type="submit" class="btn-aprobar">Aprobar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OFERENTES PENDIENTES -->
+  <div class="section-card">
+    <h3>👤 Oferentes Pendientes de Aprobación</h3>
+    <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
+      No hay oferentes pendientes.
+    </div>
+    <table th:unless="${#lists.isEmpty(oferentesPendientes)}">
+      <thead>
+        <tr>
+          <th>Identificación</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Residencia</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="oferente : ${oferentesPendientes}">
+          <td th:text="${oferente.identificacion}">1-1234-5678</td>
+          <td th:text="${oferente.nombre + ' ' + oferente.apellido}">Nombre Apellido</td>
+          <td th:text="${oferente.correo}">correo@mail.com</td>
+          <td th:text="${oferente.telefono}">+506</td>
+          <td th:text="${oferente.residencia}">San José</td>
+          <td>
+            <form th:action="@{/admin/oferente/aprobar/{id}(id=${oferente.identificacion})}" method="post" style="display:inline;">
+              <button type="submit" class="btn-aprobar">Aprobar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CARACTERÍSTICAS -->
+  <div class="section-card">
+    <h3>🏷️ Gestión de Características</h3>
+
+    <!-- Formulario nueva característica -->
+    <form th:action="@{/admin/caracteristica/nueva}" method="post" class="nueva-caracteristica">
+      <div class="form-group">
+        <label for="nombre">Nombre de la característica</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Inglés..." required>
+      </div>
+      <div class="form-group">
+        <label for="padreId">Categoría padre (opcional)</label>
+        <select id="padreId" name="padreId">
+          <option value="">-- Sin categoría padre --</option>
+          <option th:each="c : ${caracteristicas}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-aprobar" style="height: fit-content; padding: 9px 18px;">+ Agregar</button>
+    </form>
+
+    <!-- Lista de características -->
+    <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg" style="margin-top:16px;">
+      No hay características registradas.
+    </div>
+    <table th:unless="${#lists.isEmpty(caracteristicas)}" style="margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Categoría padre</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="c : ${caracteristicas}">
+          <td th:text="${c.id}">1</td>
+          <td th:text="${c.nombre}">Java</td>
+          <td>
+            <span th:if="${c.parent != null}" class="badge" th:text="${c.parent.nombre}">Padre</span>
+            <span th:unless="${c.parent != null}" style="color:#aaa;">—</span>
+          </td>
+          <td>
+            <form th:action="@{/admin/caracteristica/eliminar/{id}(id=${c.id})}" method="post" style="display:inline;"
+                  onsubmit="return confirm('¿Eliminar esta característica?');">
+              <button type="submit" class="btn-eliminar">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>

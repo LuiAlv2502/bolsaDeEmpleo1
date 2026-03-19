@@ -1,31 +1,31 @@
 package org.example.bolsadeempleo.Controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.bolsadeempleo.logic.Oferente;
-import org.example.bolsadeempleo.logic.service.OferenteService;
+import org.example.bolsadeempleo.logic.Empresa;
+import org.example.bolsadeempleo.logic.service.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/oferente")
-public class OferenteController {
+@RequestMapping("/empresa")
+public class Empresacontroller {
 
     @Autowired
-    private OferenteService oferenteService;
+    private EmpresaService empresaService;
 
     // ==================== REGISTRO ====================
 
     @GetMapping("/registro")
     public String mostrarRegistro(Model model) {
-        model.addAttribute("oferente", new Oferente());
-        return "oferente/registro";
+        model.addAttribute("empresa", new Empresa());
+        return "empresa/registro";
     }
 
     @PostMapping("/registro")
     public String procesarRegistro(
-            @ModelAttribute("oferente") Oferente oferente,
+            @ModelAttribute("empresa") Empresa empresa,
             @RequestParam("password") String password,
             @RequestParam("confirmarPassword") String confirmarPassword,
             Model model) {
@@ -33,45 +33,40 @@ public class OferenteController {
         // Validar que las contraseñas coincidan
         if (!password.equals(confirmarPassword)) {
             model.addAttribute("error", "Las contraseñas no coinciden.");
-            return "oferente/registro";
+            return "empresa/registro";
         }
 
         // Validar longitud mínima de contraseña
         if (password.length() < 6) {
             model.addAttribute("error", "La contraseña debe tener al menos 6 caracteres.");
-            return "oferente/registro";
+            return "empresa/registro";
         }
 
         // Validar campos obligatorios
-        if (oferente.getIdentificacion() == null || oferente.getIdentificacion().isBlank()) {
-            model.addAttribute("error", "La identificación es obligatoria.");
-            return "oferente/registro";
+        if (empresa.getNombre() == null || empresa.getNombre().isBlank()) {
+            model.addAttribute("error", "El nombre de la empresa es obligatorio.");
+            return "empresa/registro";
         }
 
-        if (oferente.getNombre() == null || oferente.getNombre().isBlank()) {
-            model.addAttribute("error", "El nombre es obligatorio.");
-            return "oferente/registro";
-        }
-
-        if (oferente.getCorreo() == null || oferente.getCorreo().isBlank()) {
+        if (empresa.getCorreo() == null || empresa.getCorreo().isBlank()) {
             model.addAttribute("error", "El correo es obligatorio.");
-            return "oferente/registro";
+            return "empresa/registro";
         }
 
-        // Asignar la contraseña y estado inicial
-        oferente.setClave(password);
-        oferente.setAprobado(false);
+        // Asignar contraseña y estado inicial
+        empresa.setClave(password);
+        empresa.setAprobado(false);
 
-        boolean registrado = oferenteService.registrar(oferente);
+        boolean registrada = empresaService.registrar(empresa);
 
-        if (!registrado) {
+        if (!registrada) {
             model.addAttribute("error", "Ya existe una cuenta registrada con ese correo electrónico.");
-            return "oferente/registro";
+            return "empresa/registro";
         }
 
-        model.addAttribute("success", "Registro exitoso. Tu cuenta será revisada por un administrador antes de poder ingresar.");
-        model.addAttribute("oferente", new Oferente());
-        return "oferente/registro";
+        model.addAttribute("success", "Registro exitoso. Tu empresa será revisada por un administrador antes de poder ingresar.");
+        model.addAttribute("empresa", new Empresa());
+        return "empresa/registro";
     }
 
     // ==================== LOGIN ====================
@@ -79,9 +74,9 @@ public class OferenteController {
     @GetMapping("/login")
     public String mostrarLogin(@RequestParam(value = "error", required = false) String error, Model model) {
         if (error != null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos, o cuenta no aprobada.");
+            model.addAttribute("error", "Correo o contraseña incorrectos, o empresa no aprobada.");
         }
-        return "oferente/login";
+        return "empresa/login";
     }
 
     @PostMapping("/login")
@@ -94,33 +89,33 @@ public class OferenteController {
         // Validar campos vacíos
         if (correo == null || correo.isBlank() || password == null || password.isBlank()) {
             model.addAttribute("error", "Por favor ingresa tu correo y contraseña.");
-            return "oferente/login";
+            return "empresa/login";
         }
 
-        Oferente oferente = oferenteService.login(correo, password);
+        Empresa empresa = empresaService.login(correo, password);
 
-        if (oferente == null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos, o tu cuenta aún no ha sido aprobada.");
-            return "oferente/login";
+        if (empresa == null) {
+            model.addAttribute("error", "Correo o contraseña incorrectos, o tu empresa aún no ha sido aprobada.");
+            return "empresa/login";
         }
 
         // Guardar en sesión
-        session.setAttribute("oferenteId", oferente.getIdentificacion());
-        session.setAttribute("oferenteNombre", oferente.getNombre());
-        session.setAttribute("tipoUsuario", "oferente");
+        session.setAttribute("empresaId", empresa.getId());
+        session.setAttribute("empresaNombre", empresa.getNombre());
+        session.setAttribute("tipoUsuario", "empresa");
 
-        return "redirect:/oferente/dashboard";
+        return "redirect:/empresa/dashboard";
     }
 
     // ==================== DASHBOARD ====================
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
-        if (session.getAttribute("oferenteId") == null) {
-            return "redirect:/oferente/login";
+        if (session.getAttribute("empresaId") == null) {
+            return "redirect:/empresa/login";
         }
-        model.addAttribute("nombre", session.getAttribute("oferenteNombre"));
-        return "oferente/dashboard";
+        model.addAttribute("nombre", session.getAttribute("empresaNombre"));
+        return "empresa/dashboard";
     }
 
     // ==================== LOGOUT ====================

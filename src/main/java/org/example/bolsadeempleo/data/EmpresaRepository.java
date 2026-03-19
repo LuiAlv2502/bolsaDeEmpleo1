@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
     Optional<Empresa> findByCorreo(String correo);
     boolean existsByCorreo(String correo);
-    List<Empresa> findByAprobado(boolean aprobado);
+    List<Empresa> findByAprobada(boolean aprobada);
 }
