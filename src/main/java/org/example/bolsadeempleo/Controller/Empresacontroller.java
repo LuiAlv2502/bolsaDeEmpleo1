@@ -133,7 +133,7 @@ public class Empresacontroller {
             @RequestParam("publica") boolean publica,
             @RequestParam(value = "caracteristicaIds", required = false) List<Long> caracteristicaIds,
             @RequestParam(value = "niveles", required = false) List<Integer> niveles,
-            @RequestParam(value = "moneda", defaultValue = "CRC") String moneda,
+            @RequestParam("moneda") String moneda,
             RedirectAttributes redirectAttrs) {
 
         Long empresaId = getEmpresaId(session);

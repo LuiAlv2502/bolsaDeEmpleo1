@@ -38,8 +38,8 @@
             <!-- Descripción -->
             <div class="form-group">
                 <label for="descripcion">Descripción general del puesto</label>
-                <textarea id="descripcion" name="descripcion" rows="4"
-                          placeholder="Describa las responsabilidades y tareas del puesto..." required></textarea>
+                <textarea id="descripcion" name="descripcion" rows="1" style="resize:none",
+                          placeholder="Inserte el nombre del puesto." required></textarea>
             </div>
 
             <!-- Salario y Tipo -->
@@ -68,20 +68,28 @@
             <!-- Características requeridas -->
             <div class="form-group">
                 <label>Características requeridas</label>
-                <div class="form-row">
-                    <div class="form-group" style="flex:2;">
-                        <select name="caracteristicaIds">
-                            <option value="">-- Seleccionar característica --</option>
-                            <option th:each="c : ${caracteristicas}"
-                                    th:value="${c.id}"
-                                    th:text="${c.nombre}">Característica</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <input type="number" name="niveles" min="1" max="5" value="1"
-                               placeholder="Nivel (1-5)">
+
+                <div id="caracteristicas-container">
+                    <div class="form-row" style="align-items:flex-end; margin-bottom:8px;">
+                        <div class="form-group" style="flex:2;">
+                            <select name="caracteristicaIds">
+                                <option value="">-- Seleccionar característica --</option>
+                                <option th:each="c : ${caracteristicas}"
+                                        th:value="${c.id}"
+                                        th:text="${c.nombre}">Característica</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <input type="number" name="niveles" min="1" max="5" value="1"
+                                   placeholder="Nivel (1-5)">
+                        </div>
+                        <button type="button" class="btn-eliminar" style="padding:10px 14px;"
+                                onclick="quitarFila(this)">✕</button>
                     </div>
                 </div>
+
+                <button type="button" class="btn-aprobar" style="margin-top:6px; padding:8px 16px;"
+                        onclick="agregarFila()">+ Agregar característica</button>
             </div>
 
             <button type="submit" class="btn-submit">Publicar Puesto</button>
@@ -150,6 +158,7 @@
 </footer>
 
 <script>
+    /* ── Moneda toggle ── */
     function setMoneda(moneda) {
         document.getElementById('moneda').value = moneda;
         if (moneda === 'CRC') {
@@ -159,6 +168,24 @@
             document.getElementById('btn-usd').classList.add('btn-moneda-active');
             document.getElementById('btn-crc').classList.remove('btn-moneda-active');
         }
+    }
+
+    /* ── Filas de características ── */
+    function agregarFila() {
+        const container = document.getElementById('caracteristicas-container');
+        const primeraFila = container.querySelector('.form-row');
+        const nuevaFila = primeraFila.cloneNode(true);
+
+        nuevaFila.querySelector('select').value = '';
+        nuevaFila.querySelector('input[type="number"]').value = '1';
+
+        container.appendChild(nuevaFila);
+    }
+
+    function quitarFila(btn) {
+        const container = document.getElementById('caracteristicas-container');
+        if (container.querySelectorAll('.form-row').length === 1) return;
+        btn.closest('.form-row').remove();
     }
 </script>
 

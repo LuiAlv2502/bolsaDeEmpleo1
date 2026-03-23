@@ -66,4 +66,5 @@ public class Puesto {
         if (publica == null) publica = true;
         if (moneda == null) moneda = "CRC";
     }
+
 }
