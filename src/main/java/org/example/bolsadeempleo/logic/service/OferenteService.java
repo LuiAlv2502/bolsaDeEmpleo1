@@ -7,6 +7,7 @@ import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.example.bolsadeempleo.data.HabilidadRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,9 +26,13 @@ public class OferenteService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     // REGISTRO
     public boolean registrar(Oferente oferente) {
         if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
+        oferente.setClave(passwordEncoder.encode(oferente.getClave()));
         oferenteRepository.save(oferente);
         return true;
     }
@@ -36,7 +41,8 @@ public class OferenteService {
     public Oferente login(String correo, String clave) {
         Optional<Oferente> oferente = oferenteRepository.findByCorreo(correo);
         if (oferente.isEmpty()) return null;
-        if (!oferente.get().getClave().equals(clave)) return null;
+        boolean claveCorrecta = passwordEncoder.matches(clave, oferente.get().getClave());
+        if (!claveCorrecta) return null;
         if (!oferente.get().isAprobado()) return null;
         return oferente.get();
     }

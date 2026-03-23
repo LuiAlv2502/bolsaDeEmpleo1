@@ -8,7 +8,9 @@ import org.example.bolsadeempleo.data.AdministradorRepository;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.example.bolsadeempleo.data.EmpresaRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
+import org.example.bolsadeempleo.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,9 +31,19 @@ public class AdminService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     // LOGIN
     public Administrador login(String identificacion, String clave) {
-        return adminRepository.findByIdentificacionAndPassword(identificacion, clave).orElse(null);
+        Optional<Administrador> admin = adminRepository.findByIdentificacion(identificacion);
+
+        if (admin.isEmpty()) return null;
+
+        // BCrypt compara la clave ingresada con el hash guardado
+        boolean claveCorrecta = passwordEncoder.matches(clave, admin.get().getPassword());
+
+        return claveCorrecta ? admin.get() : null;
     }
 
     // EMPRESAS
