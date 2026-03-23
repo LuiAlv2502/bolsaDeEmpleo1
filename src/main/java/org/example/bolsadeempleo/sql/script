@@ -58,6 +58,7 @@ CREATE TABLE caracteristica (
 -- =========================
 CREATE TABLE puesto (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	moneda VARCHAR(3) NOT NULL DEFAULT 'CRC',
     empresa_id BIGINT,
     descripcion TEXT,
     salario DECIMAL(10,2),

@@ -58,20 +58,7 @@ public class EmpresaService {
 
     // ── ACTUALIZAR DATOS ──────────────────────────────────────────────────────
 
-    public boolean actualizarDatos(Empresa datosActualizados) {
-        Optional<Empresa> existente = empresaRepository.findById(datosActualizados.getId());
-        if (existente.isEmpty()) return false;
 
-        Empresa empresa = existente.get();
-        empresa.setNombre(datosActualizados.getNombre());
-        empresa.setLocalizacion(datosActualizados.getLocalizacion());
-        empresa.setCorreo(datosActualizados.getCorreo());
-        empresa.setTelefono(datosActualizados.getTelefono());
-        empresa.setDescripcion(datosActualizados.getDescripcion());
-
-        empresaRepository.save(empresa);
-        return true;
-    }
 
     // ── PUBLICAR PUESTO ───────────────────────────────────────────────────────
 
@@ -81,7 +68,8 @@ public class EmpresaService {
      * Ahora se crea una referencia proxy de Caracteristica con solo el id.
      */
     public Puesto publicarPuesto(Long empresaId, String descripcion, BigDecimal salario,
-                                 boolean publica, List<Long> caracteristicaIds, List<Integer> niveles) {
+                                 boolean publica, String moneda,
+                                 List<Long> caracteristicaIds, List<Integer> niveles) {
         Optional<Empresa> empresa = empresaRepository.findById(empresaId);
         if (empresa.isEmpty()) return null;
 
@@ -90,6 +78,7 @@ public class EmpresaService {
         puesto.setDescripcion(descripcion);
         puesto.setSalario(salario);
         puesto.setPublica(publica);
+        puesto.setMoneda(moneda != null ? moneda : "CRC");
         puesto.setActivo(true);
         puestoRepository.save(puesto);
 
@@ -108,7 +97,6 @@ public class EmpresaService {
         return puesto;
     }
 
-    // ── DESACTIVAR PUESTO ─────────────────────────────────────────────────────
 
     public boolean desactivarPuesto(Long puestoId, Long empresaId) {
         Optional<Puesto> puesto = puestoRepository.findById(puestoId);

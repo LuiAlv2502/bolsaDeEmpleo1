@@ -109,7 +109,9 @@ public class Empresacontroller {
         if (empresaId == null) return "redirect:/login";
 
         model.addAttribute("puestos", empresaService.listarPuestosPorEmpresa(empresaId));
-        return "empresa/mis-puestos";
+        model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
+        model.addAttribute("nombre", session.getAttribute("empresaNombre"));
+        return "empresa/Puestos";
     }
 
     // ── PUBLICAR PUESTO ───────────────────────────────────────────────────────
@@ -131,6 +133,7 @@ public class Empresacontroller {
             @RequestParam("publica") boolean publica,
             @RequestParam(value = "caracteristicaIds", required = false) List<Long> caracteristicaIds,
             @RequestParam(value = "niveles", required = false) List<Integer> niveles,
+            @RequestParam(value = "moneda", defaultValue = "CRC") String moneda,
             RedirectAttributes redirectAttrs) {
 
         Long empresaId = getEmpresaId(session);
@@ -140,7 +143,7 @@ public class Empresacontroller {
         if (niveles == null) niveles = List.of();
 
         Puesto puesto = empresaService.publicarPuesto(
-                empresaId, descripcion, salario, publica, caracteristicaIds, niveles);
+                empresaId, descripcion, salario, publica, moneda, caracteristicaIds, niveles);
 
         if (puesto == null) {
             redirectAttrs.addFlashAttribute("error", "No se pudo publicar el puesto.");
@@ -182,24 +185,6 @@ public class Empresacontroller {
         return "empresa/buscar-candidatos";
     }
 
-    // ── VER DETALLE CANDIDATO ─────────────────────────────────────────────────
-
-    @GetMapping("/candidatos/{identificacion}")
-    public String verCandidato(@PathVariable String identificacion,
-                               HttpSession session, Model model) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return "redirect:/login";
-
-        Oferente oferente = empresaService.verDetalleCandidato(identificacion);
-        if (oferente == null) return "redirect:/empresa/puestos";
-
-        model.addAttribute("oferente", oferente);
-        model.addAttribute("habilidades", oferenteService.listarHabilidades(identificacion));
-        return "empresa/ver-candidato";
-    }
-
-    // ── PERFIL EMPRESA ────────────────────────────────────────────────────────
-
     @GetMapping("/perfil")
     public String verPerfil(HttpSession session, Model model) {
         Long empresaId = getEmpresaId(session);
@@ -209,22 +194,6 @@ public class Empresacontroller {
         return "empresa/perfil";
     }
 
-    @PostMapping("/perfil")
-    public String actualizarPerfil(@ModelAttribute("empresa") Empresa empresa,
-                                   HttpSession session, RedirectAttributes redirectAttrs) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return "redirect:/login";
-
-        empresa.setId(empresaId);
-        empresaService.actualizarDatos(empresa);
-
-        // Actualizar nombre en sesión
-        session.setAttribute("empresaNombre", empresa.getNombre());
-        redirectAttrs.addFlashAttribute("success", "Datos actualizados correctamente.");
-        return "redirect:/empresa/perfil";
-    }
-
-    // ── LOGOUT ────────────────────────────────────────────────────────────────
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {

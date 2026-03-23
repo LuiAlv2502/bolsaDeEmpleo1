@@ -31,6 +31,10 @@ public class Puesto {
     @Column(name = "salario", precision = 10, scale = 2)
     private BigDecimal salario;
 
+    @ColumnDefault("'CRC'")
+    @Column(name = "moneda", length = 3)
+    private String moneda; // "CRC" = Colones · "USD" = Dólares
+
     @ColumnDefault("1")
     @Column(name = "publica")
     private Boolean publica;
@@ -60,5 +64,6 @@ public class Puesto {
         if (fechaPublicacion == null) fechaPublicacion = Instant.now();
         if (activo == null) activo = true;
         if (publica == null) publica = true;
+        if (moneda == null) moneda = "CRC";
     }
 }
