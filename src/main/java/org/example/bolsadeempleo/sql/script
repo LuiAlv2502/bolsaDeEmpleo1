@@ -6,6 +6,7 @@ USE bolsa_empleo;
 -- =========================
 CREATE TABLE empresa (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    clave varchar(250) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     localizacion VARCHAR(150),
     correo VARCHAR(100) UNIQUE,
@@ -19,6 +20,7 @@ CREATE TABLE empresa (
 -- =========================
 CREATE TABLE oferente (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	clave varchar(250) NOT NULL,
     identificacion VARCHAR(50) UNIQUE,
     nombre VARCHAR(100),
     apellido VARCHAR(100),
