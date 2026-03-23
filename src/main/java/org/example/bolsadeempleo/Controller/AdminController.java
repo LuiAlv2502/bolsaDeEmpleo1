@@ -28,28 +28,23 @@ public class AdminController {
         return "redirect:/login";
     }
 
-    // ── DASHBOARD ─────────────────────────────────────────────────────────────
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String dashboard(HttpSession session) {
+        if (!esAdmin(session)) return "redirect:/login";
+        return "redirect:/admin/panel";
+    }
+
+
+    @GetMapping("/panel")
+    public String panel(HttpSession session, Model model) {
         if (!esAdmin(session)) return "redirect:/login";
 
         model.addAttribute("nombre", session.getAttribute("adminNombre"));
-        model.addAttribute("cantidadEmpresasPendientes",
-                adminService.listarEmpresasPendientes().size());
-        model.addAttribute("cantidadOferentesPendientes",
-                adminService.listarOferentesPendientes().size());
-        model.addAttribute("cantidadCaracteristicas",
-                adminService.listarTodasCaracteristicas().size());
-        return "admin/dashboard";
-    }
-
-    // ── PANEL (equivalente anterior, redirige al dashboard) ───────────────────
-
-    @GetMapping("/panel")
-    public String panel(HttpSession session) {
-        if (!esAdmin(session)) return "redirect:/login";
-        return "redirect:/admin/dashboard";
+        model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
+        model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
+        model.addAttribute("caracteristicas", adminService.listarTodasCaracteristicas());
+        return "admin/panel";
     }
 
     // ── EMPRESAS PENDIENTES ───────────────────────────────────────────────────
@@ -57,10 +52,7 @@ public class AdminController {
     @GetMapping("/empresas/pendientes")
     public String empresasPendientes(HttpSession session, Model model) {
         if (!esAdmin(session)) return "redirect:/login";
-
-        model.addAttribute("nombre", session.getAttribute("adminNombre"));
-        model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
-        return "admin/empresas-pendientes";
+        return "redirect:/admin/panel";
     }
 
     @PostMapping("/empresa/aprobar/{id}")
@@ -71,7 +63,7 @@ public class AdminController {
         boolean ok = adminService.autorizarEmpresa(id);
         redirectAttrs.addFlashAttribute(ok ? "success" : "error",
                 ok ? "Empresa aprobada." : "No se encontró la empresa.");
-        return "redirect:/admin/empresas/pendientes";
+        return "redirect:/admin/panel";
     }
 
     // ── OFERENTES PENDIENTES ──────────────────────────────────────────────────
@@ -79,10 +71,7 @@ public class AdminController {
     @GetMapping("/oferentes/pendientes")
     public String oferentesPendientes(HttpSession session, Model model) {
         if (!esAdmin(session)) return "redirect:/login";
-
-        model.addAttribute("nombre", session.getAttribute("adminNombre"));
-        model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
-        return "admin/oferentes-pendientes";
+        return "redirect:/admin/panel";
     }
 
     @PostMapping("/oferente/aprobar/{identificacion}")
@@ -93,35 +82,14 @@ public class AdminController {
         boolean ok = adminService.autorizarOferente(identificacion);
         redirectAttrs.addFlashAttribute(ok ? "success" : "error",
                 ok ? "Oferente aprobado." : "No se encontró el oferente.");
-        return "redirect:/admin/oferentes/pendientes";
+        return "redirect:/admin/panel";
     }
 
-    // ── CARACTERÍSTICAS ───────────────────────────────────────────────────────
 
     @GetMapping("/caracteristicas")
-    public String caracteristicas(HttpSession session, Model model,
-                                  @RequestParam(value = "parentId", required = false) Long parentId) {
+    public String caracteristicas(HttpSession session, Model model) {
         if (!esAdmin(session)) return "redirect:/login";
-
-        model.addAttribute("nombre", session.getAttribute("adminNombre"));
-
-        if (parentId != null) {
-            // Navegar dentro de una categoría
-            model.addAttribute("categoriaActual",
-                    adminService.obtenerCaracteristica(parentId).orElse(null));
-            model.addAttribute("caracteristicas",
-                    adminService.listarTodasCaracteristicas().stream()
-                            .filter(c -> c.getParent() != null && c.getParent().getId().equals(parentId))
-                            .toList());
-        } else {
-            // Mostrar raíces
-            model.addAttribute("categoriaActual", null);
-            model.addAttribute("caracteristicas", adminService.listarCaracteristicasRaiz());
-        }
-
-        model.addAttribute("todasCaracteristicas", adminService.listarTodasCaracteristicas());
-        model.addAttribute("parentId", parentId);
-        return "admin/caracteristicas";
+        return "redirect:/admin/panel";
     }
 
     @PostMapping("/caracteristica/nueva")
@@ -138,10 +106,7 @@ public class AdminController {
             adminService.registrarCaracteristica(nombre, padreId);
             redirectAttrs.addFlashAttribute("success", "Característica creada.");
         }
-
-        String redirect = "/admin/caracteristicas";
-        if (padreId != null) redirect += "?parentId=" + padreId;
-        return "redirect:" + redirect;
+        return "redirect:/admin/panel";
     }
 
     @PostMapping("/caracteristica/eliminar/{id}")
@@ -149,17 +114,9 @@ public class AdminController {
                                          RedirectAttributes redirectAttrs) {
         if (!esAdmin(session)) return "redirect:/login";
 
-        // Recordar el padre antes de eliminar para redirigir bien
-        Long parentId = adminService.obtenerCaracteristica(id)
-                .map(c -> c.getParent() != null ? c.getParent().getId() : null)
-                .orElse(null);
-
         adminService.eliminarCaracteristica(id);
         redirectAttrs.addFlashAttribute("success", "Característica eliminada.");
-
-        String redirect = "/admin/caracteristicas";
-        if (parentId != null) redirect += "?parentId=" + parentId;
-        return "redirect:" + redirect;
+        return "redirect:/admin/panel";
     }
 
     // ── LOGOUT ────────────────────────────────────────────────────────────────

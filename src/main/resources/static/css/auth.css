@@ -139,6 +139,119 @@
     color: #7d6608;
 }
 
+/* ===== PANEL ADMIN ===== */
+.panel-main {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.panel-header h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.section-card {
+    background: white;
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.section-card h3 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+.panel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.panel-table th {
+    background: #f0f4f8;
+    color: #555;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.panel-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+}
+
+.panel-table tr:last-child td {
+    border-bottom: none;
+}
+
+.btn-aprobar {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-aprobar:hover {
+    background: #1e8449;
+}
+
+.btn-eliminar {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-eliminar:hover {
+    background: #c0392b;
+}
+
+.empty-msg {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    background: #eaf4fb;
+    color: #2980b9;
+}
+
+.logout-link {
+    color: #e74c3c;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+}
+
 /* ===== AUTH FOOTER ===== */
 .auth-footer {
     text-align: center;

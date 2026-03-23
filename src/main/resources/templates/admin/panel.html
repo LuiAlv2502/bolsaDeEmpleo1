@@ -6,31 +6,6 @@
   <title>Panel Administrador - Bolsa de Empleo</title>
   <link rel="stylesheet" th:href="@{/css/index.css}">
   <link rel="stylesheet" th:href="@{/css/auth.css}">
-  <style>
-    .panel-main { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .panel-header h2 { color: #2c3e50; font-size: 1.5rem; }
-    .section-card { background: white; border-radius: 8px; padding: 28px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .section-card h3 { color: #2c3e50; font-size: 1.1rem; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th { background: #f0f4f8; color: #555; padding: 10px 14px; text-align: left; font-weight: 600; }
-    td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; color: #444; }
-    tr:last-child td { border-bottom: none; }
-    .btn-aprobar { background: #27ae60; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .btn-aprobar:hover { background: #1e8449; }
-    .btn-eliminar { background: #e74c3c; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .btn-eliminar:hover { background: #c0392b; }
-    .empty-msg { color: #aaa; font-size: 0.9rem; text-align: center; padding: 20px; }
-    .nueva-caracteristica { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-top: 16px; }
-    .nueva-caracteristica .form-group { flex: 1; min-width: 180px; }
-    .nueva-caracteristica label { font-size: 0.85rem; color: #555; font-weight: 600; display: block; margin-bottom: 6px; }
-    .nueva-caracteristica input, .nueva-caracteristica select {
-      padding: 9px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; width: 100%;
-    }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; background: #eaf4fb; color: #2980b9; }
-    .logout-link { color: #e74c3c; text-decoration: none; font-size: 0.9rem; }
-    .logout-link:hover { text-decoration: underline; }
-  </style>
 </head>
 <body>
 
@@ -54,7 +29,7 @@
     <div th:if="${#lists.isEmpty(empresasPendientes)}" class="empty-msg">
       No hay empresas pendientes.
     </div>
-    <table th:unless="${#lists.isEmpty(empresasPendientes)}">
+    <table class="panel-table" th:unless="${#lists.isEmpty(empresasPendientes)}">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -86,7 +61,7 @@
     <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
       No hay oferentes pendientes.
     </div>
-    <table th:unless="${#lists.isEmpty(oferentesPendientes)}">
+    <table class="panel-table" th:unless="${#lists.isEmpty(oferentesPendientes)}">
       <thead>
         <tr>
           <th>Identificación</th>
@@ -119,26 +94,28 @@
     <h3>🏷️ Gestión de Características</h3>
 
     <!-- Formulario nueva característica -->
-    <form th:action="@{/admin/caracteristica/nueva}" method="post" class="nueva-caracteristica">
-      <div class="form-group">
-        <label for="nombre">Nombre de la característica</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Inglés..." required>
+    <form th:action="@{/admin/caracteristica/nueva}" method="post" class="auth-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre">Nombre de la característica</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Inglés..." required>
+        </div>
+        <div class="form-group">
+          <label for="padreId">Categoría padre (opcional)</label>
+          <select id="padreId" name="padreId">
+            <option value="">-- Sin categoría padre --</option>
+            <option th:each="c : ${caracteristicas}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-aprobar" style="align-self:flex-end; padding: 10px 18px;">+ Agregar</button>
       </div>
-      <div class="form-group">
-        <label for="padreId">Categoría padre (opcional)</label>
-        <select id="padreId" name="padreId">
-          <option value="">-- Sin categoría padre --</option>
-          <option th:each="c : ${caracteristicas}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
-        </select>
-      </div>
-      <button type="submit" class="btn-aprobar" style="height: fit-content; padding: 9px 18px;">+ Agregar</button>
     </form>
 
     <!-- Lista de características -->
     <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg" style="margin-top:16px;">
       No hay características registradas.
     </div>
-    <table th:unless="${#lists.isEmpty(caracteristicas)}" style="margin-top: 20px;">
+    <table class="panel-table" th:unless="${#lists.isEmpty(caracteristicas)}" style="margin-top: 20px;">
       <thead>
         <tr>
           <th>ID</th>
