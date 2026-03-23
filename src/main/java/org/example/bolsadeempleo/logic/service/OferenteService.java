@@ -7,12 +7,18 @@ import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.example.bolsadeempleo.data.HabilidadRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class OferenteService {
 
@@ -25,14 +31,21 @@ public class OferenteService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
-    // REGISTRO
+    // Carpeta donde se guardan los CV. Configurable en application.properties
+    // cv.upload.dir=uploads/cv
+    @Value("${cv.upload.dir:uploads/cv}")
+    private String cvUploadDir;
+
+    // ── REGISTRO ──────────────────────────────────────────────────────────────
+
     public boolean registrar(Oferente oferente) {
         if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
         oferenteRepository.save(oferente);
         return true;
     }
 
-    // LOGIN
+    // ── LOGIN ─────────────────────────────────────────────────────────────────
+
     public Oferente login(String correo, String clave) {
         Optional<Oferente> oferente = oferenteRepository.findByCorreo(correo);
         if (oferente.isEmpty()) return null;
@@ -41,9 +54,16 @@ public class OferenteService {
         return oferente.get();
     }
 
-    // ACTUALIZAR DATOS
+    // ── OBTENER ───────────────────────────────────────────────────────────────
+
+    public Oferente obtenerPorIdentificacion(String identificacion) {
+        return oferenteRepository.findByIdentificacion(identificacion).orElse(null);
+    }
+
+    // ── ACTUALIZAR DATOS ──────────────────────────────────────────────────────
+
     public boolean actualizarDatos(Oferente datosActualizados) {
-        Optional<Oferente> existente = oferenteRepository.findById(datosActualizados.getIdentificacion());
+        Optional<Oferente> existente = oferenteRepository.findByIdentificacion(datosActualizados.getIdentificacion());
         if (existente.isEmpty()) return false;
 
         Oferente oferente = existente.get();
@@ -58,9 +78,10 @@ public class OferenteService {
         return true;
     }
 
-    // HABILIDADES
+    // ── HABILIDADES ───────────────────────────────────────────────────────────
+
     public boolean agregarOActualizarHabilidad(String identificacionOferente, Long caracteristicaId, Integer nivel) {
-        Optional<Oferente> oferente = oferenteRepository.findById(identificacionOferente);
+        Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacionOferente);
         Optional<Caracteristica> caracteristica = caracteristicaRepository.findById(caracteristicaId);
 
         if (oferente.isEmpty() || caracteristica.isEmpty()) return false;
@@ -73,7 +94,6 @@ public class OferenteService {
             habilidadRepository.save(habilidadExistente.get());
         } else {
             Habilidad habilidad = new Habilidad();
-            // ← Solo faltaba esta línea:
             habilidad.setOferente(oferente.get());
             habilidad.setCaracteristica(caracteristica.get());
             habilidad.setNivel(nivel);
@@ -83,8 +103,11 @@ public class OferenteService {
         return true;
     }
 
-    public boolean eliminarHabilidad(Long habilidadId) {
-        if (!habilidadRepository.existsById(habilidadId)) return false;
+    public boolean eliminarHabilidad(Long habilidadId, String identificacion) {
+        Optional<Habilidad> habilidad = habilidadRepository.findById(habilidadId);
+        if (habilidad.isEmpty()) return false;
+        // Verificar que la habilidad pertenece al oferente
+        if (!habilidad.get().getOferente().getIdentificacion().equals(identificacion)) return false;
         habilidadRepository.deleteById(habilidadId);
         return true;
     }
@@ -93,21 +116,46 @@ public class OferenteService {
         return habilidadRepository.findByOferenteIdentificacion(identificacionOferente);
     }
 
-    // CURRICULUM PDF
-//    public boolean subirCurriculum(String identificacion, MultipartFile archivo) throws IOException {
-//        if (archivo.isEmpty() || !archivo.getContentType().equals("application/pdf")) return false;
-//
-//        Optional<Oferente> oferente = oferenteRepository.findById(identificacion);
-//        if (oferente.isEmpty()) return false;
-//
-//        oferente.get().setCurriculum(archivo.getBytes());
-//        oferenteRepository.save(oferente.get());
-//        return true;
-//    }
+    // ── CURRICULUM PDF (guardado en disco) ────────────────────────────────────
+    public boolean subirCurriculum(String identificacion, MultipartFile archivo) throws IOException {
+        if (archivo == null || archivo.isEmpty()) return false;
 
-//    public byte[] obtenerCurriculum(String identificacion) {
-//        return oferenteRepository.findById(identificacion)
-//                .map(Oferente::getCurriculum)
-//                .orElse(null);
-//    }
+        String contentType = archivo.getContentType();
+        if (contentType == null || !contentType.equals("application/pdf")) return false;
+
+        Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacion);
+        if (oferente.isEmpty()) return false;
+
+        // Crear carpeta si no existe
+        Path uploadPath = Paths.get(cvUploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // Nombre único para evitar colisiones
+        String nombreArchivo = identificacion + "_" + UUID.randomUUID() + ".pdf";
+        Path destino = uploadPath.resolve(nombreArchivo);
+
+        // Si ya tenía un CV anterior, eliminarlo
+        String cvAnterior = oferente.get().getCvPdf();
+        if (cvAnterior != null && !cvAnterior.isBlank()) {
+            Path archivoAnterior = uploadPath.resolve(cvAnterior);
+            Files.deleteIfExists(archivoAnterior);
+        }
+
+        // Guardar nuevo archivo
+        Files.copy(archivo.getInputStream(), destino);
+
+        // Actualizar referencia en BD
+        oferente.get().setCvPdf(nombreArchivo);
+        oferenteRepository.save(oferente.get());
+
+        return true;
+    }
+
+    public boolean tieneCurriculum(String identificacion) {
+        return oferenteRepository.findByIdentificacion(identificacion)
+                .map(o -> o.getCvPdf() != null && !o.getCvPdf().isBlank())
+                .orElse(false);
+    }
 }

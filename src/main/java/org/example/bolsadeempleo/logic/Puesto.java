@@ -31,9 +31,9 @@ public class Puesto {
     @Column(name = "salario", precision = 10, scale = 2)
     private BigDecimal salario;
 
-    @Lob
-    @Column(name = "tipo_publicacion")
-    private String tipoPublicacion;
+    @ColumnDefault("1")
+    @Column(name = "publica")
+    private Boolean publica;
 
     @ColumnDefault("1")
     @Column(name = "activo")
@@ -46,6 +46,19 @@ public class Puesto {
     @OneToMany(mappedBy = "puesto")
     private Set<PuestoCaracteristica> puestoCaracteristicas = new LinkedHashSet<>();
 
-    public void setPublica(boolean publica) {
+    // Helpers para evitar NPE
+    public boolean isActivo() {
+        return Boolean.TRUE.equals(activo);
+    }
+
+    public boolean isPublica() {
+        return Boolean.TRUE.equals(publica);
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (fechaPublicacion == null) fechaPublicacion = Instant.now();
+        if (activo == null) activo = true;
+        if (publica == null) publica = true;
     }
 }

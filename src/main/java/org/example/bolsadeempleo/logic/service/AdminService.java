@@ -29,12 +29,14 @@ public class AdminService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
-    // LOGIN
+    // ── LOGIN ─────────────────────────────────────────────────────────────────
+
     public Administrador login(String identificacion, String clave) {
         return adminRepository.findByIdentificacionAndPassword(identificacion, clave).orElse(null);
     }
 
-    // EMPRESAS
+    // ── EMPRESAS ──────────────────────────────────────────────────────────────
+
     public List<Empresa> listarEmpresasPendientes() {
         return empresaRepository.findByAprobada(false);
     }
@@ -47,7 +49,8 @@ public class AdminService {
         return true;
     }
 
-    // OFERENTES
+    // ── OFERENTES ─────────────────────────────────────────────────────────────
+
     public List<Oferente> listarOferentesPendientes() {
         return oferenteRepository.findByAprobado(false);
     }
@@ -60,7 +63,8 @@ public class AdminService {
         return true;
     }
 
-    // CARACTERISTICAS
+    // ── CARACTERÍSTICAS ───────────────────────────────────────────────────────
+
     public List<Caracteristica> listarCaracteristicasRaiz() {
         return caracteristicaRepository.findByParentIsNull();
     }
@@ -73,11 +77,16 @@ public class AdminService {
         Caracteristica caracteristica = new Caracteristica();
         caracteristica.setNombre(nombre);
 
-//        if (padreId != null) {
-//            caracteristicaRepository.findById(padreId).ifPresent(caracteristica::setPadre);
-//        }
+        if (padreId != null) {
+            caracteristicaRepository.findById(padreId)
+                    .ifPresent(caracteristica::setParent); // ← CORREGIDO: setParent en vez de setPadre
+        }
 
         return caracteristicaRepository.save(caracteristica);
+    }
+
+    public Optional<Caracteristica> obtenerCaracteristica(Long id) {
+        return caracteristicaRepository.findById(id);
     }
 
     public boolean eliminarCaracteristica(Long id) {
