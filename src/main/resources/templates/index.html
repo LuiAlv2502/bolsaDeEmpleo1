@@ -43,7 +43,9 @@
                 <label for="caracteristica">Característica</label>
                 <select id="caracteristica" name="caracteristica">
                     <option value="">-- Todas --</option>
-                    <!-- th:each="c : ${caracteristicas}" -->
+                    <option th:each="c : ${caracteristicas}"
+                            th:value="${c.id}"
+                            th:text="${c.nombre}">Característica</option>
                 </select>
             </div>
             <div class="form-group">
@@ -59,32 +61,36 @@
         <h3>Puestos Publicados Recientemente</h3>
         <div class="puestos-grid">
 
-            <!-- Card ejemplo (luego con th:each) -->
-            <div class="puesto-card">
-                <h4>Desarrollador Backend</h4>
-                <p class="empresa-nombre">Tech Solutions S.A.</p>
-                <p class="salario">$1,500.00</p>
-                <p class="fecha">Publicado: 01/07/2025</p>
-                <div class="tooltip">
-                    <h5>Características requeridas</h5>
-                    <ul>
-                        <li>Java - Nivel 3</li>
-                        <li>Spring Boot - Nivel 2</li>
-                        <li>MySQL - Nivel 2</li>
-                    </ul>
-                </div>
-            </div>
+            <!-- Mensaje cuando no hay puestos -->
+            <p th:if="${#lists.isEmpty(puestosRecientes)}"
+               style="color:#aaa; font-size:0.9rem;">
+                No hay puestos disponibles en este momento.
+            </p>
 
-            <div class="puesto-card">
-                <h4>Diseñador UX/UI</h4>
-                <p class="empresa-nombre">Creative Agency</p>
-                <p class="salario">$1,200.00</p>
-                <p class="fecha">Publicado: 30/06/2025</p>
+            <!-- Tarjeta por cada puesto -->
+            <div class="puesto-card" th:each="p : ${puestosRecientes}">
+                <h4 th:text="${p.descripcion}">Nombre del puesto</h4>
+                <p class="empresa-nombre"
+                   th:text="${p.empresa != null ? p.empresa.nombre : '—'}">Empresa S.A.</p>
+                <p class="salario">
+                    <span th:text="${p.moneda == 'CRC' ? '₡' : '$'}"></span>
+                    <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                </p>
+                <p class="fecha"
+                   th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '—'}">
+                    01/01/2025
+                </p>
+
+                <!-- Tooltip CSS con características (sin JS, aparece al hacer hover) -->
                 <div class="tooltip">
                     <h5>Características requeridas</h5>
+                    <p th:if="${p.puestoCaracteristicas.isEmpty()}"
+                       style="color:#ccc; font-size:0.82rem;">Sin requisitos especificados.</p>
                     <ul>
-                        <li>Figma - Nivel 3</li>
-                        <li>Adobe XD - Nivel 2</li>
+                        <li th:each="pc : ${p.puestoCaracteristicas}"
+                            th:text="${pc.caracteristica.nombre} + ' — Nivel ' + ${pc.nivelRequerido}">
+                            Característica — Nivel 1
+                        </li>
                     </ul>
                 </div>
             </div>

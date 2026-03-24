@@ -23,9 +23,13 @@
     <span>Bienvenido, <strong th:text="${nombre}">Admin</strong></span>
   </div>
 
+  <!-- MENSAJES -->
+  <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
   <!-- EMPRESAS PENDIENTES -->
   <div class="section-card">
-    <h3>🏢 Empresas Pendientes de Aprobación</h3>
+    <h3>Empresas Pendientes de Aprobación</h3>
     <div th:if="${#lists.isEmpty(empresasPendientes)}" class="empty-msg">
       No hay empresas pendientes.
     </div>
@@ -89,11 +93,9 @@
     </table>
   </div>
 
-  <!-- CARACTERÍSTICAS -->
   <div class="section-card">
-    <h3>🏷️ Gestión de Características</h3>
+    <h3>Gestión de Características</h3>
 
-    <!-- Formulario nueva característica -->
     <form th:action="@{/admin/caracteristica/nueva}" method="post" class="auth-form">
       <div class="form-row">
         <div class="form-group">
@@ -111,7 +113,6 @@
       </div>
     </form>
 
-    <!-- Lista de características -->
     <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg" style="margin-top:16px;">
       No hay características registradas.
     </div>
@@ -141,6 +142,48 @@
       </tbody>
     </table>
   </div>
+  <!-- PUESTOS PUBLICADOS -->
+  <div class="section-card">
+    <h3>Puestos Publicados</h3>
+
+    <div th:if="${#lists.isEmpty(puestos)}" class="empty-msg">
+      No hay puestos registrados.
+    </div>
+    <table class="panel-table" th:unless="${#lists.isEmpty(puestos)}">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Empresa</th>
+          <th>Descripción</th>
+          <th>Salario</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${puestos}">
+          <td th:text="${p.id}">1</td>
+          <td th:text="${p.empresa != null ? p.empresa.nombre : '—'}">Empresa</td>
+          <td th:text="${p.descripcion}">Descripción</td>
+          <td>
+            <span th:text="${p.moneda == 'CRC' ? '₡' : '$'}"></span>
+            <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+          </td>
+          <td>
+            <span th:if="${p.publica}" class="badge">Pública</span>
+            <span th:unless="${p.publica}" class="badge" style="background:#fef5e7; color:#b7770d;">Privada</span>
+          </td>
+          <td>
+            <span th:if="${p.activo}" class="badge" style="background:#eafaf1; color:#1e8449;">Activo</span>
+            <span th:unless="${p.activo}" class="badge" style="background:#fdecea; color:#c0392b;">Inactivo</span>
+          </td>
+          <td th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '—'}">01/01/2025</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 <footer>
