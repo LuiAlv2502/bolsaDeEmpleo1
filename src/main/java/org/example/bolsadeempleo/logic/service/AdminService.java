@@ -4,12 +4,10 @@ import org.example.bolsadeempleo.logic.Administrador;
 import org.example.bolsadeempleo.logic.Caracteristica;
 import org.example.bolsadeempleo.logic.Empresa;
 import org.example.bolsadeempleo.logic.Oferente;
-import org.example.bolsadeempleo.logic.Puesto;
 import org.example.bolsadeempleo.data.AdministradorRepository;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.example.bolsadeempleo.data.EmpresaRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
-import org.example.bolsadeempleo.data.PuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +28,6 @@ public class AdminService {
 
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
-
-    @Autowired
-    private PuestoRepository puestoRepository;
 
     // ── LOGIN ─────────────────────────────────────────────────────────────────
 
@@ -84,7 +79,7 @@ public class AdminService {
 
         if (padreId != null) {
             caracteristicaRepository.findById(padreId)
-                    .ifPresent(caracteristica::setParent);
+                    .ifPresent(caracteristica::setParent); // ← CORREGIDO: setParent en vez de setPadre
         }
 
         return caracteristicaRepository.save(caracteristica);
@@ -94,19 +89,9 @@ public class AdminService {
         return caracteristicaRepository.findById(id);
     }
 
-    public boolean tieneHijos(Long id) {
-        return caracteristicaRepository.existsByParent_Id(id);
-    }
-
     public boolean eliminarCaracteristica(Long id) {
         if (!caracteristicaRepository.existsById(id)) return false;
         caracteristicaRepository.deleteById(id);
         return true;
-    }
-
-    // ── PUESTOS ───────────────────────────────────────────────────────────────
-
-    public List<Puesto> listarTodosPuestos() {
-        return puestoRepository.findAll();
     }
 }
