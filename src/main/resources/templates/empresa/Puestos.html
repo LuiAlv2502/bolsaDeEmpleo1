@@ -38,7 +38,7 @@
             <!-- Descripción -->
             <div class="form-group">
                 <label for="descripcion">Descripción general del puesto</label>
-                <textarea id="descripcion" name="descripcion" rows="1" style="resize:none",
+                <textarea id="descripcion" name="descripcion" rows="1" style="resize:none"
                           placeholder="Inserte el nombre del puesto." required></textarea>
             </div>
 
@@ -46,14 +46,14 @@
             <div class="form-row">
                 <div class="form-group" style="flex:2;">
                     <label for="salario">Salario ofrecido</label>
-                    <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <input type="number" id="salario" name="salario" min="0" step="0.01"
-                               placeholder="Ej: 850000" required style="flex:1;">
-                        <input type="hidden" id="moneda" name="moneda" value="CRC">
-                        <button type="button" id="btn-crc" class="btn-moneda btn-moneda-active"
-                                onclick="setMoneda('CRC')">₡ Colones</button>
-                        <button type="button" id="btn-usd" class="btn-moneda"
-                                onclick="setMoneda('USD')">$ Dólares</button>
+                               placeholder="Ej: 850000" required style="flex:1; min-width:120px;">
+                        <!-- Toggle moneda sin JavaScript -->
+                        <input type="radio" class="moneda-radio" id="moneda-crc" name="moneda" value="CRC" checked>
+                        <label for="moneda-crc" class="btn-moneda">₡ Colones</label>
+                        <input type="radio" class="moneda-radio" id="moneda-usd" name="moneda" value="USD">
+                        <label for="moneda-usd" class="btn-moneda">$ Dólares</label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -67,29 +67,24 @@
 
             <!-- Características requeridas -->
             <div class="form-group">
-                <label>Características requeridas</label>
+                <label>Características requeridas <small style="font-weight:normal; color:#888;">(deja en blanco las que no uses, máx. 5)</small></label>
 
-                <div id="caracteristicas-container">
-                    <div class="form-row" style="align-items:flex-end; margin-bottom:8px;">
-                        <div class="form-group" style="flex:2;">
-                            <select name="caracteristicaIds">
-                                <option value="">-- Seleccionar característica --</option>
-                                <option th:each="c : ${caracteristicas}"
-                                        th:value="${c.id}"
-                                        th:text="${c.nombre}">Característica</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="flex:1;">
-                            <input type="number" name="niveles" min="1" max="5" value="1"
-                                   placeholder="Nivel (1-5)">
-                        </div>
-                        <button type="button" class="btn-eliminar" style="padding:10px 14px;"
-                                onclick="quitarFila(this)">✕</button>
+                <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                <div class="form-row" style="align-items:flex-end; margin-bottom:8px;">
+                    <div class="form-group" style="flex:2;">
+                        <select name="caracteristicaIds">
+                            <option value="">-- Ninguna --</option>
+                            <option th:each="c : ${caracteristicas}"
+                                    th:value="${c.id}"
+                                    th:text="${c.nombre}">Característica</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <input type="number" name="niveles" min="1" max="5" value="1"
+                               placeholder="Nivel (1-5)">
                     </div>
                 </div>
-
-                <button type="button" class="btn-aprobar" style="margin-top:6px; padding:8px 16px;"
-                        onclick="agregarFila()">+ Agregar característica</button>
+                </th:block>
             </div>
 
             <button type="submit" class="btn-submit">Publicar Puesto</button>
@@ -140,8 +135,7 @@
                     <td>
                         <form th:if="${p.activo}"
                               th:action="@{/empresa/puestos/{id}/desactivar(id=${p.id})}"
-                              method="post" style="display:inline;"
-                              onsubmit="return confirm('¿Desactivar este puesto?');">
+                              method="post" style="display:inline;">
                             <button type="submit" class="btn-desactivar">Desactivar</button>
                         </form>
                         <span th:unless="${p.activo}" style="color:#aaa; font-size:0.85rem;">—</span>
@@ -157,37 +151,6 @@
     <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
 </footer>
 
-<script>
-    /* ── Moneda toggle ── */
-    function setMoneda(moneda) {
-        document.getElementById('moneda').value = moneda;
-        if (moneda === 'CRC') {
-            document.getElementById('btn-crc').classList.add('btn-moneda-active');
-            document.getElementById('btn-usd').classList.remove('btn-moneda-active');
-        } else {
-            document.getElementById('btn-usd').classList.add('btn-moneda-active');
-            document.getElementById('btn-crc').classList.remove('btn-moneda-active');
-        }
-    }
-
-    /* ── Filas de características ── */
-    function agregarFila() {
-        const container = document.getElementById('caracteristicas-container');
-        const primeraFila = container.querySelector('.form-row');
-        const nuevaFila = primeraFila.cloneNode(true);
-
-        nuevaFila.querySelector('select').value = '';
-        nuevaFila.querySelector('input[type="number"]').value = '1';
-
-        container.appendChild(nuevaFila);
-    }
-
-    function quitarFila(btn) {
-        const container = document.getElementById('caracteristicas-container');
-        if (container.querySelectorAll('.form-row').length === 1) return;
-        btn.closest('.form-row').remove();
-    }
-</script>
 
 </body>
 </html>

@@ -225,8 +225,13 @@
     background: #c0392b;
 }
 
-/* ===== TOGGLE MONEDA ===== */
+/* ===== TOGGLE MONEDA (CSS puro, sin JS) ===== */
+.moneda-radio {
+    display: none;
+}
+
 .btn-moneda {
+    display: inline-block;
     background: #fff;
     color: #555;
     border: 1px solid #ccc;
@@ -235,6 +240,7 @@
     font-size: 0.88rem;
     cursor: pointer;
     white-space: nowrap;
+    user-select: none;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
@@ -243,16 +249,15 @@
     color: #2980b9;
 }
 
-.btn-moneda-active {
+.moneda-radio:checked + .btn-moneda {
     background-color: #2980b9;
     color: #fff;
     border-color: #2980b9;
 }
 
-.btn-moneda-active:hover {
+.moneda-radio:checked + .btn-moneda:hover {
     background-color: #1f6fa0;
     border-color: #1f6fa0;
-    color: #fff;
 }
 
 .btn-desactivar {

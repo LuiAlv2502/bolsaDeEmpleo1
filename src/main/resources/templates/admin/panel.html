@@ -133,8 +133,7 @@
             <span th:unless="${c.parent != null}" style="color:#aaa;">—</span>
           </td>
           <td>
-            <form th:action="@{/admin/caracteristica/eliminar/{id}(id=${c.id})}" method="post" style="display:inline;"
-                  onsubmit="return confirm('¿Eliminar esta característica?');">
+            <form th:action="@{/admin/caracteristica/eliminar/{id}(id=${c.id})}" method="post" style="display:inline;">
               <button type="submit" class="btn-eliminar">Eliminar</button>
             </form>
           </td>

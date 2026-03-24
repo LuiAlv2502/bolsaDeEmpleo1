@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -131,7 +132,7 @@ public class Empresacontroller {
             @RequestParam("descripcion") String descripcion,
             @RequestParam("salario") BigDecimal salario,
             @RequestParam("publica") boolean publica,
-            @RequestParam(value = "caracteristicaIds", required = false) List<Long> caracteristicaIds,
+            @RequestParam(value = "caracteristicaIds", required = false) List<String> caracteristicaIdsStr,
             @RequestParam(value = "niveles", required = false) List<Integer> niveles,
             @RequestParam("moneda") String moneda,
             RedirectAttributes redirectAttrs) {
@@ -139,15 +140,27 @@ public class Empresacontroller {
         Long empresaId = getEmpresaId(session);
         if (empresaId == null) return "redirect:/login";
 
-        if (caracteristicaIds == null) caracteristicaIds = List.of();
-        if (niveles == null) niveles = List.of();
+        // Filtrar filas donde no se seleccionó característica (valor vacío)
+        List<Long> caracteristicaIds = new ArrayList<>();
+        List<Integer> nivelesValidos = new ArrayList<>();
+        if (caracteristicaIdsStr != null) {
+            for (int i = 0; i < caracteristicaIdsStr.size(); i++) {
+                String idStr = caracteristicaIdsStr.get(i);
+                if (idStr != null && !idStr.isBlank()) {
+                    try {
+                        caracteristicaIds.add(Long.parseLong(idStr));
+                        nivelesValidos.add(niveles != null && i < niveles.size() ? niveles.get(i) : 1);
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+        }
 
         Puesto puesto = empresaService.publicarPuesto(
-                empresaId, descripcion, salario, publica, moneda, caracteristicaIds, niveles);
+                empresaId, descripcion, salario, publica, moneda, caracteristicaIds, nivelesValidos);
 
         if (puesto == null) {
             redirectAttrs.addFlashAttribute("error", "No se pudo publicar el puesto.");
-            return "redirect:/empresa/puestos/nuevo";
+            return "redirect:/empresa/puestos";
         }
 
         redirectAttrs.addFlashAttribute("success", "Puesto publicado exitosamente.");
