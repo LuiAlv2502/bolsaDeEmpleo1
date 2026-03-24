@@ -60,4 +60,13 @@ public class Empresa {
         if (aprobada == null) return false;
         return aprobada;
     }
+
+    // ── MÉTODOS PARA PASSWORD ─────────────────────────────────────────────────
+    public String getPassword() {
+        return this.clave;
+    }
+
+    public void setPassword(String password) {
+        this.clave = password;
+    }
 }

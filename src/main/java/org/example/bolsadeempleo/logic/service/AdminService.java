@@ -29,6 +29,7 @@ public class AdminService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
+
     // ── LOGIN ─────────────────────────────────────────────────────────────────
 
     public Administrador login(String identificacion, String clave) {

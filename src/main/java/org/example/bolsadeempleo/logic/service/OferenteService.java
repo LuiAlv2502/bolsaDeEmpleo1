@@ -8,6 +8,7 @@ import org.example.bolsadeempleo.data.HabilidadRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +32,9 @@ public class OferenteService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     // Carpeta donde se guardan los CV. Configurable en application.properties
     // cv.upload.dir=uploads/cv
     @Value("${cv.upload.dir:uploads/cv}")
@@ -40,6 +44,10 @@ public class OferenteService {
 
     public boolean registrar(Oferente oferente) {
         if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
+        
+        String hashPass = passwordEncoder.encode(oferente.getPassword());
+        oferente.setPassword(hashPass);
+        
         oferenteRepository.save(oferente);
         return true;
     }
@@ -49,7 +57,7 @@ public class OferenteService {
     public Oferente login(String correo, String clave) {
         Optional<Oferente> oferente = oferenteRepository.findByCorreo(correo);
         if (oferente.isEmpty()) return null;
-        if (!oferente.get().getClave().equals(clave)) return null;
+        if (!passwordEncoder.matches(clave, oferente.get().getClave())) return null;
         if (!oferente.get().isAprobado()) return null;
         return oferente.get();
     }
