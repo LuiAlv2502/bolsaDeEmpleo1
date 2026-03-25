@@ -44,7 +44,8 @@ public class OferenteService {
 
     public boolean registrar(Oferente oferente) {
         if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
-        
+        if (oferenteRepository.existsByIdentificacion(oferente.getIdentificacion())) return false;
+
         String hashPass = passwordEncoder.encode(oferente.getPassword());
         oferente.setPassword(hashPass);
         
