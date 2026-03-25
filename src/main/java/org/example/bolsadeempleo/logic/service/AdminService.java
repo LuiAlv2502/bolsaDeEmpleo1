@@ -4,10 +4,12 @@ import org.example.bolsadeempleo.logic.Administrador;
 import org.example.bolsadeempleo.logic.Caracteristica;
 import org.example.bolsadeempleo.logic.Empresa;
 import org.example.bolsadeempleo.logic.Oferente;
+import org.example.bolsadeempleo.logic.Puesto;
 import org.example.bolsadeempleo.data.AdministradorRepository;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.example.bolsadeempleo.data.EmpresaRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
+import org.example.bolsadeempleo.data.PuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,9 @@ public class AdminService {
 
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
+
+    @Autowired
+    private PuestoRepository puestoRepository;
 
     // ── LOGIN ─────────────────────────────────────────────────────────────────
 
@@ -94,4 +99,15 @@ public class AdminService {
         caracteristicaRepository.deleteById(id);
         return true;
     }
+
+    public boolean tieneHijos(Long id) {
+        return caracteristicaRepository.existsByParent_Id(id);
+    }
+
+    // ── PUESTOS ───────────────────────────────────────────────────────────────
+
+    public List<Puesto> listarTodosPuestos() {
+        return puestoRepository.findAll();
+    }
+
 }
