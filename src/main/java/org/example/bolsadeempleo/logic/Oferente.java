@@ -68,4 +68,13 @@ public class Oferente {
         if (aprobado == null) return false;
         return aprobado;
     }
+
+    // ── MÉTODOS PARA PASSWORD ─────────────────────────────────────────────────
+    public String getPassword() {
+        return this.clave;
+    }
+
+    public void setPassword(String password) {
+        this.clave = password;
+    }
 }

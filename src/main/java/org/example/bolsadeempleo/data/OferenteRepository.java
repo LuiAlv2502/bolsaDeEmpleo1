@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface OferenteRepository extends JpaRepository<Oferente, Long> {
     Optional<Oferente> findByCorreo(String correo);
     boolean existsByCorreo(String correo);
+    boolean existsByIdentificacion(String identificacion);
     List<Oferente> findByAprobado(boolean aprobado);
     Optional<Oferente> findByIdentificacion(String identificacion);
 }

@@ -29,12 +29,7 @@
 
         <div class="registro-section" style="margin-top: 0;">
             <div class="registro-card">
-                <h3>👤 Mi Perfil</h3>
-                <p>Actualizá tus datos personales y de contacto.</p>
-                <a th:href="@{/oferente/perfil}" class="btn btn-primary">Ver perfil</a>
-            </div>
-            <div class="registro-card">
-                <h3>🏷️ Mis Habilidades</h3>
+                <h3>Mis Habilidades</h3>
                 <p>Agregá o actualizá tus habilidades y niveles.</p>
                 <a th:href="@{/oferente/habilidades}" class="btn btn-secondary">Gestionar habilidades</a>
             </div>
@@ -47,6 +42,9 @@
                     <span th:if="${tieneCv}">Ver / Actualizar CV</span>
                     <span th:unless="${tieneCv}">Subir CV</span>
                 </a>
+                <h3>Mi CV</h3>
+                <p>Subí tu currículum en formato PDF.</p>
+                <a href="#" class="btn btn-primary">Subir CV</a>
             </div>
         </div>
     </div>

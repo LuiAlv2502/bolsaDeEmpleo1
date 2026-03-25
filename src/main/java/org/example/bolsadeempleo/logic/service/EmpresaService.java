@@ -3,6 +3,7 @@ package org.example.bolsadeempleo.logic.service;
 import org.example.bolsadeempleo.logic.*;
 import org.example.bolsadeempleo.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,10 +33,17 @@ public class EmpresaService {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     // ── REGISTRO ──────────────────────────────────────────────────────────────
 
     public boolean registrar(Empresa empresa) {
         if (empresaRepository.existsByCorreo(empresa.getCorreo())) return false;
+        
+        String hashPass = passwordEncoder.encode(empresa.getPassword());
+        empresa.setPassword(hashPass);
+
         empresaRepository.save(empresa);
         return true;
     }
@@ -45,7 +53,7 @@ public class EmpresaService {
     public Empresa login(String correo, String clave) {
         Optional<Empresa> empresa = empresaRepository.findByCorreo(correo);
         if (empresa.isEmpty()) return null;
-        if (!empresa.get().getClave().equals(clave)) return null;
+        if (!passwordEncoder.matches(clave, empresa.get().getClave())) return null;
         if (!empresa.get().isAprobado()) return null;
         return empresa.get();
     }
