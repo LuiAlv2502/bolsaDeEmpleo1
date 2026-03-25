@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OferenteRepository extends JpaRepository<Oferente, String> {
+public interface OferenteRepository extends JpaRepository<Oferente, Long> {
     Optional<Oferente> findByCorreo(String correo);
     boolean existsByCorreo(String correo);
     List<Oferente> findByAprobado(boolean aprobado);
