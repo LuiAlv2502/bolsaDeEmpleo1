@@ -14,7 +14,7 @@
     <nav>
         <a th:href="@{/}">Inicio</a>
         <span>Bienvenido, <strong th:text="${nombre}">Oferente</strong></span>
-        <a th:href="@{/oferente/logout}">Cerrar sesión</a>
+        <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
     </nav>
 </header>
 
@@ -22,16 +22,26 @@
     <div class="auth-card auth-card-wide">
         <div class="auth-header">
             <h2>Mi Panel</h2>
-            <p>Gestioná tu perfil y habilidades</p>
+            <p>Gestioná tu perfil, habilidades y currículum</p>
         </div>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
         <div class="registro-section" style="margin-top: 0;">
             <div class="registro-card">
                 <h3>Mis Habilidades</h3>
                 <p>Agregá o actualizá tus habilidades y niveles.</p>
-                <a href="#" class="btn btn-secondary">Gestionar habilidades</a>
+                <a th:href="@{/oferente/habilidades}" class="btn btn-secondary">Gestionar habilidades</a>
             </div>
             <div class="registro-card">
+                <h3 th:if="${tieneCv}">📋 Mi CV <span style="font-size:0.8rem; color:#27ae60;">✔ Cargado</span></h3>
+                <h3 th:unless="${tieneCv}">📄 Mi CV</h3>
+                <p th:if="${tieneCv}">Tu currículum está disponible. Podés verlo o reemplazarlo.</p>
+                <p th:unless="${tieneCv}">Subí tu currículum en formato PDF para que las empresas te encuentren.</p>
+                <a th:href="@{/oferente/cv}" class="btn btn-primary">
+                    <span th:if="${tieneCv}">Ver / Actualizar CV</span>
+                    <span th:unless="${tieneCv}">Subir CV</span>
+                </a>
                 <h3>Mi CV</h3>
                 <p>Subí tu currículum en formato PDF.</p>
                 <a href="#" class="btn btn-primary">Subir CV</a>

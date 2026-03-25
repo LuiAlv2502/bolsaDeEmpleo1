@@ -3,8 +3,6 @@ package org.example.bolsadeempleo.logic.service;
 import org.example.bolsadeempleo.logic.Puesto;
 import org.example.bolsadeempleo.data.PuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,13 +15,9 @@ public class Busquedaservice {
     @Autowired
     private PuestoRepository puestoRepository;
 
-    // ── 5 puestos públicos más recientes ─────────────────────────────────────
-
     public List<Puesto> obtenerUltimosPuestosPublicos() {
         return puestoRepository.findTop5ByActivoAndPublicaOrderByFechaPublicacionDesc(true, true);
     }
-
-    // ── Buscar puestos por filtros ────────────────────────────────────────────
 
     public List<Puesto> buscarPuestosPublicos(String palabraClave, BigDecimal salarioMin) {
         List<Puesto> todos = puestoRepository.findByActivoAndPublica(true, true);

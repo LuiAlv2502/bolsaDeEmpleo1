@@ -21,7 +21,7 @@ public class Oferente {
     private Long id;
 
     @Size(max = 50)
-    @Column(name = "identificacion", length = 50)
+    @Column(name = "identificacion", length = 50, unique = true)
     private String identificacion;
 
     @Size(max = 100)

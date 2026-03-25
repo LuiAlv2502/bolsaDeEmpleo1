@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -115,7 +116,6 @@ public class OferenteService {
     public boolean eliminarHabilidad(Long habilidadId, String identificacion) {
         Optional<Habilidad> habilidad = habilidadRepository.findById(habilidadId);
         if (habilidad.isEmpty()) return false;
-        // Verificar que la habilidad pertenece al oferente
         if (!habilidad.get().getOferente().getIdentificacion().equals(identificacion)) return false;
         habilidadRepository.deleteById(habilidadId);
         return true;
@@ -125,15 +125,22 @@ public class OferenteService {
         return habilidadRepository.findByOferenteIdentificacion(identificacionOferente);
     }
 
-    // ── CURRICULUM PDF (guardado en disco) ────────────────────────────────────
+    // ── CURRICULUM PDF ────────────────────────────────────────────────────────
+
     public boolean subirCurriculum(String identificacion, MultipartFile archivo) throws IOException {
         if (archivo == null || archivo.isEmpty()) return false;
 
+        // CORRECCIÓN: se valida content-type pero también la extensión, ya que
+        // algunos navegadores pueden enviar tipos MIME distintos para PDF.
         String contentType = archivo.getContentType();
-        if (contentType == null || !contentType.equals("application/pdf")) return false;
+        String originalFilename = archivo.getOriginalFilename();
+        boolean esPdf = (contentType != null && contentType.equals("application/pdf"))
+                || (originalFilename != null && originalFilename.toLowerCase().endsWith(".pdf"));
+        if (!esPdf) return false;
 
-        Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacion);
-        if (oferente.isEmpty()) return false;
+        Optional<Oferente> opt = oferenteRepository.findByIdentificacion(identificacion);
+        if (opt.isEmpty()) return false;
+        Oferente oferente = opt.get();
 
         // Crear carpeta si no existe
         Path uploadPath = Paths.get(cvUploadDir);
@@ -141,23 +148,19 @@ public class OferenteService {
             Files.createDirectories(uploadPath);
         }
 
-        // Nombre único para evitar colisiones
-        String nombreArchivo = identificacion + "_" + UUID.randomUUID() + ".pdf";
-        Path destino = uploadPath.resolve(nombreArchivo);
-
-        // Si ya tenía un CV anterior, eliminarlo
-        String cvAnterior = oferente.get().getCvPdf();
+        // Eliminar CV anterior si existe
+        String cvAnterior = oferente.getCvPdf();
         if (cvAnterior != null && !cvAnterior.isBlank()) {
-            Path archivoAnterior = uploadPath.resolve(cvAnterior);
-            Files.deleteIfExists(archivoAnterior);
+            Files.deleteIfExists(uploadPath.resolve(cvAnterior));
         }
 
-        // Guardar nuevo archivo
-        Files.copy(archivo.getInputStream(), destino);
+        // Guardar nuevo archivo con nombre único
+        String nombreArchivo = identificacion + "_" + UUID.randomUUID() + ".pdf";
+        Path destino = uploadPath.resolve(nombreArchivo);
+        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
-        // Actualizar referencia en BD
-        oferente.get().setCvPdf(nombreArchivo);
-        oferenteRepository.save(oferente.get());
+        oferente.setCvPdf(nombreArchivo);
+        oferenteRepository.save(oferente);
 
         return true;
     }
