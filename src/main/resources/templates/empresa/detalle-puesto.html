@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Puesto - Bolsa de Empleo</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <style>
+        /* ── Tarjeta de detalles ── */
+        .detalle-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 28px 32px;
+            margin-bottom: 28px;
+        }
+        .detalle-card h3 {
+            margin: 0 0 18px 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #eaf0fb;
+            padding-bottom: 10px;
+        }
+        .detalle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px 28px;
+        }
+        .detalle-item label {
+            display: block;
+            font-size: 0.78rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .detalle-item span {
+            font-size: 1rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .detalle-descripcion {
+            margin-top: 18px;
+        }
+        .detalle-descripcion label {
+            display: block;
+            font-size: 0.78rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+        .detalle-descripcion p {
+            margin: 0;
+            font-size: 1rem;
+            color: #34495e;
+            line-height: 1.6;
+            background: #f8fafc;
+            border-left: 4px solid #2980b9;
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+        }
+        .tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .tag-badge {
+            display: inline-block;
+            background: #eaf4fb;
+            color: #2980b9;
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+        .tag-badge .nivel-dot {
+            display: inline-block;
+            background: #2980b9;
+            color: #fff;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            line-height: 18px;
+            text-align: center;
+            font-size: 0.72rem;
+            margin-left: 5px;
+        }
+
+        /* ── Tabla de candidatos ── */
+        .candidatos-section { margin-top: 8px; }
+        .candidatos-section h3 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .candidatos-section .pronto-badge {
+            font-size: 0.74rem;
+            background: #fef9e7;
+            color: #d4a017;
+            border: 1px solid #f0d070;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-weight: 600;
+        }
+        .candidatos-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+        .candidatos-table thead tr {
+            background: #2980b9;
+            color: #fff;
+        }
+        .candidatos-table th {
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.83rem;
+            letter-spacing: 0.03em;
+        }
+        .candidatos-table tbody tr {
+            border-bottom: 1px solid #eaeaea;
+            transition: background 0.15s;
+        }
+        .candidatos-table tbody tr:hover { background: #f4f9ff; }
+        .candidatos-table td { padding: 10px 14px; }
+        .match-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .match-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .match-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+        .match-pct { font-size: 0.82rem; color: #555; min-width: 42px; text-align: right; }
+        .empty-candidatos {
+            text-align: center;
+            padding: 32px;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+        .empty-candidatos .empty-icon { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+
+        /* ── Volver ── */
+        .back-link { margin-top: 22px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Bolsa de Empleo</h1>
+    <nav>
+        <a th:href="@{/}">Inicio</a>
+        <a th:href="@{/empresa/dashboard}">Dashboard</a>
+        <a th:href="@{/empresa/puestos}">Mis Puestos</a>
+        <span>Bienvenido, <strong th:text="${nombre}">Empresa</strong></span>
+        <a th:href="@{/empresa/logout}" class="logout-link">Cerrar sesión</a>
+    </nav>
+</header>
+
+<div class="panel-main">
+
+    <div class="panel-header">
+        <h2>🔍 Detalle del Puesto #<span th:text="${puesto.id}"></span></h2>
+    </div>
+
+    <!-- ── TARJETA DE DETALLES ── -->
+    <div class="detalle-card">
+        <h3>📋 Información del Puesto</h3>
+
+        <div class="detalle-grid">
+
+            <div class="detalle-item">
+                <label>Salario</label>
+                <span>
+                    <th:block th:text="${puesto.moneda == 'USD' ? '$' : '₡'}"></th:block>
+                    <th:block th:text="${#numbers.formatDecimal(puesto.salario, 1, 'COMMA', 2, 'POINT')}"></th:block>
+                    <small th:text="${puesto.moneda}" style="font-weight:400; color:#888; font-size:0.78rem;"></small>
+                </span>
+            </div>
+
+            <div class="detalle-item">
+                <label>Tipo de publicación</label>
+                <span th:if="${puesto.publica}"
+                      style="color:#2980b9;">🌐 Pública</span>
+                <span th:unless="${puesto.publica}"
+                      style="color:#8e44ad;">🔒 Privada</span>
+            </div>
+
+            <div class="detalle-item">
+                <label>Estado</label>
+                <span th:if="${puesto.activo}"   style="color:#1e8449;">✅ Activo</span>
+                <span th:unless="${puesto.activo}" style="color:#c0392b;">❌ Inactivo</span>
+            </div>
+
+            <div class="detalle-item">
+                <label>Fecha de publicación</label>
+                <span th:if="${puesto.fechaPublicacion != null}"
+                      th:text="${#temporals.format(puesto.fechaPublicacion, 'dd/MM/yyyy')}">—</span>
+                <span th:unless="${puesto.fechaPublicacion != null}" style="color:#aaa;">—</span>
+            </div>
+
+        </div>
+
+        <!-- Descripción -->
+        <div class="detalle-descripcion">
+            <label>Descripción</label>
+            <p th:text="${puesto.descripcion}">Sin descripción.</p>
+        </div>
+
+        <!-- Características requeridas -->
+        <div style="margin-top: 20px;">
+            <label style="font-size:0.78rem; color:#888; text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:8px;">
+                Características requeridas
+            </label>
+            <div th:if="${#sets.isEmpty(puesto.puestoCaracteristicas)}" style="color:#aaa; font-size:0.9rem;">
+                Este puesto no tiene características definidas.
+            </div>
+            <div class="tags-row" th:unless="${#sets.isEmpty(puesto.puestoCaracteristicas)}">
+                <span th:each="pc : ${puesto.puestoCaracteristicas}" class="tag-badge">
+                    <span th:text="${pc.caracteristica.nombre}">Característica</span>
+                    <span class="nivel-dot" th:text="${pc.nivelRequerido}">1</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TABLA DE CANDIDATOS ── -->
+    <div class="detalle-card candidatos-section">
+        <h3>
+            👥 Oferentes que calzan con el puesto
+            <span class="pronto-badge">Próximamente</span>
+        </h3>
+
+        <!-- Tabla: columnas definidas aunque la lista esté vacía -->
+        <table class="candidatos-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Identificación</th>
+                    <th>Correo</th>
+                    <th>Requisitos cumplidos</th>
+                    <th>Coincidencia</th>
+                    <th>CV</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas dinámicas (cuando se implemente la búsqueda) -->
+                <tr th:each="c, iter : ${candidatos}">
+                    <td th:text="${iter.index + 1}">1</td>
+                    <td th:text="${c.oferente.nombre + ' ' + c.oferente.apellido}">Nombre</td>
+                    <td th:text="${c.oferente.identificacion}">ID</td>
+                    <td th:text="${c.oferente.correo}">correo@mail.com</td>
+                    <td th:text="${c.requisitosCumplidos + ' / ' + c.requisitosTotal}">0 / 0</td>
+                    <td>
+                        <div class="match-bar-wrap">
+                            <div class="match-bar">
+                                <div class="match-bar-fill"
+                                     th:style="'width:' + ${c.porcentaje} + '%'"></div>
+                            </div>
+                            <span class="match-pct" th:text="${c.porcentajeFormateado}">0%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <a th:if="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
+                           th:href="@{/oferente/cv/ver/{id}(id=${c.oferente.identificacion})}"
+                           target="_blank" class="btn-detalle" style="font-size:0.8rem;">
+                            📄 Ver CV
+                        </a>
+                        <span th:unless="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
+                              style="color:#aaa; font-size:0.82rem;">Sin CV</span>
+                    </td>
+                </tr>
+
+                <!-- Estado vacío -->
+                <tr th:if="${#lists.isEmpty(candidatos)}">
+                    <td colspan="7" class="empty-candidatos">
+                        <span class="empty-icon">🔎</span>
+                        La búsqueda de oferentes estará disponible próximamente.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/empresa/puestos}" class="back-link">← Volver a Mis Puestos</a>
+
+</div>
+
+<footer>
+    <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>
+

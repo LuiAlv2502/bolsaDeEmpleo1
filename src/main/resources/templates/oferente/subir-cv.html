@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi CV - Bolsa de Empleo</title>
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+  <style>
+    .cv-drop-area {
+      border: 2px dashed #2980b9;
+      border-radius: 10px;
+      padding: 40px 24px;
+      text-align: center;
+      background: #f0f7ff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cv-drop-area:hover { background: #dbeeff; }
+    .cv-drop-area input[type="file"] { display: none; }
+    .cv-drop-area label {
+      display: block;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #2980b9;
+      font-weight: 600;
+    }
+    .cv-drop-area .cv-icon { font-size: 3rem; display: block; margin-bottom: 10px; }
+    .cv-drop-area .file-hint {
+      font-size: 0.85rem;
+      color: #777;
+      margin-top: 6px;
+    }
+    .cv-filename {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #27ae60;
+      font-weight: 600;
+    }
+    .btn-submit { margin-top: 18px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Bolsa de Empleo</h1>
+  <nav>
+    <a th:href="@{/}">Inicio</a>
+    <a th:href="@{/oferente/dashboard}">Dashboard</a>
+    <span>Bienvenido, <strong th:text="${session.oferenteNombre}">Oferente</strong></span>
+    <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
+  </nav>
+</header>
+
+<main class="auth-main">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-header">
+      <h2>📄 Mi Currículum (CV)</h2>
+      <p th:if="${tieneCv}">Tu CV está cargado. Podés verlo o reemplazarlo con un nuevo archivo PDF.</p>
+      <p th:unless="${tieneCv}">Subí tu currículum en formato PDF para que las empresas te encuentren.</p>
+    </div>
+
+    <!-- Alertas -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+    <!-- Formulario de subida -->
+    <form th:action="@{/oferente/cv/subir}" method="post"
+          enctype="multipart/form-data" class="auth-form" id="cvForm">
+
+      <div class="cv-drop-area" id="dropArea" onclick="document.getElementById('archivo').click()">
+        <span class="cv-icon">📂</span>
+        <label>Seleccionar archivo PDF</label>
+        <input type="file" id="archivo" name="archivo" accept=".pdf" required
+               onchange="mostrarNombre(this)">
+        <span class="file-hint">Solo archivos .pdf · Máx. 5 MB</span>
+        <span class="cv-filename" id="nombreArchivo"></span>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span th:if="${tieneCv}">🔄 Reemplazar CV</span>
+        <span th:unless="${tieneCv}">⬆ Subir CV</span>
+      </button>
+    </form>
+
+    <!-- Botón para abrir el CV en una nueva pestaña -->
+    <div th:if="${tieneCv}" style="margin-top: 18px;">
+      <a th:href="@{/oferente/cv/ver/{id}(id=${session.oferenteId})}"
+         target="_blank" class="btn btn-secondary">
+        👁 Ver CV actual
+      </a>
+    </div>
+
+    <div class="auth-footer">
+      <p><a th:href="@{/oferente/dashboard}">← Volver al panel</a></p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+  function mostrarNombre(input) {
+    const span = document.getElementById('nombreArchivo');
+    span.textContent = input.files.length > 0 ? '✔ ' + input.files[0].name : '';
+  }
+
+  // Drag & drop
+  const drop = document.getElementById('dropArea');
+  const fileInput = document.getElementById('archivo');
+
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.background = '#c8e6ff'; });
+  drop.addEventListener('dragleave', () => { drop.style.background = ''; });
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    drop.style.background = '';
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type === 'application/pdf') {
+      const dt = new DataTransfer();
+      dt.items.add(files[0]);
+      fileInput.files = dt.files;
+      mostrarNombre(fileInput);
+    } else {
+      alert('Solo se aceptan archivos PDF.');
+    }
+  });
+</script>
+</body>
+</html>
+

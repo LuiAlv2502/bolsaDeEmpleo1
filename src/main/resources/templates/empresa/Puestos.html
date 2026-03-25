@@ -6,7 +6,19 @@
     <title>Mis Puestos - Bolsa de Empleo</title>
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <link rel="stylesheet" th:href="@{/css/auth.css}">
-</head>
+    <style>
+        .btn-detalle {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #2980b9;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 0.82rem;
+            text-decoration: none;
+            margin-right: 4px;
+        }
+        .btn-detalle:hover { background: #1f6391; }
+    </style>
 <body>
 
 <header>
@@ -133,6 +145,8 @@
                               th:text="${pc.caracteristica.nombre + ' (Nv.' + pc.nivelRequerido + ')'}">Tag</span>
                     </td>
                     <td>
+                        <a th:href="@{/empresa/puestos/{id}/detalle(id=${p.id})}"
+                           class="btn-detalle">Ver detalles</a>
                         <form th:if="${p.activo}"
                               th:action="@{/empresa/puestos/{id}/desactivar(id=${p.id})}"
                               method="post" style="display:inline;">

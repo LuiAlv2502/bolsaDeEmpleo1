@@ -167,6 +167,25 @@ public class Empresacontroller {
         return "redirect:/empresa/puestos";
     }
 
+    // ── DETALLE DEL PUESTO ────────────────────────────────────────────────────
+
+    @GetMapping("/puestos/{id}/detalle")
+    public String detallePuesto(@PathVariable Long id, HttpSession session, Model model) {
+        Long empresaId = getEmpresaId(session);
+        if (empresaId == null) return "redirect:/login";
+
+        Puesto puesto = empresaService.obtenerPuesto(id);
+        if (puesto == null || !puesto.getEmpresa().getId().equals(empresaId)) {
+            return "redirect:/empresa/puestos";
+        }
+
+        model.addAttribute("puesto", puesto);
+        model.addAttribute("nombre", session.getAttribute("empresaNombre"));
+        // candidatos: se deja vacío de momento (solo plantilla)
+        model.addAttribute("candidatos", java.util.Collections.emptyList());
+        return "empresa/detalle-puesto";
+    }
+
     // ── DESACTIVAR PUESTO ─────────────────────────────────────────────────────
 
     @PostMapping("/puestos/{id}/desactivar")
