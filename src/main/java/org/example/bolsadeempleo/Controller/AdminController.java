@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -37,14 +38,38 @@ public class AdminController {
 
 
     @GetMapping("/panel")
-    public String panel(HttpSession session, Model model) {
+//    public String panel(HttpSession session, Model model) {
+//        if (!esAdmin(session)) return "redirect:/login";
+//
+//        model.addAttribute("nombre", session.getAttribute("adminNombre"));
+//        model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
+//        model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
+//        model.addAttribute("caracteristicas", adminService.listarTodasCaracteristicas());
+//        model.addAttribute("puestos", adminService.listarTodosPuestos());
+//        return "admin/panel";
+//    }
+    public String panel(HttpSession session, Model model,
+                        @RequestParam(value = "actualId", required = false) Long actualId) {
         if (!esAdmin(session)) return "redirect:/login";
 
         model.addAttribute("nombre", session.getAttribute("adminNombre"));
         model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
         model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
-        model.addAttribute("caracteristicas", adminService.listarTodasCaracteristicas());
         model.addAttribute("puestos", adminService.listarTodosPuestos());
+
+        if (actualId != null) {
+            var actual = adminService.obtenerCaracteristica(actualId);
+            actual.ifPresent(c -> {
+                model.addAttribute("actual", c);
+                model.addAttribute("caracteristicas", adminService.listarHijos(actualId));
+                model.addAttribute("ruta", adminService.obtenerRuta(actualId));
+            });
+        } else {
+            model.addAttribute("caracteristicas", adminService.listarCaracteristicasRaiz());
+            model.addAttribute("ruta", List.of());
+        }
+
+        model.addAttribute("todasCaracteristicas", adminService.listarTodasCaracteristicas());
         return "admin/panel";
     }
 
