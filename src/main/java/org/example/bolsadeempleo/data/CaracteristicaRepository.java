@@ -10,4 +10,5 @@ import java.util.List;
 public interface CaracteristicaRepository extends JpaRepository<Caracteristica, Long> {
     List<Caracteristica> findByParentIsNull();
     boolean existsByParent_Id(Long parentId);
+    List<Caracteristica> findByParentId(Long parentId);
 }

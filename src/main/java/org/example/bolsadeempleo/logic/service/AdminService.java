@@ -13,6 +13,7 @@ import org.example.bolsadeempleo.data.PuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,6 +103,20 @@ public class AdminService {
 
     public boolean tieneHijos(Long id) {
         return caracteristicaRepository.existsByParent_Id(id);
+    }
+
+    public List<Caracteristica> listarHijos(Long padreId) {
+        return caracteristicaRepository.findByParentId(padreId);
+    }
+
+    public List<Caracteristica> obtenerRuta(Long id) {
+        List<Caracteristica> ruta = new ArrayList<>();
+        Optional<Caracteristica> actual = caracteristicaRepository.findById(id);
+        while (actual.isPresent() && actual.get().getParent() != null) {
+            ruta.add(0, actual.get().getParent());
+            actual = Optional.ofNullable(actual.get().getParent());
+        }
+        return ruta;
     }
 
     // ── PUESTOS ───────────────────────────────────────────────────────────────
