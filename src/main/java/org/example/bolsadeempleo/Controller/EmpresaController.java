@@ -143,15 +143,15 @@ public class EmpresaController {
 
         model.addAttribute("puesto", puesto);
         model.addAttribute("nombre", session.getAttribute("empresaNombre"));
-        model.addAttribute("candidatos", java.util.Collections.emptyList());
+        model.addAttribute("candidatos", empresaService.buscarCandidatos(id));
         return "empresa/detalle-puesto";
     }
 
     @PostMapping("/puestos/{id}/desactivar")
     public String desactivarPuesto(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttrs) {
         Long empresaId = getEmpresaId(session);
-        empresaService.desactivarPuesto(empresaId, id);
-        redirectAttrs.addFlashAttribute("succes", "Puesto desactivado");
+        empresaService.desactivarPuesto(id, empresaId);
+        redirectAttrs.addFlashAttribute("success", "Puesto desactivado");
         return "redirect:/empresa/puestos";
 
     }

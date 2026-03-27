@@ -55,7 +55,7 @@
 <main class="auth-main">
   <div class="auth-card auth-card-wide">
     <div class="auth-header">
-      <h2>📄 Mi Currículum (CV)</h2>
+      <h2>Mi Currículum (CV)</h2>
       <p th:if="${tieneCv}">Tu CV está cargado. Podés verlo o reemplazarlo con un nuevo archivo PDF.</p>
       <p th:unless="${tieneCv}">Subí tu currículum en formato PDF para que las empresas te encuentren.</p>
     </div>
@@ -69,7 +69,7 @@
           enctype="multipart/form-data" class="auth-form" id="cvForm">
 
       <div class="cv-drop-area" id="dropArea" onclick="document.getElementById('archivo').click()">
-        <span class="cv-icon">📂</span>
+        <span class="cv-icon"></span>
         <label>Seleccionar archivo PDF</label>
         <input type="file" id="archivo" name="archivo" accept=".pdf" required
                onchange="mostrarNombre(this)">
@@ -78,8 +78,8 @@
       </div>
 
       <button type="submit" class="btn-submit">
-        <span th:if="${tieneCv}">🔄 Reemplazar CV</span>
-        <span th:unless="${tieneCv}">⬆ Subir CV</span>
+        <span th:if="${tieneCv}">Reemplazar CV</span>
+        <span th:unless="${tieneCv}">Subir CV</span>
       </button>
     </form>
 
@@ -87,7 +87,7 @@
     <div th:if="${tieneCv}" style="margin-top: 18px;">
       <a th:href="@{/oferente/cv/ver/{id}(id=${session.oferenteId})}"
          target="_blank" class="btn btn-secondary">
-        👁 Ver CV actual
+        Ver CV actual
       </a>
     </div>
 
@@ -104,7 +104,7 @@
 <script>
   function mostrarNombre(input) {
     const span = document.getElementById('nombreArchivo');
-    span.textContent = input.files.length > 0 ? '✔ ' + input.files[0].name : '';
+    span.textContent = input.files.length > 0 ? input.files[0].name : '';
   }
 
   // Drag & drop

@@ -132,38 +132,43 @@ public class EmpresaService {
     // ── BUSCAR CANDIDATOS ─────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
-    public List<CandidatoDTO> buscarCandidatos(Long puestoId) {
+    public List<CandidatoDTO> buscarCandidatos(Long puestoId){
         List<PuestoCaracteristica> requisitos = requisitoPuestoRepository.findByPuestoId(puestoId);
-        if (requisitos.isEmpty()) return new ArrayList<>();
+        if(requisitos.isEmpty()) return new  ArrayList<>();
 
         List<Oferente> todosOferentes = oferenteRepository.findByAprobado(true);
         List<CandidatoDTO> candidatos = new ArrayList<>();
 
         for (Oferente oferente : todosOferentes) {
-            int cumplidos = contarRequisitorCumplidos(oferente.getIdentificacion(), requisitos);
-            if (cumplidos > 0) {
-                double porcentaje = (double) cumplidos / requisitos.size() * 100;
-                candidatos.add(new CandidatoDTO(oferente, cumplidos, requisitos.size(), porcentaje));
+            double puntuacion = calcularPuntuacion(oferente.getIdentificacion(), requisitos);
+            if (puntuacion > 0){
+                double porcentaje = (puntuacion/ requisitos.size()) * 100.0;
+                candidatos.add(new CandidatoDTO(oferente, puntuacion, requisitos.size(), porcentaje));
             }
         }
-
-        // Ordenar por % de coincidencia descendente
         candidatos.sort((a, b) -> Double.compare(b.getPorcentaje(), a.getPorcentaje()));
         return candidatos;
     }
 
-    private int contarRequisitorCumplidos(String identificacion, List<PuestoCaracteristica> requisitos) {
-        int cumplidos = 0;
-        for (PuestoCaracteristica requisito : requisitos) {
-            Long caracId = requisito.getCaracteristica().getId(); // ← CORREGIDO
-            Optional<Habilidad> habilidad = habilidadRepository
-                    .findByOferenteIdentificacionAndCaracteristicaId(identificacion, caracId);
+    private double calcularPuntuacion(String identificacion,  List<PuestoCaracteristica> requisitos) {
+        double puntuacion = 0.0;
+        for(PuestoCaracteristica requisito : requisitos) {
+            Long caracId = requisito.getCaracteristica().getId();
+            Optional<Habilidad> habilidad = habilidadRepository.findByOferenteIdentificacionAndCaracteristicaId(identificacion, caracId);
 
-            if (habilidad.isPresent() && habilidad.get().getNivel() >= requisito.getNivelRequerido()) {
-                cumplidos++;
+            if(habilidad.isPresent()) {
+                int nivelOferente = habilidad.get().getNivel();
+                int nivelRequerido = requisito.getNivelRequerido();
+
+                if(nivelOferente >= nivelRequerido) {
+                    puntuacion += 1.0;
+                }else{
+                    puntuacion += 0.5;
+                }
+
             }
         }
-        return cumplidos;
+        return puntuacion;
     }
 
     // ── VER DETALLE CANDIDATO ─────────────────────────────────────────────────
@@ -187,15 +192,17 @@ public class EmpresaService {
     public static class CandidatoDTO {
         @Getter
         private final Oferente oferente;
-        private final int requisitosCumplidos;
-        private final int requisitosTotal;
+        @Getter
+        private final double puntuacion;
+        @Getter
+        private final int    requisitosTotal;
         private final double porcentaje;
 
-        public CandidatoDTO(Oferente oferente, int cumplidos, int total, double porcentaje) {
-            this.oferente = oferente;
-            this.requisitosCumplidos = cumplidos;
+        public CandidatoDTO(Oferente oferente, double puntuacion, int total, double porcentaje) {
+            this.oferente        = oferente;
+            this.puntuacion      = puntuacion;
             this.requisitosTotal = total;
-            this.porcentaje = porcentaje;
+            this.porcentaje      = porcentaje;
         }
 
         public double getPorcentaje() {

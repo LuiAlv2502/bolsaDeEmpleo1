@@ -28,7 +28,7 @@
 
     <!-- ── TARJETA DE DETALLES ── -->
     <div class="detalle-card">
-        <h3>📋 Información del Puesto</h3>
+        <h3>Información del Puesto</h3>
 
         <div class="detalle-grid">
 
@@ -89,7 +89,7 @@
 
     <!-- ── TABLA DE CANDIDATOS ── -->
     <div class="detalle-card candidatos-section">
-        <h3>👥 Oferentes que calzan con el puesto</h3>
+        <h3>Oferentes que calzan con el puesto</h3>
 
         <!-- Tabla de candidatos ordenados por % de coincidencia -->
         <table class="candidatos-table">
@@ -111,13 +111,7 @@
                     <td th:text="${c.oferente.identificacion}">ID</td>
                     <td th:text="${c.oferente.correo}">correo@mail.com</td>
                     <td>
-                        <div class="match-bar-wrap">
-                            <div class="match-bar">
-                                <div class="match-bar-fill"
-                                     th:style="'width:' + ${c.porcentaje} + '%'"></div>
-                            </div>
-                            <span class="match-pct" th:text="${c.porcentajeFormateado}">0%</span>
-                        </div>
+                        <span class="match-pct" th:text="${c.porcentajeFormateado}">0%</span>
                     </td>
                     <td>
                         <a th:if="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
@@ -132,10 +126,9 @@
 
                 <!-- Estado vacío -->
                 <tr th:if="${#lists.isEmpty(candidatos)}">
-                    <td colspan="6" class="empty-candidatos">
-                        <span class="empty-icon">🔎</span>
-                        No se encontraron oferentes con habilidades coincidentes para este puesto.
-                    </td>
+                        <td colspan="6" class="empty-candidatos">
+                            No se encontraron oferentes con habilidades coincidentes para este puesto.
+                        </td>
                 </tr>
             </tbody>
         </table>
