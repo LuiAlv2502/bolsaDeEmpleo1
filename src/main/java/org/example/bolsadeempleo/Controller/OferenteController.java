@@ -36,6 +36,12 @@ public class OferenteController {
     private String cvUploadDir;
 
     @GetMapping("/registro")
+    public String mostrarRegistro(Model model) {
+        model.addAttribute("oferente", new Oferente());
+        return "oferente/registro";
+    }
+
+    @PostMapping("/registro")
     public String registro(@ModelAttribute("oferente") Oferente oferente,
                            @RequestParam("password") String password,
                            @RequestParam("confirmarPassword") String  confirmarPassword,

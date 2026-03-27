@@ -56,7 +56,7 @@ public class LoginController {
         }
         Oferente oferente = oferenteService.login(credencial, password);
         if(oferente != null){
-            session.setAttribute("oferenteId", oferente.getId());
+            session.setAttribute("oferenteId", oferente.getIdentificacion());
             session.setAttribute("oferenteNombre", oferente.getNombre());
             session.setAttribute("tipoUsuario", "oferente");
             return "redirect:/oferente/dashboard";

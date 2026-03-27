@@ -27,6 +27,12 @@ public class EmpresaController {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
+    @GetMapping("/registro")
+    public String mostrarRegistro(Model model) {
+        model.addAttribute("empresa", new Empresa());
+        return "empresa/registro";
+    }
+
     @PostMapping("/registro")
     public String registro(@ModelAttribute("empresa") Empresa empresa, @RequestParam("password") String password,
                            @RequestParam("confirmarPassword") String confirmarPassword, Model model) {
