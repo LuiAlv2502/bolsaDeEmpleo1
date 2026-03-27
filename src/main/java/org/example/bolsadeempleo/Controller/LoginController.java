@@ -20,73 +20,56 @@ public class LoginController {
 
     @Autowired
     private EmpresaService empresaService;
-
     @Autowired
     private OferenteService oferenteService;
 
-    // ==================== LOGIN UNIFICADO (auto-detección) ====================
-
     @GetMapping("/login")
-    public String mostrarLogin(
-            @RequestParam(value = "error", required = false) String error,
-            Model model) {
+    public String login(@RequestParam(value = "error", required = false) String error, Model model) {
         if (error != null) {
-            model.addAttribute("error", "Credenciales incorrectas o cuenta no aprobada.");
+            model.addAttribute("error", "No se ha encontrado un usuario o la cuenta no ha sido aprobada.");
         }
         return "login";
     }
-
-    @PostMapping("/login")
-    public String procesarLogin(
-            @RequestParam("credencial") String credencial,
-            @RequestParam("password") String password,
-            HttpSession session,
-            Model model) {
-
-        // Validar campos vacíos
-        if (credencial == null || credencial.isBlank() || password == null || password.isBlank()) {
-            model.addAttribute("error", "Por favor ingresa tus credenciales y contraseña.");
+    public String validarLogin(@RequestParam("credencial") String credencial, @RequestParam("passowrd") String password,Model model,
+                               HttpSession session) {
+        if(credencial == null || credencial.isEmpty() || password == null || password.isEmpty()){
+            model.addAttribute("error", "Por favor, ingrese su usuario y contraseña.");
             return "login";
         }
 
-        // 1. Intentar como Administrador (identificacion + password)
         Administrador admin = adminService.login(credencial, password);
-        if (admin != null) {
+        if(admin != null){
             session.setAttribute("adminId", admin.getId());
             session.setAttribute("adminNombre", admin.getNombre());
             session.setAttribute("tipoUsuario", "admin");
             return "redirect:/admin/panel";
-        }
 
-        // 2. Intentar como Empresa (correo + clave)
+        }
         Empresa empresa = empresaService.login(credencial, password);
-        if (empresa != null) {
+        if(empresa != null){
             session.setAttribute("empresaId", empresa.getId());
             session.setAttribute("empresaNombre", empresa.getNombre());
             session.setAttribute("tipoUsuario", "empresa");
             return "redirect:/empresa/dashboard";
         }
-
-        // 3. Intentar como Oferente (correo + clave)
         Oferente oferente = oferenteService.login(credencial, password);
-        if (oferente != null) {
-            session.setAttribute("oferenteId", oferente.getIdentificacion());
+        if(oferente != null){
+            session.setAttribute("oferenteId", oferente.getId());
             session.setAttribute("oferenteNombre", oferente.getNombre());
             session.setAttribute("tipoUsuario", "oferente");
             return "redirect:/oferente/dashboard";
-        }
 
-        // Ninguno coincidió
-        model.addAttribute("error", "Credenciales incorrectas o cuenta aún no aprobada.");
+        }
+        model.addAttribute("error", "No se ha encontrado un usuario o la cuenta no ha sido aprobada.");
         return "login";
+
     }
 
-    // ==================== LOGOUT GLOBAL ====================
-
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session){
         session.invalidate();
         return "redirect:/";
     }
+
 }
 
