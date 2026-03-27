@@ -44,8 +44,8 @@ public class OferenteService {
     // ── REGISTRO ──────────────────────────────────────────────────────────────
 
     public boolean registrar(Oferente oferente) {
-        if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
-        if (oferenteRepository.existsByIdentificacion(oferente.getIdentificacion())) return false;
+        if (oferenteRepository.existeByCorreo(oferente.getCorreo())) return false;
+        if (oferenteRepository.existeByIdentificacion(oferente.getIdentificacion())) return false;
 
         String hashPass = passwordEncoder.encode(oferente.getPassword());
         oferente.setPassword(hashPass);
@@ -97,7 +97,7 @@ public class OferenteService {
         if (oferente.isEmpty() || caracteristica.isEmpty()) return false;
 
         Optional<Habilidad> habilidadExistente = habilidadRepository
-                .findByOferenteIdentificacionAndCaracteristicaId(identificacionOferente, caracteristicaId);
+                .findByOferenteIdAndCarac(identificacionOferente, caracteristicaId);
 
         if (habilidadExistente.isPresent()) {
             habilidadExistente.get().setNivel(nivel);
@@ -122,7 +122,7 @@ public class OferenteService {
     }
 
     public List<Habilidad> listarHabilidades(String identificacionOferente) {
-        return habilidadRepository.findByOferenteIdentificacion(identificacionOferente);
+        return habilidadRepository.findByOferenteId(identificacionOferente);
     }
 
     // ── CURRICULUM PDF ────────────────────────────────────────────────────────
