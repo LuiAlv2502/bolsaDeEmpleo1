@@ -76,13 +76,7 @@ public class AdminController {
 
         }
 
-//        @GetMapping("/oferentes/pendietes")
-//        public String oferentePendientes(HttpSession session, Model model){
-//            if(!esAdmin(session)){
-//                return "redirect:/login";
-//            }
-//            return "redirect:admin/panel";
-//        }
+
 
         @PostMapping("/oferente/aprobar/{identificacion}")
         public String aprobarOferente(@PathVariable String identificacion, HttpSession session

@@ -1,10 +1,7 @@
 package org.example.bolsadeempleo.Controller;
 
-import jakarta.servlet.http.HttpSession;
 import org.example.bolsadeempleo.logic.service.Busquedaservice;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
-import org.example.bolsadeempleo.logic.service.EmpresaService;
-import org.example.bolsadeempleo.logic.service.OferenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
