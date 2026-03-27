@@ -2,9 +2,7 @@ package org.example.bolsadeempleo.Controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.bolsadeempleo.logic.Empresa;
-import org.example.bolsadeempleo.logic.Oferente;
 import org.example.bolsadeempleo.logic.Puesto;
-import org.example.bolsadeempleo.logic.PuestoCaracteristica;
 import org.example.bolsadeempleo.logic.service.EmpresaService;
 import org.example.bolsadeempleo.logic.service.OferenteService;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
@@ -17,8 +15,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+//listo
 @Controller
+@RequestMapping("/empresa")
 public class EmpresaController {
 
     @Autowired
@@ -28,7 +27,7 @@ public class EmpresaController {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
-    @GetMapping("/registro")
+    @PostMapping("/registro")
     public String registro(@ModelAttribute("empresa") Empresa empresa, @RequestParam("password") String password,
                            @RequestParam("confirmarPassword") String confirmarPassword, Model model) {
 
@@ -61,11 +60,7 @@ public class EmpresaController {
         model.addAttribute("empresa", new Empresa());
         return "empresa/registro";
     }
-    @GetMapping("/login")
-    public String mostrarLogin()    {
-        return "redirect:/login";
 
-    }
 
     private Long getEmpresaId(HttpSession session) {
         Object id = session.getAttribute("empresaId");
@@ -172,11 +167,7 @@ public class EmpresaController {
 
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
-    }
+
 
 
 }

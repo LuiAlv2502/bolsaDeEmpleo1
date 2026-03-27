@@ -30,7 +30,9 @@ public class LoginController {
         }
         return "login";
     }
-    public String validarLogin(@RequestParam("credencial") String credencial, @RequestParam("passowrd") String password,Model model,
+
+    @PostMapping("/login")
+    public String validarLogin(@RequestParam("credencial") String credencial, @RequestParam("password") String password,Model model,
                                HttpSession session) {
         if(credencial == null || credencial.isEmpty() || password == null || password.isEmpty()){
             model.addAttribute("error", "Por favor, ingrese su usuario y contraseña.");
