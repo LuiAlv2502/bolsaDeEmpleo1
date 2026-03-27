@@ -13,7 +13,7 @@
   <h1>Bolsa de Empleo</h1>
   <nav>
     <a th:href="@{/}">Inicio</a>
-    <a th:href="@{/admin/logout}" class="logout-link">Cerrar sesión</a>
+    <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
   </nav>
 </header>
 
@@ -61,7 +61,7 @@
 
   <!-- secciom de oferentes pendientes de aprobacion del admin  -->
   <div class="section-card">
-    <h3> Oferentes Pendientes de Aprobación</h3>
+    <h3>Oferentes Pendientes de Aprobación</h3>
     <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
       No hay oferentes pendientes.
     </div>
@@ -93,57 +93,90 @@
     </table>
   </div>
 
-    <!-- seccion de gestion de caracteristicas de la vista del admin  -->
-  <div class="section-card">
-    <h3>Gestión de Características</h3>
+    <div class="section-card">
+        <h3>Gestión de Características</h3>
 
-    <form th:action="@{/admin/caracteristica/nueva}" method="post" class="auth-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="nombre">Nombre de la característica</label>
-          <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Inglés..." required>
+        <!-- RUTA DE NAVEGACIÓN -->
+        <div class="ruta-nav">
+    <span class="badge">
+      <a th:href="@{/admin/panel}">Raíces</a>
+    </span>
+            <th:block th:each="nodo : ${ruta}">
+                <span class="ruta-separador">/</span>
+                <span class="badge">
+        <a th:href="@{/admin/panel(actualId=${nodo.id})}"
+           th:text="${nodo.nombre}">Nodo</a>
+      </span>
+            </th:block>
+            <th:block th:if="${actual != null}">
+                <span class="ruta-separador">/</span>
+                <span class="badge-actual" th:text="${actual.nombre}">Actual</span>
+            </th:block>
         </div>
-        <div class="form-group">
-          <label for="padreId">Categoría padre (opcional)</label>
-          <select id="padreId" name="padreId">
-            <option value="">-- Sin categoría padre --</option>
-            <option th:each="c : ${caracteristicas}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
-          </select>
-        </div>
-        <button type="submit" class="btn-aprobar" style="align-self:flex-end; padding: 10px 18px;">+ Agregar</button>
-      </div>
-    </form>
 
-    <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg" style="margin-top:16px;">
-      No hay características registradas.
-    </div>
-    <table class="panel-table" th:unless="${#lists.isEmpty(caracteristicas)}" style="margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Categoría padre</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="c : ${caracteristicas}">
-          <td th:text="${c.id}">1</td>
-          <td th:text="${c.nombre}">Java</td>
-          <td>
-            <span th:if="${c.parent != null}" class="badge" th:text="${c.parent.nombre}">Padre</span>
-            <span th:unless="${c.parent != null}" style="color:#aaa;">—</span>
-          </td>
-          <td>
-            <form th:action="@{/admin/caracteristica/eliminar/{id}(id=${c.id})}" method="post" style="display:inline;">
-              <button type="submit" class="btn-eliminar">Eliminar</button>
+        <!-- TÍTULO NIVEL ACTUAL -->
+        <p class="subcategoria-label" th:if="${actual != null}">
+            Subcategorías de: <strong th:text="${actual.nombre}"></strong>
+        </p>
+
+        <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg">
+            No hay características en este nivel.
+        </div>
+
+        <table class="panel-table tabla-margin" th:unless="${#lists.isEmpty(caracteristicas)}">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría padre</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${caracteristicas}">
+                <td>
+                    <a class="caracteristica-link"
+                       th:href="@{/admin/panel(actualId=${c.id})}"
+                       th:text="${c.nombre}">Java</a>
+                </td>
+                <td>
+                    <span th:if="${c.parent != null}" class="badge" th:text="${c.parent.nombre}">Padre</span>
+                    <span th:unless="${c.parent != null}" class="ruta-separador">—</span>
+                </td>
+                <td>
+                    <form th:action="@{/admin/caracteristica/eliminar/{id}(id=${c.id})}" method="post">
+                        <button type="submit" class="btn-eliminar">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- FORMULARIO AGREGAR -->
+        <div class="form-divider">
+            <form th:action="@{/admin/caracteristica/nueva}" method="post" class="auth-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre de la característica</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Inglés..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="padreId">Categoría padre (opcional)</label>
+                        <select id="padreId" name="padreId">
+                            <option value="">(sin padre)</option>
+                            <option th:each="c : ${todasCaracteristicas}"
+                                    th:value="${c.id}"
+                                    th:text="${c.nombre}"
+                                    th:selected="${actual != null and actual.id == c.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-aprobar">+ Agregar</button>
+                </div>
             </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <!-- seccion de puestos de trabajo publicados desde la vista del admin -->
+        </div>
+    </div>
+
+  <!-- PUESTOS PUBLICADOS -->
   <div class="section-card">
     <h3>Puestos Publicados</h3>
 

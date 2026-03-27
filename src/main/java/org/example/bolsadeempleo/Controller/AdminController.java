@@ -7,134 +7,119 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import java.util.List;
+//listo
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-
     @Autowired
     private AdminService adminService;
 
-    // ── Utilidad: verificar sesión ────────────────────────────────────────────
-
-    private boolean esAdmin(HttpSession session) {
+    private boolean esAdmin(HttpSession session){
         return session.getAttribute("adminId") != null;
     }
-
-    // ── LOGIN (redirige al unificado) ─────────────────────────────────────────
-
     @GetMapping("/login")
     public String mostrarLogin() {
         return "redirect:/login";
     }
 
-
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session) {
-        if (!esAdmin(session)) return "redirect:/login";
+    public String dashboard(HttpSession session){
+        if(!esAdmin(session)){
+            return "redirect:/login";
+        }
         return "redirect:/admin/panel";
     }
 
-
     @GetMapping("/panel")
-    public String panel(HttpSession session, Model model) {
+    public String panel(HttpSession session, Model model, @RequestParam(value = "actualId", required = false) Long actualId) {
         if (!esAdmin(session)) return "redirect:/login";
 
         model.addAttribute("nombre", session.getAttribute("adminNombre"));
         model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
         model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
-        model.addAttribute("caracteristicas", adminService.listarTodasCaracteristicas());
         model.addAttribute("puestos", adminService.listarTodosPuestos());
+
+        if (actualId != null) {
+            var actual = adminService.obtenerCaracteristica(actualId);
+            actual.ifPresent(c -> {
+                model.addAttribute("actual", c);
+                model.addAttribute("caracteristicas", adminService.listarHijos(actualId));
+                model.addAttribute("ruta", adminService.obtenerRuta(actualId));
+            });
+        } else {
+            model.addAttribute("caracteristicas", adminService.listarCaracteristicasRaiz());
+            model.addAttribute("ruta", List.of());
+        }
+        model.addAttribute("todasCaracteristicas", adminService.listarTodasCaracteristicas());
         return "admin/panel";
     }
-
-    // ── EMPRESAS PENDIENTES ───────────────────────────────────────────────────
-
-    @GetMapping("/empresas/pendientes")
-    public String empresasPendientes(HttpSession session, Model model) {
-        if (!esAdmin(session)) return "redirect:/login";
-        return "redirect:/admin/panel";
-    }
-
-    @PostMapping("/empresa/aprobar/{id}")
-    public String aprobarEmpresa(@PathVariable Long id, HttpSession session,
-                                 RedirectAttributes redirectAttrs) {
-        if (!esAdmin(session)) return "redirect:/login";
-
-        boolean ok = adminService.autorizarEmpresa(id);
-        redirectAttrs.addFlashAttribute(ok ? "success" : "error",
-                ok ? "Empresa aprobada." : "No se encontró la empresa.");
-        return "redirect:/admin/panel";
-    }
-
-    // ── OFERENTES PENDIENTES ──────────────────────────────────────────────────
-
-    @GetMapping("/oferentes/pendientes")
-    public String oferentesPendientes(HttpSession session, Model model) {
-        if (!esAdmin(session)) return "redirect:/login";
-        return "redirect:/admin/panel";
-    }
-
-    @PostMapping("/oferente/aprobar/{identificacion}")
-    public String aprobarOferente(@PathVariable String identificacion, HttpSession session,
-                                  RedirectAttributes redirectAttrs) {
-        if (!esAdmin(session)) return "redirect:/login";
-
-        boolean ok = adminService.autorizarOferente(identificacion);
-        redirectAttrs.addFlashAttribute(ok ? "success" : "error",
-                ok ? "Oferente aprobado." : "No se encontró el oferente.");
-        return "redirect:/admin/panel";
-    }
-
-
-    @GetMapping("/caracteristicas")
-    public String caracteristicas(HttpSession session, Model model) {
-        if (!esAdmin(session)) return "redirect:/login";
-        return "redirect:/admin/panel";
-    }
-
-    @PostMapping("/caracteristica/nueva")
-    public String crearCaracteristica(
-            @RequestParam("nombre") String nombre,
-            @RequestParam(value = "padreId", required = false) Long padreId,
-            HttpSession session, RedirectAttributes redirectAttrs) {
-
-        if (!esAdmin(session)) return "redirect:/login";
-
-        if (nombre == null || nombre.isBlank()) {
-            redirectAttrs.addFlashAttribute("error", "El nombre no puede estar vacío.");
-        } else {
-            adminService.registrarCaracteristica(nombre, padreId);
-            redirectAttrs.addFlashAttribute("success", "Característica creada.");
+        @GetMapping("/empresas/pendientes")
+        public String empresasPendientes(HttpSession session, Model model){
+            if(!esAdmin(session)){
+                return "redirect:/login";
+            }
+            return "admin/panel";
         }
-        return "redirect:/admin/panel";
-    }
 
-    @PostMapping("/caracteristica/eliminar/{id}")
-    public String eliminarCaracteristica(@PathVariable Long id, HttpSession session,
-                                         RedirectAttributes redirectAttrs) {
-        if (!esAdmin(session)) return "redirect:/login";
+        @PostMapping("/empresa/aprobar/{id}")
+        public String aprobarEmpresa(@PathVariable Long id, HttpSession session,RedirectAttributes redirectAttrs){
 
-        // Bloquear si la característica tiene hijos (es categoría padre de otras)
-        var caracteristica = adminService.obtenerCaracteristica(id);
-        if (caracteristica.isPresent() && adminService.tieneHijos(id)) {
-            redirectAttrs.addFlashAttribute("error",
-                    "No se puede eliminar \"" + caracteristica.get().getNombre() +
-                    "\" porque es categoría padre de otras características. " +
-                    "Primero elimina sus subcategorías.");
+            if(!esAdmin(session)){
+                return "redirect:/login";
+            }
+
+            boolean aprobar = adminService.autorizarEmpresa(id);
+            redirectAttrs.addFlashAttribute(aprobar ? "success" : "error",
+                    aprobar ? "Empresa aprobada." : "No se encontró la empresa.");
+            return "redirect:/admin/panel";
+
+        }
+
+
+
+        @PostMapping("/oferente/aprobar/{identificacion}")
+        public String aprobarOferente(@PathVariable String identificacion, HttpSession session
+                ,RedirectAttributes redirectAttrs) {
+
+            if(!esAdmin(session)){
+                return "redirect:/login";
+            }
+
+            boolean ok = adminService.autorizarOferente(identificacion);
+            redirectAttrs.addFlashAttribute(ok ? "success" : "error",
+                    ok ? "Oferente aprobado." : "No se encontró el oferente.");
             return "redirect:/admin/panel";
         }
 
-        adminService.eliminarCaracteristica(id);
-        redirectAttrs.addFlashAttribute("success", "Característica eliminada.");
-        return "redirect:/admin/panel";
-    }
+        @PostMapping("/caracteristica/nueva")
+        public String crearCaracteristica(@RequestParam String nombre, @RequestParam (value = "padreId", required = false) Long padreId,
+                                          HttpSession session, RedirectAttributes redirectAttrs) {
 
-    // ── LOGOUT ────────────────────────────────────────────────────────────────
+            if(nombre == null || nombre.isBlank()){
+                redirectAttrs.addFlashAttribute("error", "El nombre no puede estar vacio.");
+            }else {
+                adminService.registrarCaracteristica(nombre, padreId);
+                redirectAttrs.addFlashAttribute("success", "Característica creada.");
+        }
+            return "redirect:/admin/panel";
+            }
+            @PostMapping("/caracteristica/eliminar/{id}")
+            public String eliminarCaracteristica(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttrs) {
+                if (!esAdmin(session)) {
+                    return "redirect:/login";
+                }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
-    }
+                boolean eliminado = adminService.eliminarCaracteristica(id);
+                redirectAttrs.addFlashAttribute(eliminado ? "success" : "error",
+                        eliminado ? "Característica eliminada." : "No se puede eliminar ya que es padre de otras caracteristicas");
+                return "redirect:/admin/panel";
+
+
+            }
+
+
+
+
+
 }

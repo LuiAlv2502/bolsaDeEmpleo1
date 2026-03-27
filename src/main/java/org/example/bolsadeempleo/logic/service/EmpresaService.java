@@ -1,10 +1,13 @@
 package org.example.bolsadeempleo.logic.service;
 
+import lombok.Getter;
 import org.example.bolsadeempleo.logic.*;
 import org.example.bolsadeempleo.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -128,6 +131,7 @@ public class EmpresaService {
 
     // ── BUSCAR CANDIDATOS ─────────────────────────────────────────────────────
 
+    @Transactional(readOnly = true)
     public List<CandidatoDTO> buscarCandidatos(Long puestoId) {
         List<PuestoCaracteristica> requisitos = requisitoPuestoRepository.findByPuestoId(puestoId);
         if (requisitos.isEmpty()) return new ArrayList<>();
@@ -181,6 +185,7 @@ public class EmpresaService {
     // ── DTO CANDIDATO ─────────────────────────────────────────────────────────
 
     public static class CandidatoDTO {
+        @Getter
         private final Oferente oferente;
         private final int requisitosCumplidos;
         private final int requisitosTotal;
@@ -193,9 +198,6 @@ public class EmpresaService {
             this.porcentaje = porcentaje;
         }
 
-        public Oferente getOferente() { return oferente; }
-        public int getRequisitosCumplidos() { return requisitosCumplidos; }
-        public int getRequisitosTotal() { return requisitosTotal; }
         public double getPorcentaje() {
             return BigDecimal.valueOf(porcentaje)
                     .setScale(2, RoundingMode.HALF_UP)
@@ -206,10 +208,4 @@ public class EmpresaService {
         }
     }
 
-//    // VER CURRICULUM CANDIDATO
-//    public byte[] obtenerCurriculumCandidato(String identificacion) {
-//        return oferenteRepository.findById(identificacion)
-//                .map(Oferente::getCurriculum)
-//                .orElse(null);
-//    }
 }

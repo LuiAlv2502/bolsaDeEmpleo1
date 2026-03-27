@@ -12,33 +12,28 @@ import java.math.BigDecimal;
 
 @Controller
 public class PublicoController {
-
-    @Autowired
-    private Busquedaservice busquedaService;
-
+    //
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
+    @Autowired
+    private Busquedaservice busquedaservice;
 
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("puestosRecientes",
-                busquedaService.obtenerUltimosPuestosPublicos());
-        model.addAttribute("caracteristicas",
-                caracteristicaRepository.findAll());
-        return "index";
-    }
-
-    @GetMapping("/puestos/buscar")
-    public String buscarPuestos(
-            @RequestParam(value = "palabraClave", required = false) String palabraClave,
-            @RequestParam(value = "salarioMin", required = false) BigDecimal salarioMin,
-            Model model) {
-
-        model.addAttribute("resultados",
-                busquedaService.buscarPuestosPublicos(palabraClave, salarioMin));
+        model.addAttribute("puestosRecientes", busquedaservice.obtenerUltimosPuestosPublicos());
         model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
-        model.addAttribute("palabraClave", palabraClave);
+        return "index";
+
+    }
+    @GetMapping("/puestos/buscar")
+    public String buscarPuestos(@RequestParam(value = "palabra", required = false)String palabra,
+                                @RequestParam(value = "salarioMin", required = false) BigDecimal salarioMin, Model model){
+        model.addAttribute("resultados", busquedaservice.buscarPuestosPublicos(palabra, salarioMin));
+        model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
+        model.addAttribute("palabra", palabra);
         model.addAttribute("salarioMin", salarioMin);
         return "buscar-puestos";
+
+
     }
 }
