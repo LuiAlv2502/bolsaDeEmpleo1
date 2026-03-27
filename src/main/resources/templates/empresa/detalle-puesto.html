@@ -170,7 +170,7 @@
 <div class="panel-main">
 
     <div class="panel-header">
-        <h2>🔍 Detalle del Puesto #<span th:text="${puesto.id}"></span></h2>
+        <h2> Detalle del Puesto #<span th:text="${puesto.id}"></span></h2>
     </div>
 
     <!-- ── TARJETA DE DETALLES ── -->
@@ -191,15 +191,15 @@
             <div class="detalle-item">
                 <label>Tipo de publicación</label>
                 <span th:if="${puesto.publica}"
-                      style="color:#2980b9;">🌐 Pública</span>
+                      style="color:#2980b9;"> Pública</span>
                 <span th:unless="${puesto.publica}"
-                      style="color:#8e44ad;">🔒 Privada</span>
+                      style="color:#8e44ad;"> Privada</span>
             </div>
 
             <div class="detalle-item">
                 <label>Estado</label>
-                <span th:if="${puesto.activo}"   style="color:#1e8449;">✅ Activo</span>
-                <span th:unless="${puesto.activo}" style="color:#c0392b;">❌ Inactivo</span>
+                <span th:if="${puesto.activo}"   style="color:#1e8449;"> Activo</span>
+                <span th:unless="${puesto.activo}" style="color:#c0392b;"> Inactivo</span>
             </div>
 
             <div class="detalle-item">
@@ -275,7 +275,7 @@
                         <a th:if="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
                            th:href="@{/oferente/cv/ver/{id}(id=${c.oferente.identificacion})}"
                            target="_blank" class="btn-detalle" style="font-size:0.8rem;">
-                            📄 Ver CV
+                             Ver CV
                         </a>
                         <span th:unless="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
                               style="color:#aaa; font-size:0.82rem;">Sin CV</span>
@@ -285,7 +285,7 @@
                 <!-- Estado vacío -->
                 <tr th:if="${#lists.isEmpty(candidatos)}">
                     <td colspan="7" class="empty-candidatos">
-                        <span class="empty-icon">🔎</span>
+                        <span class="empty-icon"></span>
                         La búsqueda de oferentes estará disponible próximamente.
                     </td>
                 </tr>
@@ -298,9 +298,8 @@
 </div>
 
 <footer>
-    <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+    <p> 2025 Bolsa de Empleo. </p>
 </footer>
 
 </body>
 </html>
-

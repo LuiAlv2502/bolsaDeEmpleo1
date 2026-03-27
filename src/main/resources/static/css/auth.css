@@ -1,15 +1,16 @@
-/* ===== AUTH MAIN ===== */
-.auth-main {
+*{
+    margin: 0;
+}
+.auth-main{
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: calc(100vh - 130px);
+    min-height: 85%;
     padding: 50px 20px;
     background-color: #f5f5f5;
 }
 
-/* ===== AUTH CARD ===== */
-.auth-card {
+.auth-card{
     background-color: white;
     border-radius: 8px;
     padding: 40px;
@@ -18,240 +19,229 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-.auth-card-wide {
+.auth-card-wide{
     max-width: 780px;
 }
 
-/* ===== AUTH HEADER ===== */
-.auth-header {
+.auth-header{
     text-align: center;
     margin-bottom: 30px;
 }
 
-.auth-header h2 {
-    font-size: 1.6rem;
+.auth-header h2{
+    font-size: 26px;
     color: #2c3e50;
     margin-bottom: 6px;
 }
 
-.auth-header p {
-    font-size: 0.9rem;
-    color: #777;
+.auth-header p{
+    font-size: 15px;
+    color: #777777;
 }
 
-/* ===== FORM ===== */
-.auth-form {
-    display: flex;
+.auth-form{
+    display:flex;
     flex-direction: column;
     gap: 18px;
 }
 
 .form-row {
     display: flex;
-    gap: 16px;
     flex-wrap: wrap;
+    gap: 16px;
 }
 
-.form-row .form-group {
+.form-row .form-group{
     flex: 1;
     min-width: 100px;
 }
 
-.auth-form .form-group {
+.auth-form .form-group{
     display: flex;
 }
 
-.auth-form label {
-    font-size: 0.85rem;
-    color: #555;
+.auth-form label{
+    font-size: 14px;
+    color: #555555;
     margin-bottom: 6px;
     font-weight: 600;
 }
 
-.auth-form input,
-.auth-form textarea,
-.auth-form select {
+.auth-form input, .auth-form textarea, .auth-form select{
     padding: 10px 14px;
-    border: 1px solid #ccc;
+    border: 1px solid #cccccc;
     border-radius: 4px;
-    font-size: 0.95rem;
+    font-size: 15px;
     transition: border-color 0.2s;
     font-family: Arial, sans-serif;
 }
 
-.auth-form input:focus,
-.auth-form textarea:focus {
+.auth-form input:focus, .auth-form textarea:focus{
     outline: none;
     border-color: #2980b9;
     box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
 }
 
-.auth-form textarea {
-    resize: vertical;
+.auth-form text area{
     min-height: 100px;
+    resize: vertical;
 }
 
-/* ===== SUBMIT BUTTON ===== */
-.btn-submit {
+.btn-submit{
     background-color: #2980b9;
     color: white;
     border: none;
     border-radius: 4px;
     padding: 12px;
-    font-size: 1rem;
+    font-size: 16px;
     cursor: pointer;
     margin-top: 6px;
     transition: background-color 0.2s;
 }
 
-.btn-submit:hover {
+.btn-submit:hover{
     background-color: #1f6fa0;
 }
 
-/* ===== ALERTS ===== */
-.alert {
+.alert{
     padding: 12px 16px;
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 15px;
     margin-bottom: 16px;
 }
 
-.alert-error {
+.alert-error{
     background-color: #fdecea;
     color: #c0392b;
-    border: 1px solid #e74c3c;
-}
-
-.alert-success {
-    background-color: #eafaf1;
-    color: #1e8449;
     border: 1px solid #27ae60;
 }
 
-/* ===== INFO BOX ===== */
-.info-box {
+.info-box{
     background-color: #fef9e7;
     border: 1px solid #f39c12;
     border-radius: 4px;
     padding: 12px 16px;
-    font-size: 0.85rem;
+    font-size: 14px;
     color: #7d6608;
 }
 
-/* ===== PANEL ADMIN ===== */
-.panel-main {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.panel-header {
+.panel-header{
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
 }
 
-.panel-header h2 {
+.panel-header h2{
     color: #2c3e50;
-    font-size: 1.5rem;
+    font-size: 24px;
 }
 
-.section-card {
-    background: white;
+.panel-header h2{
+    color: #2c3e50;
+    font-size: 24px;
+}
+
+.section-card{
+    background: #ffffff;
     border-radius: 8px;
     padding: 28px;
     margin-bottom: 30px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.section-card h3 {
+.section-card h3{
     color: #2c3e50;
-    font-size: 1.1rem;
+    font-size: 16px;
     margin-bottom: 18px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid #eeeeee;
 }
 
-.panel-table {
+.panel-table{
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 15px;
 }
 
-.panel-table th {
+.panel-table th{
     background: #f0f4f8;
-    color: #555;
+    color: #555555;
     padding: 10px 14px;
     text-align: left;
     font-weight: 600;
 }
 
-.panel-table td {
+.panel-table td{
     padding: 10px 14px;
     border-bottom: 1px solid #f0f0f0;
-    color: #444;
+    color: #444444;
 }
 
-.panel-table tr:last-child td {
+.panel-table tr:last-child td{
     border-bottom: none;
 }
 
-.btn-aprobar {
+.btn-aprobar{
     background: #27ae60;
     color: white;
     border: none;
     padding: 6px 14px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 14px;
 }
 
-.btn-aprobar:hover {
+.btn-aprobar:hover{
     background: #1e8449;
 }
 
-.btn-eliminar {
+.btn-eliminar{
     background: #e74c3c;
     color: white;
     border: none;
     padding: 6px 14px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 14px;
 }
 
-.btn-eliminar:hover {
+.btn-eliminar:hover{
     background: #c0392b;
 }
 
-/* ===== TOGGLE MONEDA (CSS puro, sin JS) ===== */
-.moneda-radio {
+.moneda-radio{
     display: none;
 }
 
-.btn-moneda {
+.btn-moneda{
     display: inline-block;
-    background: #fff;
-    color: #555;
-    border: 1px solid #ccc;
+    background: #ffffff;
+    color: #555555;
+    border: 1px solid #cccccc;
     border-radius: 4px;
     padding: 9px 14px;
-    font-size: 0.88rem;
+    font-size: 14px;
     cursor: pointer;
     white-space: nowrap;
     user-select: none;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.btn-moneda:hover {
+.btn-moneda:hover{
     border-color: #2980b9;
     color: #2980b9;
 }
 
-.moneda-radio:checked + .btn-moneda {
+.moneda-radio:checked + .btn-moneda{
     background-color: #2980b9;
-    color: #fff;
+    color: #ffffff;
+    border-color: #2980b9;
+}
+
+.moneda-radio:checked + boton-moneda:hover{
+    background-color: #2980b9;
+    color: #ffffff;
     border-color: #2980b9;
 }
 
@@ -260,48 +250,37 @@
     border-color: #1f6fa0;
 }
 
-.btn-desactivar {
-    background: #e67e22;
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.btn-desactivar:hover {
+.btn-desactivar:hover{
     background: #ca6f1e;
 }
 
-.empty-msg {
-    color: #aaa;
-    font-size: 0.9rem;
+.empty-msg{
+    color: #aaaaaa;
+    font-size: 16px;
     text-align: center;
     padding: 20px;
 }
 
-.badge {
+.badge{
     display: inline-block;
     padding: 2px 8px;
     border-radius: 10px;
-    font-size: 0.78rem;
+    font-size: 14px;
     background: #eaf4fb;
     color: #2980b9;
 }
 
-.logout-link {
+.logout-link{
     color: #e74c3c;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 15px;
 }
 
-.logout-link:hover {
+.logout-link:hover{
     text-decoration: underline;
 }
 
-/* ===== AUTH FOOTER ===== */
-.auth-footer {
+.auth-footer{
     text-align: center;
     margin-top: 24px;
     display: flex;
@@ -309,16 +288,20 @@
     gap: 8px;
 }
 
-.auth-footer p {
-    font-size: 0.88rem;
-    color: #666;
+.auth-footer p{
+    font-size: 14px;
+    color: #666666;
 }
 
-.auth-footer a {
+.auth-footer a{
     color: #2980b9;
     text-decoration: none;
 }
 
-.auth-footer a:hover {
+.auth-footer a:hover{
     text-decoration: underline;
+}
+
+*{
+    margin: 0;
 }
