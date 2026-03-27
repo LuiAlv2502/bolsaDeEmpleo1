@@ -23,11 +23,11 @@
     <span>Bienvenido, <strong th:text="${nombre}">Admin</strong></span>
   </div>
 
-  <!-- MENSAJES -->
+    <!--alertas si la accion se ejecuta o si sale error  -->
   <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
   <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-  <!-- EMPRESAS PENDIENTES -->
+    <!-- seccipm de empresas pendientes de aprobacion -->
   <div class="section-card">
     <h3>Empresas Pendientes de Aprobación</h3>
     <div th:if="${#lists.isEmpty(empresasPendientes)}" class="empty-msg">
@@ -59,7 +59,7 @@
     </table>
   </div>
 
-  <!-- OFERENTES PENDIENTES -->
+  <!-- secciom de oferentes pendientes de aprobacion del admin  -->
   <div class="section-card">
     <h3>Oferentes Pendientes de Aprobación</h3>
     <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
@@ -221,7 +221,7 @@
 </div>
 
 <footer>
-  <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+  <p> 2025 Bolsa de Empleo.</p>
 </footer>
 
 </body>
