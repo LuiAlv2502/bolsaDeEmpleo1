@@ -16,7 +16,7 @@ public class Busquedaservice {
     private PuestoRepository puestoRepository;
 
     public List<Puesto> obtenerUltimosPuestosPublicos() {
-        return puestoRepository.findUltimos5PuestosPublicos(true, true);
+        return puestoRepository.findTop5ByActivoAndPublicaOrderByFechaPublicacionDesc(true, true);
     }
 
     public List<Puesto> buscarPuestosPublicos(String palabraClave, BigDecimal salarioMin, Long caracteristica) {

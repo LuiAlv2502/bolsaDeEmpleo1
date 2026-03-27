@@ -154,7 +154,7 @@ public class EmpresaService {
         double puntuacion = 0.0;
         for(PuestoCaracteristica requisito : requisitos) {
             Long caracId = requisito.getCaracteristica().getId();
-            Optional<Habilidad> habilidad = habilidadRepository.findByOferenteIdAndCarac(identificacion, caracId);
+            Optional<Habilidad> habilidad = habilidadRepository.findByOferente_IdentificacionAndCaracteristica_Id(identificacion, caracId);
 
             if(habilidad.isPresent()) {
                 int nivelOferente = habilidad.get().getNivel();

@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface HabilidadRepository extends JpaRepository<Habilidad, Long> {
-    List<Habilidad> findByOferenteId(String identificacion);
-    Optional<Habilidad> findByOferenteIdAndCarac(String identificacion, Long caracteristicaId);
+    List<Habilidad> findByOferente_Identificacion(String identificacion);
+    Optional<Habilidad> findByOferente_IdentificacionAndCaracteristica_Id(String identificacion, Long caracteristicaId);
 }

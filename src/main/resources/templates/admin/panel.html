@@ -1,112 +1,112 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Administrador - Bolsa de Empleo</title>
-  <link rel="stylesheet" th:href="@{/css/index.css}">
-  <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Bolsa de Empleo</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
 
 <header>
-  <h1>Bolsa de Empleo</h1>
-  <nav>
-    <a th:href="@{/}">Inicio</a>
-    <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
-  </nav>
+    <h1>Bolsa de Empleo</h1>
+    <nav>
+        <a th:href="@{/}">Inicio</a>
+        <a th:href="@{/logout}" class="logout-link">Cerrar sesion</a>
+    </nav>
 </header>
 
 <div class="panel-main">
-  <div class="panel-header">
-    <h2>Panel de Administrador</h2>
-    <span>Bienvenido, <strong th:text="${nombre}">Admin</strong></span>
-  </div>
+    <div class="panel-header">
+        <h2>Panel de Administrador</h2>
+        <span>Bienvenido, <strong th:text="${nombre}">Admin</strong></span>
+    </div>
 
     <!--alertas si la accion se ejecuta o si sale error  -->
-  <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-    <!-- seccipm de empresas pendientes de aprobacion -->
-  <div class="section-card">
-    <h3>Empresas Pendientes de Aprobación</h3>
-    <div th:if="${#lists.isEmpty(empresasPendientes)}" class="empty-msg">
-      No hay empresas pendientes.
+    <!-- seccion de empresas pendientes de aprobacion -->
+    <div class="section-card">
+        <h3>Empresas Pendientes de Aprobacion</h3>
+        <div th:if="${#lists.isEmpty(empresasPendientes)}" class="empty-msg">
+            No hay empresas pendientes.
+        </div>
+        <table class="panel-table" th:unless="${#lists.isEmpty(empresasPendientes)}">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Telefono</th>
+                <th>Localizacion</th>
+                <th>Accion</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="empresa : ${empresasPendientes}">
+                <td th:text="${empresa.nombre}">Empresa</td>
+                <td th:text="${empresa.correo}">correo@empresa.com</td>
+                <td th:text="${empresa.telefono}">+506</td>
+                <td th:text="${empresa.localizacion}">San Jose</td>
+                <td>
+                    <form th:action="@{/admin/empresa/aprobar/{id}(id=${empresa.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-aprobar">Aprobar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-    <table class="panel-table" th:unless="${#lists.isEmpty(empresasPendientes)}">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Teléfono</th>
-          <th>Localización</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="empresa : ${empresasPendientes}">
-          <td th:text="${empresa.nombre}">Empresa</td>
-          <td th:text="${empresa.correo}">correo@empresa.com</td>
-          <td th:text="${empresa.telefono}">+506</td>
-          <td th:text="${empresa.localizacion}">San José</td>
-          <td>
-            <form th:action="@{/admin/empresa/aprobar/{id}(id=${empresa.id})}" method="post" style="display:inline;">
-              <button type="submit" class="btn-aprobar">Aprobar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
-  <!-- secciom de oferentes pendientes de aprobacion del admin  -->
-  <div class="section-card">
-    <h3>Oferentes Pendientes de Aprobación</h3>
-    <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
-      No hay oferentes pendientes.
+    <!-- seccion de oferentes pendientes de aprobacion del admin  -->
+    <div class="section-card">
+        <h3>Oferentes Pendientes de Aprobacion</h3>
+        <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
+            No hay oferentes pendientes.
+        </div>
+        <table class="panel-table" th:unless="${#lists.isEmpty(oferentesPendientes)}">
+            <thead>
+            <tr>
+                <th>Identificacion</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Telefono</th>
+                <th>Residencia</th>
+                <th>Accion</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="oferente : ${oferentesPendientes}">
+                <td th:text="${oferente.identificacion}">1-1234-5678</td>
+                <td th:text="${oferente.nombre + ' ' + oferente.apellido}">Nombre Apellido</td>
+                <td th:text="${oferente.correo}">correo@mail.com</td>
+                <td th:text="${oferente.telefono}">+506</td>
+                <td th:text="${oferente.residencia}">San Jose</td>
+                <td>
+                    <form th:action="@{/admin/oferente/aprobar/{id}(id=${oferente.identificacion})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-aprobar">Aprobar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-    <table class="panel-table" th:unless="${#lists.isEmpty(oferentesPendientes)}">
-      <thead>
-        <tr>
-          <th>Identificación</th>
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Teléfono</th>
-          <th>Residencia</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="oferente : ${oferentesPendientes}">
-          <td th:text="${oferente.identificacion}">1-1234-5678</td>
-          <td th:text="${oferente.nombre + ' ' + oferente.apellido}">Nombre Apellido</td>
-          <td th:text="${oferente.correo}">correo@mail.com</td>
-          <td th:text="${oferente.telefono}">+506</td>
-          <td th:text="${oferente.residencia}">San José</td>
-          <td>
-            <form th:action="@{/admin/oferente/aprobar/{id}(id=${oferente.identificacion})}" method="post" style="display:inline;">
-              <button type="submit" class="btn-aprobar">Aprobar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
     <div class="section-card">
-        <h3>Gestión de Características</h3>
+        <h3>Gestion de Caracteristicas</h3>
 
-        <!-- RUTA DE NAVEGACIÓN -->
+        <!-- RUTA DE NAVEGACION -->
         <div class="ruta-nav">
-    <span class="badge">
-      <a th:href="@{/admin/panel}">Raíces</a>
-    </span>
+      <span class="badge">
+        <a th:href="@{/admin/panel}">Raices</a>
+      </span>
             <th:block th:each="nodo : ${ruta}">
                 <span class="ruta-separador">/</span>
                 <span class="badge">
-        <a th:href="@{/admin/panel(actualId=${nodo.id})}"
-           th:text="${nodo.nombre}">Nodo</a>
-      </span>
+          <a th:href="@{/admin/panel(actualId=${nodo.id})}"
+             th:text="${nodo.nombre}">Nodo</a>
+        </span>
             </th:block>
             <th:block th:if="${actual != null}">
                 <span class="ruta-separador">/</span>
@@ -114,21 +114,21 @@
             </th:block>
         </div>
 
-        <!-- TÍTULO NIVEL ACTUAL -->
+        <!-- TITULO NIVEL ACTUAL -->
         <p class="subcategoria-label" th:if="${actual != null}">
-            Subcategorías de: <strong th:text="${actual.nombre}"></strong>
+            Subcategorias de: <strong th:text="${actual.nombre}"></strong>
         </p>
 
         <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg">
-            No hay características en este nivel.
+            No hay caracteristicas en este nivel.
         </div>
 
         <table class="panel-table tabla-margin" th:unless="${#lists.isEmpty(caracteristicas)}">
             <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Categoría padre</th>
-                <th>Acción</th>
+                <th>Categoria padre</th>
+                <th>Accion</th>
             </tr>
             </thead>
             <tbody>
@@ -140,7 +140,7 @@
                 </td>
                 <td>
                     <span th:if="${c.parent != null}" class="badge" th:text="${c.parent.nombre}">Padre</span>
-                    <span th:unless="${c.parent != null}" class="ruta-separador">—</span>
+                    <span th:unless="${c.parent != null}" class="ruta-separador">--</span>
                 </td>
                 <td>
                     <form th:action="@{/admin/caracteristica/eliminar/{id}(id=${c.id})}" method="post">
@@ -156,11 +156,11 @@
             <form th:action="@{/admin/caracteristica/nueva}" method="post" class="auth-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="nombre">Nombre de la característica</label>
-                        <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Inglés..." required>
+                        <label for="nombre">Nombre de la caracteristica</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej: Java, SQL, Ingles..." required>
                     </div>
                     <div class="form-group">
-                        <label for="padreId">Categoría padre (opcional)</label>
+                        <label for="padreId">Categoria padre (opcional)</label>
                         <select id="padreId" name="padreId">
                             <option value="">(sin padre)</option>
                             <option th:each="c : ${todasCaracteristicas}"
@@ -176,52 +176,92 @@
         </div>
     </div>
 
-  <!-- PUESTOS PUBLICADOS -->
-  <div class="section-card">
-    <h3>Puestos Publicados</h3>
+    <!-- PUESTOS PUBLICADOS -->
+    <div class="section-card">
+        <h3>Puestos Publicados</h3>
 
-    <div th:if="${#lists.isEmpty(puestos)}" class="empty-msg">
-      No hay puestos registrados.
+        <div th:if="${#lists.isEmpty(puestos)}" class="empty-msg">
+            No hay puestos registrados.
+        </div>
+        <table class="panel-table" th:unless="${#lists.isEmpty(puestos)}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Empresa</th>
+                <th>Descripcion</th>
+                <th>Salario</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${puestos}">
+                <td th:text="${p.id}">1</td>
+                <td th:text="${p.empresa != null ? p.empresa.nombre : '—'}">Empresa</td>
+                <td th:text="${p.descripcion}">Descripcion</td>
+                <td>
+                    <span th:text="${p.moneda == 'CRC' ? '₡' : '$'}"></span>
+                    <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                </td>
+                <td>
+                    <span th:if="${p.publica}" class="badge">Publica</span>
+                    <span th:unless="${p.publica}" class="badge" style="background:#fef5e7; color:#b7770d;">Privada</span>
+                </td>
+                <td>
+                    <span th:if="${p.activo}" class="badge" style="background:#eafaf1; color:#1e8449;">Activo</span>
+                    <span th:unless="${p.activo}" class="badge" style="background:#fdecea; color:#c0392b;">Inactivo</span>
+                </td>
+                <td th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '—'}">01/01/2025</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-    <table class="panel-table" th:unless="${#lists.isEmpty(puestos)}">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Empresa</th>
-          <th>Descripción</th>
-          <th>Salario</th>
-          <th>Tipo</th>
-          <th>Estado</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="p : ${puestos}">
-          <td th:text="${p.id}">1</td>
-          <td th:text="${p.empresa != null ? p.empresa.nombre : '—'}">Empresa</td>
-          <td th:text="${p.descripcion}">Descripción</td>
-          <td>
-            <span th:text="${p.moneda == 'CRC' ? '₡' : '$'}"></span>
-            <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
-          </td>
-          <td>
-            <span th:if="${p.publica}" class="badge">Pública</span>
-            <span th:unless="${p.publica}" class="badge" style="background:#fef5e7; color:#b7770d;">Privada</span>
-          </td>
-          <td>
-            <span th:if="${p.activo}" class="badge" style="background:#eafaf1; color:#1e8449;">Activo</span>
-            <span th:unless="${p.activo}" class="badge" style="background:#fdecea; color:#c0392b;">Inactivo</span>
-          </td>
-          <td th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '—'}">01/01/2025</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+
+    <!-- REPORTE DE PUESTOS POR MES -->
+    <div class="section-card">
+        <h3>Reporte de Puestos por Mes</h3>
+        <form th:action="@{/admin/reporte/puestos}" method="get" class="auth-form" target="_blank">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mes">Mes</label>
+                    <select id="mes" name="mes" required>
+                        <option value="">Seleccione un mes</option>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="anio">Anio</label>
+                    <select id="anio" name="anio" required>
+                        <option value="">Seleccione un anio</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-aprobar">Generar Reporte</button>
+            </div>
+        </form>
+    </div>
 
 </div>
 
 <footer>
-  <p> 2025 Bolsa de Empleo.</p>
+    <p> 2025 Bolsa de Empleo.</p>
 </footer>
 
 </body>

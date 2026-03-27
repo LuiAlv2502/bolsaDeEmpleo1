@@ -13,6 +13,9 @@ import org.example.bolsadeempleo.data.PuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -121,8 +124,15 @@ public class AdminService {
 
     // ── PUESTOS ───────────────────────────────────────────────────────────────
 
-    public List<Puesto> listarTodosPuestos() {
+    public List<Puesto> todosLosPuestos() {
         return puestoRepository.findAll();
+    }
+
+    public List<Puesto> puestosPorMes(int mes, int annio){
+        YearMonth annioMes = YearMonth.of(annio, mes);
+        Instant desde = annioMes.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant hasta = annioMes.plusMonths(1).atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        return puestoRepository.findByFechaPublicacionBetween(desde, hasta);
     }
 
 }
