@@ -19,7 +19,7 @@ public class Busquedaservice {
         return puestoRepository.findTop5ByActivoAndPublicaOrderByFechaPublicacionDesc(true, true);
     }
 
-    public List<Puesto> buscarPuestosPublicos(String palabraClave, BigDecimal salarioMin) {
+    public List<Puesto> buscarPuestosPublicos(String palabraClave, BigDecimal salarioMin, Long caracteristica) {
         List<Puesto> todos = puestoRepository.findByActivoAndPublica(true, true);
 
         return todos.stream()
@@ -27,10 +27,9 @@ public class Busquedaservice {
                         p.getDescripcion().toLowerCase().contains(palabraClave.toLowerCase()))
                 .filter(p -> salarioMin == null ||
                         (p.getSalario() != null && p.getSalario().compareTo(salarioMin) >= 0))
+                .filter(p -> caracteristica == null || p.getPuestoCaracteristicas().stream()
+                        .anyMatch(pc -> pc.getCaracteristica().getId().equals(caracteristica)))
                 .collect(Collectors.toList());
     }
 
-    public Puesto obtenerDetallePuesto(Long id) {
-        return puestoRepository.findById(id).orElse(null);
-    }
 }

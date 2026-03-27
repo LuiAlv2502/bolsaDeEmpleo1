@@ -26,14 +26,22 @@ public class PublicoController {
 
     }
     @GetMapping("/puestos/buscar")
-    public String buscarPuestos(@RequestParam(value = "palabra", required = false)String palabra,
-                                @RequestParam(value = "salarioMin", required = false) BigDecimal salarioMin, Model model){
-        model.addAttribute("resultados", busquedaservice.buscarPuestosPublicos(palabra, salarioMin));
+    public String buscarPuestos(@RequestParam(value = "palabra", required = false) String palabra,
+                                @RequestParam(value = "salarioMin", required = false) BigDecimal salarioMin,
+                                @RequestParam(value = "caracteristica", required = false) String caracteristica,
+                                Model model) {
+
+        Long caracteristicaId = (caracteristica != null && !caracteristica.isBlank())
+                ? Long.valueOf(caracteristica)
+                : null;
+
+        model.addAttribute("resultados", busquedaservice.buscarPuestosPublicos(palabra, salarioMin, caracteristicaId));
+        model.addAttribute("puestosRecientes", busquedaservice.obtenerUltimosPuestosPublicos());
         model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
         model.addAttribute("palabra", palabra);
         model.addAttribute("salarioMin", salarioMin);
-        return "buscar-puestos";
-
-
+        model.addAttribute("caracteristicaId", caracteristicaId);
+        return "index";
     }
+
 }
