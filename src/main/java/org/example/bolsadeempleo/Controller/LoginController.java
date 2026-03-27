@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class LoginController {
-
+//listo
     @Autowired
     private AdminService adminService;
 
