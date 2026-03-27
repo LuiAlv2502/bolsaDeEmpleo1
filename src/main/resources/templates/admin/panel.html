@@ -13,7 +13,7 @@
   <h1>Bolsa de Empleo</h1>
   <nav>
     <a th:href="@{/}">Inicio</a>
-    <a th:href="@{/admin/logout}" class="logout-link">Cerrar sesión</a>
+    <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
   </nav>
 </header>
 
@@ -61,7 +61,7 @@
 
   <!-- OFERENTES PENDIENTES -->
   <div class="section-card">
-    <h3>👤 Oferentes Pendientes de Aprobación</h3>
+    <h3>Oferentes Pendientes de Aprobación</h3>
     <div th:if="${#lists.isEmpty(oferentesPendientes)}" class="empty-msg">
       No hay oferentes pendientes.
     </div>

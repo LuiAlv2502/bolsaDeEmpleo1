@@ -16,7 +16,7 @@
         <a th:href="@{/empresa/dashboard}">Dashboard</a>
         <a th:href="@{/empresa/puestos}">Mis Puestos</a>
         <span>Bienvenido, <strong th:text="${nombre}">Empresa</strong></span>
-        <a th:href="@{/empresa/logout}" class="logout-link">Cerrar sesión</a>
+        <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
     </nav>
 </header>
 
@@ -89,12 +89,9 @@
 
     <!-- ── TABLA DE CANDIDATOS ── -->
     <div class="detalle-card candidatos-section">
-        <h3>
-            👥 Oferentes que calzan con el puesto
-            <span class="pronto-badge">Próximamente</span>
-        </h3>
+        <h3>👥 Oferentes que calzan con el puesto</h3>
 
-        <!-- Tabla: columnas definidas aunque la lista esté vacía -->
+        <!-- Tabla de candidatos ordenados por % de coincidencia -->
         <table class="candidatos-table">
             <thead>
                 <tr>
@@ -102,19 +99,17 @@
                     <th>Nombre</th>
                     <th>Identificación</th>
                     <th>Correo</th>
-                    <th>Requisitos cumplidos</th>
-                    <th>Coincidencia</th>
+                    <th>% Coincidencia</th>
                     <th>CV</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Filas dinámicas (cuando se implemente la búsqueda) -->
+                <!-- Filas dinámicas -->
                 <tr th:each="c, iter : ${candidatos}">
                     <td th:text="${iter.index + 1}">1</td>
                     <td th:text="${c.oferente.nombre + ' ' + c.oferente.apellido}">Nombre</td>
                     <td th:text="${c.oferente.identificacion}">ID</td>
                     <td th:text="${c.oferente.correo}">correo@mail.com</td>
-                    <td th:text="${c.requisitosCumplidos + ' / ' + c.requisitosTotal}">0 / 0</td>
                     <td>
                         <div class="match-bar-wrap">
                             <div class="match-bar">
@@ -137,9 +132,9 @@
 
                 <!-- Estado vacío -->
                 <tr th:if="${#lists.isEmpty(candidatos)}">
-                    <td colspan="7" class="empty-candidatos">
+                    <td colspan="6" class="empty-candidatos">
                         <span class="empty-icon">🔎</span>
-                        La búsqueda de oferentes estará disponible próximamente.
+                        No se encontraron oferentes con habilidades coincidentes para este puesto.
                     </td>
                 </tr>
             </tbody>
