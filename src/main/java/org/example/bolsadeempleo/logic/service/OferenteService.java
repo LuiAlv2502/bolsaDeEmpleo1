@@ -36,12 +36,9 @@ public class OferenteService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // Carpeta donde se guardan los CV. Configurable en application.properties
-    // cv.upload.dir=uploads/cv
     @Value("${cv.upload.dir:uploads/cv}")
     private String cvUploadDir;
 
-    // ── REGISTRO ──────────────────────────────────────────────────────────────
 
     public boolean registrar(Oferente oferente) {
         if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
@@ -54,7 +51,6 @@ public class OferenteService {
         return true;
     }
 
-    // ── LOGIN ─────────────────────────────────────────────────────────────────
 
     public Oferente login(String correo, String clave) {
         Optional<Oferente> oferente = oferenteRepository.findByCorreo(correo);
@@ -64,13 +60,11 @@ public class OferenteService {
         return oferente.get();
     }
 
-    // ── OBTENER ───────────────────────────────────────────────────────────────
 
     public Oferente obtenerPorIdentificacion(String identificacion) {
         return oferenteRepository.findByIdentificacion(identificacion).orElse(null);
     }
 
-    // ── ACTUALIZAR DATOS ──────────────────────────────────────────────────────
 
     public boolean actualizarDatos(Oferente datosActualizados) {
         Optional<Oferente> existente = oferenteRepository.findByIdentificacion(datosActualizados.getIdentificacion());
@@ -88,7 +82,6 @@ public class OferenteService {
         return true;
     }
 
-    // ── HABILIDADES ───────────────────────────────────────────────────────────
 
     public boolean agregarOActualizarHabilidad(String identificacionOferente, Long caracteristicaId, Integer nivel) {
         Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacionOferente);
@@ -125,13 +118,9 @@ public class OferenteService {
         return habilidadRepository.findByOferente_Identificacion(identificacionOferente);
     }
 
-    // ── CURRICULUM PDF ────────────────────────────────────────────────────────
 
     public boolean subirCurriculum(String identificacion, MultipartFile archivo) throws IOException {
         if (archivo == null || archivo.isEmpty()) return false;
-
-        // CORRECCIÓN: se valida content-type pero también la extensión, ya que
-        // algunos navegadores pueden enviar tipos MIME distintos para PDF.
         String contentType = archivo.getContentType();
         String originalFilename = archivo.getOriginalFilename();
         boolean esPdf = (contentType != null && contentType.equals("application/pdf"))
@@ -142,19 +131,16 @@ public class OferenteService {
         if (opt.isEmpty()) return false;
         Oferente oferente = opt.get();
 
-        // Crear carpeta si no existe
         Path uploadPath = Paths.get(cvUploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        // Eliminar CV anterior si existe
         String cvAnterior = oferente.getCvPdf();
         if (cvAnterior != null && !cvAnterior.isBlank()) {
             Files.deleteIfExists(uploadPath.resolve(cvAnterior));
         }
 
-        // Guardar nuevo archivo con nombre único
         String nombreArchivo = identificacion + "_" + UUID.randomUUID() + ".pdf";
         Path destino = uploadPath.resolve(nombreArchivo);
         Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);

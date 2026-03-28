@@ -38,13 +38,10 @@ public class AdminService {
     @Autowired
     private PuestoRepository puestoRepository;
 
-    // ── LOGIN ─────────────────────────────────────────────────────────────────
 
     public Administrador login(String identificacion, String clave) {
         return adminRepository.findByIdentificacionAndPassword(identificacion, clave).orElse(null);
     }
-
-    // ── EMPRESAS ──────────────────────────────────────────────────────────────
 
     public List<Empresa> listarEmpresasPendientes() {
         return empresaRepository.findByAprobada(false);
@@ -58,7 +55,6 @@ public class AdminService {
         return true;
     }
 
-    // ── OFERENTES ─────────────────────────────────────────────────────────────
 
     public List<Oferente> listarOferentesPendientes() {
         return oferenteRepository.findByAprobado(false);
@@ -72,7 +68,6 @@ public class AdminService {
         return true;
     }
 
-    // ── CARACTERÍSTICAS ───────────────────────────────────────────────────────
 
     public List<Caracteristica> listarCaracteristicasRaiz() {
         return caracteristicaRepository.findByParentIsNull();
@@ -122,12 +117,6 @@ public class AdminService {
         return ruta;
     }
 
-    // ── PUESTOS ───────────────────────────────────────────────────────────────
-
-    public List<Puesto> todosLosPuestos() {
-        return puestoRepository.findAll();
-    }
-
     public List<Puesto> puestosPorMes(int mes, int annio){
         YearMonth annioMes = YearMonth.of(annio, mes);
         Instant desde = annioMes.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -135,4 +124,7 @@ public class AdminService {
         return puestoRepository.findByFechaPublicacionBetween(desde, hasta);
     }
 
+    public Object todosLosPuestos() {
+        return puestoRepository.findAll();
+    }
 }
