@@ -93,10 +93,11 @@
         </table>
     </div>
 
+    <!-- TABLA DE GEsyion de caracteristicas  -->
     <div class="section-card">
         <h3>Gestion de Caracteristicas</h3>
 
-        <!-- RUTA DE NAVEGACION -->
+        <!-- ruta de raices / padre / hijp -->
         <div class="ruta-nav">
       <span class="badge">
         <a th:href="@{/admin/panel}">Raices</a>
@@ -114,9 +115,8 @@
             </th:block>
         </div>
 
-        <!-- TITULO NIVEL ACTUAL -->
         <p class="subcategoria-label" th:if="${actual != null}">
-            Subcategorias de: <strong th:text="${actual.nombre}"></strong>
+            Subcategorías de: <strong th:text="${actual.nombre}"></strong>
         </p>
 
         <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg">
@@ -151,7 +151,6 @@
             </tbody>
         </table>
 
-        <!-- FORMULARIO AGREGAR -->
         <div class="form-divider">
             <form th:action="@{/admin/caracteristica/nueva}" method="post" class="auth-form">
                 <div class="form-row">
@@ -176,7 +175,7 @@
         </div>
     </div>
 
-    <!-- PUESTOS PUBLICADOS -->
+    <!-- TABLA DE puestos publicados -->
     <div class="section-card">
         <h3>Puestos Publicados</h3>
 
@@ -218,7 +217,7 @@
         </table>
     </div>
 
-    <!-- REPORTE DE PUESTOS POR MES -->
+    <!-- tabla de reportes de puestos mensuaeles -->
     <div class="section-card">
         <h3>Reporte de Puestos por Mes</h3>
         <form th:action="@{/admin/reporte/puestos}" method="get" class="auth-form" target="_blank">
