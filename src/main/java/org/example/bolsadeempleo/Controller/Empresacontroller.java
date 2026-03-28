@@ -74,7 +74,7 @@ public class Empresacontroller {
         empresa.setClave(password);
         empresa.setAprobado(false);
 
-        if (!empresaService.registrar(empresa)) {
+        if (!empresaService.registarEmpresa(empresa)) {
             model.addAttribute("error", "Ya existe una cuenta con ese correo electrónico.");
             return "empresa/registro";
         }
@@ -167,7 +167,7 @@ public class Empresacontroller {
         return "redirect:/empresa/puestos";
     }
 
-    // ── DESACTIVAR PUESTO ─────────────────────────────────────────────────────
+    // Desactivar peusto
 
     @PostMapping("/puestos/{id}/desactivar")
     public String desactivarPuesto(@PathVariable Long id, HttpSession session,
@@ -180,7 +180,7 @@ public class Empresacontroller {
         return "redirect:/empresa/puestos";
     }
 
-    // ── BUSCAR CANDIDATOS ─────────────────────────────────────────────────────
+    // Buscar candidatos
 
     @GetMapping("/candidatos/buscar")
     public String buscarCandidatos(@RequestParam("puestoId") Long puestoId,
@@ -203,7 +203,7 @@ public class Empresacontroller {
         Long empresaId = getEmpresaId(session);
         if (empresaId == null) return "redirect:/login";
 
-        model.addAttribute("empresa", empresaService.obtenerPorId(empresaId));
+        model.addAttribute("empresa", empresaService.obtenerEmpresaPorId(empresaId));
         return "empresa/perfil";
     }
 

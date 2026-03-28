@@ -61,7 +61,7 @@ public class Empresa {
         return aprobada;
     }
 
-    // ── MÉTODOS PARA PASSWORD ─────────────────────────────────────────────────
+    // Metodos para pasar contraseñas
     public String getPassword() {
         return this.clave;
     }

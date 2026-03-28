@@ -22,7 +22,7 @@ public class PublicoController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("puestosRecientes",
-                busquedaService.obtenerUltimosPuestosPublicos());
+                busquedaService.obtnerUltimosPuestosPublicos());
         model.addAttribute("caracteristicas",
                 caracteristicaRepository.findAll());
         return "index";

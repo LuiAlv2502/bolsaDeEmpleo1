@@ -41,8 +41,8 @@ public class AdminController {
         if (!esAdmin(session)) return "redirect:/login";
 
         model.addAttribute("nombre", session.getAttribute("adminNombre"));
-        model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
-        model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
+        model.addAttribute("empresasPendientes", adminService.listaEmpresasPendientes());
+        model.addAttribute("oferentesPendientes", adminService.listaOferentesPendientes());
         model.addAttribute("caracteristicas", adminService.listarTodasCaracteristicas());
         model.addAttribute("puestos", adminService.listarTodosPuestos());
         return "admin/panel";
@@ -115,8 +115,7 @@ public class AdminController {
                                          RedirectAttributes redirectAttrs) {
         if (!esAdmin(session)) return "redirect:/login";
 
-        // Bloquear si la característica tiene hijos (es categoría padre de otras)
-        var caracteristica = adminService.obtenerCaracteristica(id);
+        var caracteristica = adminService.obtenerCaracteristaca(id);
         if (caracteristica.isPresent() && adminService.tieneHijos(id)) {
             redirectAttrs.addFlashAttribute("error",
                     "No se puede eliminar \"" + caracteristica.get().getNombre() +

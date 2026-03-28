@@ -81,7 +81,7 @@ public class OferenteController {
         oferente.setClave(password);
         oferente.setAprobado(false);
 
-        if (!oferenteService.registrar(oferente)) {
+        if (!oferenteService.registrarOferente(oferente)) {
             model.addAttribute("error", "Ya existe una cuenta con esa identificación o correo electrónico.");
             return "oferente/registro";
         }

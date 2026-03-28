@@ -33,7 +33,7 @@ public class Puesto {
 
     @ColumnDefault("'CRC'")
     @Column(name = "moneda", length = 3)
-    private String moneda; // "CRC" = Colones · "USD" = Dólares
+    private String moneda;
 
     @ColumnDefault("1")
     @Column(name = "publica")
@@ -50,7 +50,6 @@ public class Puesto {
     @OneToMany(mappedBy = "puesto")
     private Set<PuestoCaracteristica> puestoCaracteristicas = new LinkedHashSet<>();
 
-    // Helpers para evitar NPE
     public boolean isActivo() {
         return Boolean.TRUE.equals(activo);
     }

@@ -69,7 +69,7 @@ public class Oferente {
         return aprobado;
     }
 
-    // ── MÉTODOS PARA PASSWORD ─────────────────────────────────────────────────
+    // Metodos para pasar contraseñas
     public String getPassword() {
         return this.clave;
     }

@@ -1,10 +1,13 @@
 package org.example.bolsadeempleo.logic.service;
 
+import lombok.Getter;
 import org.example.bolsadeempleo.logic.*;
 import org.example.bolsadeempleo.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,7 +17,6 @@ import java.util.Optional;
 
 @Service
 public class EmpresaService {
-
     @Autowired
     private EmpresaRepository empresaRepository;
 
@@ -36,45 +38,38 @@ public class EmpresaService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // ── REGISTRO ──────────────────────────────────────────────────────────────
+    //Registro
 
-    public boolean registrar(Empresa empresa) {
+    public boolean registarEmpresa(Empresa empresa){
         if (empresaRepository.existsByCorreo(empresa.getCorreo())) return false;
-        
-        String hashPass = passwordEncoder.encode(empresa.getPassword());
-        empresa.setPassword(hashPass);
+
+        String hashPassword = passwordEncoder.encode(empresa.getPassword());
+        empresa.setPassword(hashPassword);
 
         empresaRepository.save(empresa);
         return true;
     }
 
-    // ── LOGIN ─────────────────────────────────────────────────────────────────
+    //login
 
-    public Empresa login(String correo, String clave) {
+    public Empresa login(String correo, String password){
         Optional<Empresa> empresa = empresaRepository.findByCorreo(correo);
-        if (empresa.isEmpty()) return null;
-        if (!passwordEncoder.matches(clave, empresa.get().getClave())) return null;
+        if(empresa.isEmpty()) return null;
+        if(!passwordEncoder.matches(password, empresa.get().getPassword())) return null ;
         if (!empresa.get().isAprobado()) return null;
         return empresa.get();
     }
 
-    // ── OBTENER POR ID ────────────────────────────────────────────────────────
+    //ordenar por id
 
-    public Empresa obtenerPorId(Long id) {
+    public Empresa obtenerEmpresaPorId(Long id){
         return empresaRepository.findById(id).orElse(null);
     }
 
-    // ── ACTUALIZAR DATOS ──────────────────────────────────────────────────────
+    //Actializar datos
 
+    //Publicar puesto
 
-
-    // ── PUBLICAR PUESTO ───────────────────────────────────────────────────────
-
-    /**
-     * BUG CORREGIDO: antes se hacía requisito.setId(caracteristicaIds.get(i))
-     * lo cual sobreescribía el PK del registro en vez de asignar la característica.
-     * Ahora se crea una referencia proxy de Caracteristica con solo el id.
-     */
     public Puesto publicarPuesto(Long empresaId, String descripcion, BigDecimal salario,
                                  boolean publica, String moneda,
                                  List<Long> caracteristicaIds, List<Integer> niveles) {
@@ -105,6 +100,47 @@ public class EmpresaService {
         return puesto;
     }
 
+    //Buscar candidato
+
+    @Transactional(readOnly = true)
+    public List<CandidatoDTO> buscarCandidatos(Long puestoId){
+        List<PuestoCaracteristica> requisitos = requisitoPuestoRepository.findByPuestoId(puestoId);
+        if(requisitos.isEmpty()) return new  ArrayList<>();
+
+        List<Oferente> todosOferentes = oferenteRepository.findByAprobado(true);
+        List<CandidatoDTO> candidatos = new ArrayList<>();
+
+        for (Oferente oferente : todosOferentes) {
+            double puntuacion = calcularPuntuacion(oferente.getIdentificacion(), requisitos);
+            if (puntuacion > 0){
+                double porcentaje = (puntuacion/ requisitos.size()) * 100.0;
+                candidatos.add(new CandidatoDTO(oferente, puntuacion, requisitos.size(), porcentaje));
+            }
+        }
+        candidatos.sort((a, b) -> Double.compare(b.getPorcentaje(), a.getPorcentaje()));
+        return candidatos;
+    }
+
+    private double calcularPuntuacion(String identificacion,  List<PuestoCaracteristica> requisitos) {
+        double puntuacion = 0.0;
+        for(PuestoCaracteristica requisito : requisitos) {
+            Long caracId = requisito.getCaracteristica().getId();
+            Optional<Habilidad> habilidad = habilidadRepository.findByOferenteIdentificacionAndCaracteristicaId(identificacion, caracId);
+
+            if(habilidad.isPresent()) {
+                int nivelOferente = habilidad.get().getNivel();
+                int nivelRequerido = requisito.getNivelRequerido();
+
+                if(nivelOferente >= nivelRequerido) {
+                    puntuacion += 1.0;
+                }else{
+                    puntuacion += 0.5;
+                }
+
+            }
+        }
+        return puntuacion;
+    }
 
     public boolean desactivarPuesto(Long puestoId, Long empresaId) {
         Optional<Puesto> puesto = puestoRepository.findById(puestoId);
@@ -116,59 +152,19 @@ public class EmpresaService {
         return true;
     }
 
-    // ── LISTAR PUESTOS POR EMPRESA ────────────────────────────────────────────
+    // Ordenar por % de coincidencia descendente
 
-    public List<Puesto> listarPuestosPorEmpresa(Long empresaId) {
-        return puestoRepository.findByEmpresaId(empresaId);
-    }
-
-    public List<Puesto> listarPuestosActivos(Long empresaId) {
-        return puestoRepository.findByEmpresaIdAndActivo(empresaId, true);
-    }
-
-    // ── BUSCAR CANDIDATOS ─────────────────────────────────────────────────────
-
-    public List<CandidatoDTO> buscarCandidatos(Long puestoId) {
-        List<PuestoCaracteristica> requisitos = requisitoPuestoRepository.findByPuestoId(puestoId);
-        if (requisitos.isEmpty()) return new ArrayList<>();
-
-        List<Oferente> todosOferentes = oferenteRepository.findByAprobado(true);
-        List<CandidatoDTO> candidatos = new ArrayList<>();
-
-        for (Oferente oferente : todosOferentes) {
-            int cumplidos = contarRequisitorCumplidos(oferente.getIdentificacion(), requisitos);
-            if (cumplidos > 0) {
-                double porcentaje = (double) cumplidos / requisitos.size() * 100;
-                candidatos.add(new CandidatoDTO(oferente, cumplidos, requisitos.size(), porcentaje));
-            }
-        }
-
-        // Ordenar por % de coincidencia descendente
-        candidatos.sort((a, b) -> Double.compare(b.getPorcentaje(), a.getPorcentaje()));
-        return candidatos;
-    }
-
-    private int contarRequisitorCumplidos(String identificacion, List<PuestoCaracteristica> requisitos) {
+    private int contarRequisitorCumplidos(String identificacion,List<PuestoCaracteristica> requisitos){
         int cumplidos = 0;
         for (PuestoCaracteristica requisito : requisitos) {
-            Long caracId = requisito.getCaracteristica().getId(); // ← CORREGIDO
-            Optional<Habilidad> habilidad = habilidadRepository
-                    .findByOferenteIdentificacionAndCaracteristicaId(identificacion, caracId);
-
-            if (habilidad.isPresent() && habilidad.get().getNivel() >= requisito.getNivelRequerido()) {
-                cumplidos++;
-            }
+            long caracteristicaId = requisito.getCaracteristica().getId();
+            Optional<Habilidad> habilidad = habilidadRepository.findByOferenteIdentificacionAndCaracteristicaId(identificacion, caracteristicaId);
+            if (habilidad.isPresent() && habilidad.get().getNivel() >= requisito.getNivelRequerido()) {cumplidos++;}
         }
         return cumplidos;
     }
 
-    // ── VER DETALLE CANDIDATO ─────────────────────────────────────────────────
-
-    public Oferente verDetalleCandidato(String identificacion) {
-        return oferenteRepository.findByIdentificacion(identificacion).orElse(null);
-    }
-
-    // ── OBTENER PUESTO ────────────────────────────────────────────────────────
+    // Obtener puesto
 
     public Puesto obtenerPuesto(Long puestoId) {
         return puestoRepository.findById(puestoId).orElse(null);
@@ -178,15 +174,20 @@ public class EmpresaService {
         return requisitoPuestoRepository.findByPuestoId(puestoId);
     }
 
-    // ── DTO CANDIDATO ─────────────────────────────────────────────────────────
+    // Ver detalle candidato
 
+    public Oferente verDetalleCandidato(String identificacion) {
+        return oferenteRepository.findByIdentificacion(identificacion).orElse(null);
+    }
+
+    // DTO candidadto
     public static class CandidatoDTO {
         private final Oferente oferente;
-        private final int requisitosCumplidos;
+        private final double requisitosCumplidos;
         private final int requisitosTotal;
         private final double porcentaje;
 
-        public CandidatoDTO(Oferente oferente, int cumplidos, int total, double porcentaje) {
+        public CandidatoDTO(Oferente oferente, double cumplidos, int total, double porcentaje) {
             this.oferente = oferente;
             this.requisitosCumplidos = cumplidos;
             this.requisitosTotal = total;
@@ -194,7 +195,7 @@ public class EmpresaService {
         }
 
         public Oferente getOferente() { return oferente; }
-        public int getRequisitosCumplidos() { return requisitosCumplidos; }
+        public double getRequisitosCumplidos() { return requisitosCumplidos; }
         public int getRequisitosTotal() { return requisitosTotal; }
         public double getPorcentaje() {
             return BigDecimal.valueOf(porcentaje)
@@ -205,11 +206,13 @@ public class EmpresaService {
             return String.format("%.2f%%", porcentaje);
         }
     }
+    // Listas puestos por empresa
 
-//    // VER CURRICULUM CANDIDATO
-//    public byte[] obtenerCurriculumCandidato(String identificacion) {
-//        return oferenteRepository.findById(identificacion)
-//                .map(Oferente::getCurriculum)
-//                .orElse(null);
-//    }
+    public List<Puesto> listarPuestosPorEmpresa(Long empresaId) {
+        return puestoRepository.findByEmpresaId(empresaId);
+    }
+
+    public List<Puesto> listarPuestosActivos(Long empresaId) {
+        return puestoRepository.findByEmpresaIdAndActivo(empresaId, true);
+    }
 }
