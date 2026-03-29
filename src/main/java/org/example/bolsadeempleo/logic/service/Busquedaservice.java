@@ -1,7 +1,7 @@
 package org.example.bolsadeempleo.logic.service;
 
-import org.example.bolsadeempleo.logic.Puesto;
 import org.example.bolsadeempleo.data.PuestoRepository;
+import org.example.bolsadeempleo.logic.Puesto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,21 +15,16 @@ public class Busquedaservice {
     @Autowired
     private PuestoRepository puestoRepository;
 
-    public List<Puesto> obtenerUltimosPuestosPublicos() {
+    public List<Puesto> getUltimos5PuestosPublicos(){
         return puestoRepository.findTop5ByActivoAndPublicaOrderByFechaPublicacionDesc(true, true);
     }
 
-    public List<Puesto> buscarPuestosPublicos(String palabraClave, BigDecimal salarioMin, Long caracteristica) {
-        List<Puesto> todos = puestoRepository.findByActivoAndPublica(true, true);
-
-        return todos.stream()
-                .filter(p -> palabraClave == null || palabraClave.isBlank() ||
-                        p.getDescripcion().toLowerCase().contains(palabraClave.toLowerCase()))
-                .filter(p -> salarioMin == null ||
-                        (p.getSalario() != null && p.getSalario().compareTo(salarioMin) >= 0))
-                .filter(p -> caracteristica == null || p.getPuestoCaracteristicas().stream()
-                        .anyMatch(pc -> pc.getCaracteristica().getId().equals(caracteristica)))
+    public List<Puesto> buscarPuestosPublicos(String palabra, BigDecimal salarioMin, Long caracteristica){
+        List<Puesto> puestos = puestoRepository.findByActivoAndPublica(true, true);
+        return puestos.stream().filter(p-> palabra == null || palabra.isBlank() ||
+                p.getDescripcion().toLowerCase().contains(palabra.toLowerCase()))
+                .filter(p-> salarioMin == null || p.getSalario().compareTo(salarioMin) >= 0)
+                .filter(p -> caracteristica == null || p.getPuestoCaracteristicas().stream().anyMatch(pc -> pc.getCaracteristica().getId().equals(caracteristica)))
                 .collect(Collectors.toList());
     }
-
 }
