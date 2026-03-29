@@ -23,7 +23,6 @@ import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-//listo
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
