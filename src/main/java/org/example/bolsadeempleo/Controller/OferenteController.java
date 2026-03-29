@@ -120,7 +120,7 @@ public class OferenteController {
     @GetMapping("/habilidades")
     public String habilidades(HttpSession session, Model model) {
         String id = getOferenteId(session);
-        model.addAttribute("habilidades", oferenteService.listarHabilidades(id));
+        model.addAttribute("habilidades", oferenteService.getHabilidades(id));
         model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
         return "oferente/habilidades";
     }
@@ -147,7 +147,7 @@ public class OferenteController {
     public String eliminarHabilidad(@PathVariable Long habilidadId, HttpSession session,
                                     RedirectAttributes redirectAttributes) {
         String id = getOferenteId(session);
-        oferenteService.eliminarHabilidad(habilidadId, id);
+        oferenteService.eliminarHabilidad(id, habilidadId);
         redirectAttributes.addFlashAttribute("success", "Habilidad eliminada.");
         return "redirect:/oferente/habilidades";
     }
