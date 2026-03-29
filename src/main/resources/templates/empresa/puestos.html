@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,13 +61,13 @@
             </div>
 
             <div class="form-group">
-                <label>Características requeridas <small style="font-weight:normal; color:#888;">(deja en blanco las que no uses, máx. 5)</small></label>
+                <label>Características requeridas <small style="font-weight:normal; color:#888888;">(deje en blanco las que no use, máx. 5)</small></label>
 
                 <th:block th:each="i : ${#numbers.sequence(1,5)}">
                     <div class="form-row" style="align-items:flex-end; margin-bottom:8px;">
                         <div class="form-group" style="flex:2;">
                             <select name="caracteristicaIds">
-                                <option value="">-- Ninguna --</option>
+                                <option value=""> Ninguna </option>
                                 <option th:each="c : ${caracteristicas}"
                                         th:value="${c.id}"
                                         th:text="${c.nombre}">Característica</option>
@@ -89,7 +89,7 @@
         <h3>Puestos Registrados</h3>
 
         <div th:if="${#lists.isEmpty(puestos)}" class="empty-msg">
-            No tenés puestos publicados aún.
+            No tiene puestos publicados aún.
         </div>
 
         <table class="panel-table" th:unless="${#lists.isEmpty(puestos)}">
@@ -121,7 +121,7 @@
                     <span th:unless="${p.activo}" class="badge" style="background:#fdecea; color:#c0392b;">Inactivo</span>
                 </td>
                 <td>
-                    <span th:if="${#sets.isEmpty(p.puestoCaracteristicas)}" style="color:#aaa;">—</span>
+                    <span th:if="${#sets.isEmpty(p.puestoCaracteristicas)}" style="color:#aaaaaa;">—</span>
                     <span th:each="pc : ${p.puestoCaracteristicas}" class="badge"
                           th:text="${pc.caracteristica.nombre + ' (Nv.' + pc.nivelRequerido + ')'}">Tag</span>
                 </td>
@@ -133,7 +133,7 @@
                           method="post" style="display:inline;">
                         <button type="submit" class="btn-desactivar">Desactivar</button>
                     </form>
-                    <span th:unless="${p.activo}" style="color:#aaa; font-size:0.85rem;">—</span>
+                    <span th:unless="${p.activo}" style="color:#aaaaaa; font-size:15px;">—</span>
                 </td>
             </tr>
             </tbody>

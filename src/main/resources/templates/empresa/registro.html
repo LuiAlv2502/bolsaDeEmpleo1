@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +22,7 @@
   <div class="auth-card auth-card-wide">
     <div class="auth-header">
       <h2>Registro de Empresa</h2>
-      <p>Completa los datos para registrar tu empresa</p>
+      <p>Complete los datos para registrar su empresa</p>
     </div>
 
     <div th:if="${error}" class="alert alert-error">
@@ -81,14 +81,14 @@
       </div>
 
       <div class="info-box">
-        <p>Tu registro será revisado por un administrador antes de poder ingresar al sistema.</p>
+        <p>Su registro será revisado por un administrador antes de poder ingresar al sistema.</p>
       </div>
 
       <button type="submit" class="btn-submit">Registrar Empresa</button>
     </form>
 
     <div class="auth-footer">
-      <p>¿Ya tienes cuenta? <a th:href="@{/empresa/login}">Iniciar sesión</a></p>
+      <p>¿Ya tiene cuenta? <a th:href="@{/empresa/login}">Iniciar sesión</a></p>
       <p><a th:href="@{/}">← Volver al inicio</a></p>
     </div>
   </div>

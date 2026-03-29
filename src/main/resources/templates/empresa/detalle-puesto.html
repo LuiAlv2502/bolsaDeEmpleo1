@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +36,7 @@
                 <span>
                     <th:block th:text="${puesto.moneda == 'USD' ? '$' : '₡'}"></th:block>
                     <th:block th:text="${#numbers.formatDecimal(puesto.salario, 1, 'COMMA', 2, 'POINT')}"></th:block>
-                    <small th:text="${puesto.moneda}" style="font-weight:400; color:#888; font-size:0.78rem;"></small>
+                    <small th:text="${puesto.moneda}" style="font-weight:400; color:#888888; font-size:15px;"></small>
                 </span>
             </div>
 
@@ -58,7 +58,7 @@
                 <label>Fecha de publicación</label>
                 <span th:if="${puesto.fechaPublicacion != null}"
                       th:text="${#temporals.format(puesto.fechaPublicacion, 'dd/MM/yyyy')}">—</span>
-                <span th:unless="${puesto.fechaPublicacion != null}" style="color:#aaa;">—</span>
+                <span th:unless="${puesto.fechaPublicacion != null}" style="color:#aaaaaa;">—</span>
             </div>
 
         </div>
@@ -69,11 +69,11 @@
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="font-size:0.78rem; color:#888; text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:8px;">
+            <label style="font-size:15px; color:#888888; text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:8px;">
                 Características requeridas
             </label>
-            <div th:if="${#sets.isEmpty(puesto.puestoCaracteristicas)}" style="color:#aaa; font-size:0.9rem;">
-                Este puesto no tiene características definidas.
+            <div th:if="${#sets.isEmpty(puesto.puestoCaracteristicas)}" style="color:#aaaaaa; font-size:16px;">
+                El puesto no tiene características definidas.
             </div>
             <div class="tags-row" th:unless="${#sets.isEmpty(puesto.puestoCaracteristicas)}">
                 <span th:each="pc : ${puesto.puestoCaracteristicas}" class="tag-badge">
@@ -114,7 +114,7 @@
                              Ver CV
                         </a>
                         <span th:unless="${c.cvPdf != null and !c.cvPdf.isBlank()}"
-                              style="color:#aaa; font-size:0.82rem;">Sin CV</span>
+                              style="color:#aaaaaa; font-size:15px;">Sin CV</span>
                     </td>
                 </tr>
 
@@ -132,7 +132,7 @@
 </div>
 
 <footer>
-    <p> 2026 Bolsa de Empleo. </p>
+    <p> 2026 Bolsa de Empleo. Todos los derechos reservados.</p>
 </footer>
 
 </body>
