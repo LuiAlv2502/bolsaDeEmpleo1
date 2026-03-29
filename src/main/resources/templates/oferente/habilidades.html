@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habilidades Oferente - Bolsa de Empleo</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a th:href="@{/}">Inicio</a>
+        <a th:href="@{/oferente/dashboard}">Dashboard</a>
+        <span>Bienvenido, <strong th:text="${session.oferenteNombre}">Oferente</strong></span>
+        <a th:href="@{/logout}" class="logout-link">Cerrar sesión</a>
+    </nav>
+</header>
+<main class="auth-main">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-header">
+            <h2> Mis Habilidades</h2>
+            <p>Agregue o actualice sus habilidades y niveles de dominio.</p>
+        </div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+        <div class="section-card" style="margin-bottom: 24px;">
+            <h3>Agregar / actualizar habilidades </h3>
+            <form th:action="@{/oferente/habilidades/agregar}" method="post" class="auth-form">
+                <div class="form-row">
+                    <div class="form-group" style="flex:3;">
+                        <label for="caracteristicaId">Característica</label>
+                        <select id="caracteristicaId" name="caracteristicaId" required>
+                            <option value=""> Seleccionar </option>
+                            <th:block th:each="c : ${caracteristicas}">
+                                <option th:if="${c.parent != null}"
+                                        th:value="${c.id}"
+                                        th:text="${c.parent.nombre + ' > ' + c.nombre}">
+                                </option>
+                                <option th:unless="${c.parent != null}"
+                                        th:value="${c.id}"
+                                        th:text="${c.nombre}">
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="nivel"> Nivel (1 - 5)</label>
+                        <input type="number" id="nivel" name="nivel"
+                               min="1" max="5" value="1" required>
+                    </div>
+                    <div class="form-group" style="flex:1; justify-content:flex-end; padding-top:22px;">
+                        <button type="submit" class="btn-submit" style="margin:0; padding:10px 18px;">
+                            + Agregar
+                        </button>
+                    </div>
+                </div>
+                <p style="font-size:15px; color:#888888; margin-top:-8px;">
+                    Nivel 1 = básico · 3 = intermedio · 5 = experto.
+                    Si la habilidad ya existe, se actualizará el nivel de la misma.
+                </p>
+            </form>
+        </div>
+
+        <div class="section-card">
+            <h3>Mis habilidades registradas</h3>
+
+            <div th:if="${#lists.isEmpty(habilidades)}" class="empty-msg">
+                Aún no tiene habilidades registradas.
+            </div>
+
+            <table class="panel-table" th:unless="${#lists.isEmpty(habilidades)}">
+                <thead>
+                <tr>
+                    <th>Característica</th>
+                    <th>Categoría padre</th>
+                    <th>Nivel</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="h : ${habilidades}">
+                    <td th:text="${h.caracteristica.nombre}">Java</td>
+                    <td>
+                            <span th:if="${h.caracteristica.parent != null}"
+                                  class="badge"
+                                  th:text="${h.caracteristica.parent.nombre}">Padre</span>
+                        <span th:unless="${h.caracteristica.parent != null}"
+                              style="color:#aaaaaa;">-</span>
+                    </td>
+                    <td>
+                        <span class="nivel-badge" th:text="${h.nivel}">3</span>
+                    </td>
+                    <td>
+                        <form th:action="@{/oferente/habilidades/{id}/eliminar(id=${h.id})}"
+                              method="post" style="display:inline;">
+                            <button type="submit" class="btn-eliminar">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="auth-footer">
+            <p><a th:href="@{/oferente/dashboard}"> ← Volver al menú </a></p>
+        </div>
+
+    </div>
+</main>
+<footer>
+    <p> 2026 Bolsa de Empleo. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>
