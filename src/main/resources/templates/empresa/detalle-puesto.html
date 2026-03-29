@@ -26,7 +26,6 @@
         <h2> Detalle del Puesto #<span th:text="${puesto.id}"></span></h2>
     </div>
 
-    <!-- ── TARJETA DE DETALLES ── -->
     <div class="detalle-card">
         <h3>Información del Puesto</h3>
 
@@ -64,13 +63,11 @@
 
         </div>
 
-        <!-- Descripción -->
         <div class="detalle-descripcion">
             <label>Descripción</label>
             <p th:text="${puesto.descripcion}">Sin descripción.</p>
         </div>
 
-        <!-- Características requeridas -->
         <div style="margin-top: 20px;">
             <label style="font-size:0.78rem; color:#888; text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:8px;">
                 Características requeridas
@@ -87,11 +84,9 @@
         </div>
     </div>
 
-    <!-- ── TABLA DE CANDIDATOS ── -->
     <div class="detalle-card candidatos-section">
         <h3>Oferentes que calzan con el puesto</h3>
 
-        <!-- Tabla de candidatos ordenados por % de coincidencia -->
         <table class="candidatos-table">
             <thead>
                 <tr>
@@ -104,27 +99,25 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Filas dinámicas -->
                 <tr th:each="c, iter : ${candidatos}">
                     <td th:text="${iter.index + 1}">1</td>
-                    <td th:text="${c.oferente.nombre + ' ' + c.oferente.apellido}">Nombre</td>
-                    <td th:text="${c.oferente.identificacion}">ID</td>
-                    <td th:text="${c.oferente.correo}">correo@mail.com</td>
+                    <td th:text="${c.nombre + ' ' + c.apellido}">Nombre</td>
+                    <td th:text="${c.identificacion}">ID</td>
+                    <td th:text="${c.correo}">correo@mail.com</td>
                     <td>
                         <span class="match-pct" th:text="${c.porcentajeFormateado}">0%</span>
                     </td>
                     <td>
-                        <a th:if="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
-                           th:href="@{/oferente/cv/ver/{id}(id=${c.oferente.identificacion})}"
+                        <a th:if="${c.cvPdf != null and !c.cvPdf.isBlank()}"
+                           th:href="@{/oferente/cv/ver/{id}(id=${c.identificacion})}"
                            target="_blank" class="btn-detalle" style="font-size:0.8rem;">
                              Ver CV
                         </a>
-                        <span th:unless="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
+                        <span th:unless="${c.cvPdf != null and !c.cvPdf.isBlank()}"
                               style="color:#aaa; font-size:0.82rem;">Sin CV</span>
                     </td>
                 </tr>
 
-                <!-- Estado vacío -->
                 <tr th:if="${#lists.isEmpty(candidatos)}">
                         <td colspan="6" class="empty-candidatos">
                             No se encontraron oferentes con habilidades coincidentes para este puesto.

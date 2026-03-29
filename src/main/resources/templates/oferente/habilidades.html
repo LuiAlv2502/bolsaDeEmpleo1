@@ -29,7 +29,6 @@
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 
-    <!-- ── AGREGAR HABILIDAD ── -->
     <div class="section-card" style="margin-bottom:24px;">
       <h3>Agregar / actualizar habilidad</h3>
       <form th:action="@{/oferente/habilidades/agregar}" method="post" class="auth-form">
@@ -68,7 +67,6 @@
       </form>
     </div>
 
-    <!-- ── LISTA DE HABILIDADES ── -->
     <div class="section-card">
       <h3>Mis habilidades registradas</h3>
 
