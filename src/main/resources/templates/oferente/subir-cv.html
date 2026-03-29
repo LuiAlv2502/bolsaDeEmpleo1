@@ -27,11 +27,9 @@
       <p th:unless="${tieneCv}">Subí tu currículum en formato PDF para que las empresas te encuentren.</p>
     </div>
 
-    <!-- Alertas -->
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 
-    <!-- Formulario de subida -->
     <form th:action="@{/oferente/cv/subir}" method="post"
           enctype="multipart/form-data" class="auth-form" id="cvForm">
 
@@ -50,7 +48,6 @@
       </button>
     </form>
 
-    <!-- Botón para abrir el CV en una nueva pestaña -->
     <div th:if="${tieneCv}" style="margin-top: 18px;">
       <a th:href="@{/oferente/cv/ver/{id}(id=${session.oferenteId})}"
          target="_blank" class="btn btn-secondary">
@@ -65,35 +62,9 @@
 </main>
 
 <footer>
-  <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+  <p>2026 Bolsa de Empleo. Todos los derechos reservados.</p>
 </footer>
 
-<script>
-  function mostrarNombre(input) {
-    const span = document.getElementById('nombreArchivo');
-    span.textContent = input.files.length > 0 ? input.files[0].name : '';
-  }
-
-  // Drag & drop
-  const drop = document.getElementById('dropArea');
-  const fileInput = document.getElementById('archivo');
-
-  drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.background = '#c8e6ff'; });
-  drop.addEventListener('dragleave', () => { drop.style.background = ''; });
-  drop.addEventListener('drop', e => {
-    e.preventDefault();
-    drop.style.background = '';
-    const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type === 'application/pdf') {
-      const dt = new DataTransfer();
-      dt.items.add(files[0]);
-      fileInput.files = dt.files;
-      mostrarNombre(fileInput);
-    } else {
-      alert('Solo se aceptan archivos PDF.');
-    }
-  });
-</script>
 </body>
 </html>
 

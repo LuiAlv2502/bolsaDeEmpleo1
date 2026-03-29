@@ -24,24 +24,20 @@
         <h2>Mis Puestos</h2>
     </div>
 
-    <!-- Mensajes flash -->
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 
-    <!-- ── FORMULARIO PUBLICAR PUESTO ── -->
     <div class="section-card">
         <h3>Publicar Nuevo Puesto</h3>
 
         <form th:action="@{/empresa/publicarPuesto}" method="post" class="auth-form">
 
-            <!-- Descripción -->
             <div class="form-group">
                 <label for="descripcion">Descripción general del puesto</label>
                 <textarea id="descripcion" name="descripcion" rows="1" style="resize:none"
                           placeholder="Inserte el nombre del puesto." required></textarea>
             </div>
 
-            <!-- Salario y Tipo -->
             <div class="form-row">
                 <div class="form-group" style="flex:2;">
                     <label for="salario">Salario ofrecido</label>
@@ -64,25 +60,24 @@
                 </div>
             </div>
 
-            <!-- Características requeridas -->
             <div class="form-group">
                 <label>Características requeridas <small style="font-weight:normal; color:#888;">(deja en blanco las que no uses, máx. 5)</small></label>
 
                 <th:block th:each="i : ${#numbers.sequence(1,5)}">
-                <div class="form-row" style="align-items:flex-end; margin-bottom:8px;">
-                    <div class="form-group" style="flex:2;">
-                        <select name="caracteristicaIds">
-                            <option value="">-- Ninguna --</option>
-                            <option th:each="c : ${caracteristicas}"
-                                    th:value="${c.id}"
-                                    th:text="${c.nombre}">Característica</option>
-                        </select>
+                    <div class="form-row" style="align-items:flex-end; margin-bottom:8px;">
+                        <div class="form-group" style="flex:2;">
+                            <select name="caracteristicaIds">
+                                <option value="">-- Ninguna --</option>
+                                <option th:each="c : ${caracteristicas}"
+                                        th:value="${c.id}"
+                                        th:text="${c.nombre}">Característica</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <input type="number" name="niveles" min="1" max="5" value="1"
+                                   placeholder="Nivel (1-5)">
+                        </div>
                     </div>
-                    <div class="form-group" style="flex:1;">
-                        <input type="number" name="niveles" min="1" max="5" value="1"
-                               placeholder="Nivel (1-5)">
-                    </div>
-                </div>
                 </th:block>
             </div>
 
@@ -90,7 +85,6 @@
         </form>
     </div>
 
-    <!-- ── TABLA DE PUESTOS ── -->
     <div class="section-card">
         <h3>Puestos Registrados</h3>
 
@@ -100,48 +94,48 @@
 
         <table class="panel-table" th:unless="${#lists.isEmpty(puestos)}">
             <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Descripción</th>
-                    <th>Salario</th>
-                    <th>Tipo</th>
-                    <th>Estado</th>
-                    <th>Características</th>
-                    <th>Acción</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>Descripción</th>
+                <th>Salario</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Características</th>
+                <th>Acción</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="p : ${puestos}">
-                    <td th:text="${p.id}">1</td>
-                    <td th:text="${#strings.abbreviate(p.descripcion, 80)}">Descripción</td>
-                    <td>
-                        <span th:text="${p.moneda == 'USD' ? '$' : '₡'}"></span>
-                        <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></span>
-                    </td>
-                    <td>
-                        <span th:if="${p.publica}"  class="badge" style="background:#eaf4fb; color:#2980b9;">Pública</span>
-                        <span th:unless="${p.publica}" class="badge" style="background:#fdf2fb; color:#8e44ad;">Privada</span>
-                    </td>
-                    <td>
-                        <span th:if="${p.activo}"    class="badge" style="background:#eafaf1; color:#1e8449;">Activo</span>
-                        <span th:unless="${p.activo}" class="badge" style="background:#fdecea; color:#c0392b;">Inactivo</span>
-                    </td>
-                    <td>
-                        <span th:if="${#sets.isEmpty(p.puestoCaracteristicas)}" style="color:#aaa;">—</span>
-                        <span th:each="pc : ${p.puestoCaracteristicas}" class="badge"
-                              th:text="${pc.caracteristica.nombre + ' (Nv.' + pc.nivelRequerido + ')'}">Tag</span>
-                    </td>
-                    <td>
-                        <a th:href="@{/empresa/puestos/{id}/detalle(id=${p.id})}"
-                           class="btn-detalle">Ver detalles</a>
-                        <form th:if="${p.activo}"
-                              th:action="@{/empresa/puestos/{id}/desactivar(id=${p.id})}"
-                              method="post" style="display:inline;">
-                            <button type="submit" class="btn-desactivar">Desactivar</button>
-                        </form>
-                        <span th:unless="${p.activo}" style="color:#aaa; font-size:0.85rem;">—</span>
-                    </td>
-                </tr>
+            <tr th:each="p : ${puestos}">
+                <td th:text="${p.id}">1</td>
+                <td th:text="${#strings.abbreviate(p.descripcion, 80)}">Descripción</td>
+                <td>
+                    <span th:text="${p.moneda == 'USD' ? '$' : '₡'}"></span>
+                    <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></span>
+                </td>
+                <td>
+                    <span th:if="${p.publica}"  class="badge" style="background:#eaf4fb; color:#2980b9;">Pública</span>
+                    <span th:unless="${p.publica}" class="badge" style="background:#fdf2fb; color:#8e44ad;">Privada</span>
+                </td>
+                <td>
+                    <span th:if="${p.activo}"    class="badge" style="background:#eafaf1; color:#1e8449;">Activo</span>
+                    <span th:unless="${p.activo}" class="badge" style="background:#fdecea; color:#c0392b;">Inactivo</span>
+                </td>
+                <td>
+                    <span th:if="${#sets.isEmpty(p.puestoCaracteristicas)}" style="color:#aaa;">—</span>
+                    <span th:each="pc : ${p.puestoCaracteristicas}" class="badge"
+                          th:text="${pc.caracteristica.nombre + ' (Nv.' + pc.nivelRequerido + ')'}">Tag</span>
+                </td>
+                <td>
+                    <a th:href="@{/empresa/puestos/{id}/detalle(id=${p.id})}"
+                       class="btn-detalle">Ver detalles</a>
+                    <form th:if="${p.activo}"
+                          th:action="@{/empresa/puestos/{id}/desactivar(id=${p.id})}"
+                          method="post" style="display:inline;">
+                        <button type="submit" class="btn-desactivar">Desactivar</button>
+                    </form>
+                    <span th:unless="${p.activo}" style="color:#aaa; font-size:0.85rem;">—</span>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -149,7 +143,7 @@
 </div>
 
 <footer>
-    <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+    <p>2026 Bolsa de Empleo. Todos los derechos reservados.</p>
 </footer>
 
 
