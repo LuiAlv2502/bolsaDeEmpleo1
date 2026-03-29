@@ -20,7 +20,7 @@ public class PublicoController {
 
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("puestosRecientes", busquedaservice.obtenerUltimosPuestosPublicos());
+        model.addAttribute("puestosRecientes", busquedaservice.getUltimos5PuestosPublicos());
         model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
         return "index";
 
@@ -36,7 +36,7 @@ public class PublicoController {
                 : null;
 
         model.addAttribute("resultados", busquedaservice.buscarPuestosPublicos(palabra, salarioMin, caracteristicaId));
-        model.addAttribute("puestosRecientes", busquedaservice.obtenerUltimosPuestosPublicos());
+        model.addAttribute("puestosRecientes", busquedaservice.getUltimos5PuestosPublicos());
         model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
         model.addAttribute("palabra", palabra);
         model.addAttribute("salarioMin", salarioMin);

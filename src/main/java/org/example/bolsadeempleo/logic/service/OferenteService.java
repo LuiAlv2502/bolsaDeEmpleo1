@@ -1,11 +1,11 @@
 package org.example.bolsadeempleo.logic.service;
 
-import org.example.bolsadeempleo.logic.Habilidad;
-import org.example.bolsadeempleo.logic.Oferente;
-import org.example.bolsadeempleo.logic.Caracteristica;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.example.bolsadeempleo.data.HabilidadRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
+import org.example.bolsadeempleo.logic.Caracteristica;
+import org.example.bolsadeempleo.logic.Habilidad;
+import org.example.bolsadeempleo.logic.Oferente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,7 +23,6 @@ import java.util.UUID;
 
 @Service
 public class OferenteService {
-
     @Autowired
     private OferenteRepository oferenteRepository;
 
@@ -39,32 +38,27 @@ public class OferenteService {
     @Value("${cv.upload.dir:uploads/cv}")
     private String cvUploadDir;
 
+    public boolean registrar (Oferente oferente){
+        if(oferenteRepository.existsByCorreo(oferente.getCorreo()))return false;
+        if(oferenteRepository.existsByIdentificacion(oferente.getIdentificacion()))return false;
 
-    public boolean registrar(Oferente oferente) {
-        if (oferenteRepository.existsByCorreo(oferente.getCorreo())) return false;
-        if (oferenteRepository.existsByIdentificacion(oferente.getIdentificacion())) return false;
-
-        String hashPass = passwordEncoder.encode(oferente.getPassword());
-        oferente.setPassword(hashPass);
-        
+        String hash = passwordEncoder.encode(oferente.getPassword());
+        oferente.setPassword(hash);
         oferenteRepository.save(oferente);
         return true;
     }
 
-
-    public Oferente login(String correo, String clave) {
+    public Oferente login(String correo, String clave){
         Optional<Oferente> oferente = oferenteRepository.findByCorreo(correo);
-        if (oferente.isEmpty()) return null;
-        if (!passwordEncoder.matches(clave, oferente.get().getClave())) return null;
-        if (!oferente.get().isAprobado()) return null;
+        if(oferente.isEmpty())return null;
+        if(!passwordEncoder.matches(clave, oferente.get().getClave()))return null;
+        if(!oferente.get().isAprobado())return null;
         return oferente.get();
     }
 
-
-    public Oferente obtenerPorIdentificacion(String identificacion) {
+    public Oferente obtenerPorIdentificacion(String identificacion){
         return oferenteRepository.findByIdentificacion(identificacion).orElse(null);
     }
-
 
     public boolean actualizarDatos(Oferente datosActualizados) {
         Optional<Oferente> existente = oferenteRepository.findByIdentificacion(datosActualizados.getIdentificacion());
@@ -81,8 +75,6 @@ public class OferenteService {
         oferenteRepository.save(oferente);
         return true;
     }
-
-
     public boolean agregarOActualizarHabilidad(String identificacionOferente, Long caracteristicaId, Integer nivel) {
         Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacionOferente);
         Optional<Caracteristica> caracteristica = caracteristicaRepository.findById(caracteristicaId);
@@ -105,19 +97,18 @@ public class OferenteService {
 
         return true;
     }
-
-    public boolean eliminarHabilidad(Long habilidadId, String identificacion) {
+    public boolean eliminarHabilidad(String identificacion, Long habilidadId) {
         Optional<Habilidad> habilidad = habilidadRepository.findById(habilidadId);
         if (habilidad.isEmpty()) return false;
-        if (!habilidad.get().getOferente().getIdentificacion().equals(identificacion)) return false;
+        if(!habilidad.get().getOferente().getIdentificacion().equals(identificacion)) return false;
         habilidadRepository.deleteById(habilidadId);
         return true;
+
     }
 
-    public List<Habilidad> listarHabilidades(String identificacionOferente) {
-        return habilidadRepository.findByOferente_Identificacion(identificacionOferente);
+    public List<Habilidad> getHabilidades(String identificacion) {
+        return habilidadRepository.findByOferente_Identificacion(identificacion);
     }
-
 
     public boolean subirCurriculum(String identificacion, MultipartFile archivo) throws IOException {
         if (archivo == null || archivo.isEmpty()) return false;
@@ -156,4 +147,7 @@ public class OferenteService {
                 .map(o -> o.getCvPdf() != null && !o.getCvPdf().isBlank())
                 .orElse(false);
     }
+
+
+
 }

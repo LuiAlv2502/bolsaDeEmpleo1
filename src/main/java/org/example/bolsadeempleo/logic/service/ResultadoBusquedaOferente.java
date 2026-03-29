@@ -15,10 +15,7 @@ public class ResultadoBusquedaOferente {
         this.puntuacion = puntuacion;
         this.requisitosTotal = requisitosTotal;
         this.porcentaje = porcentaje;
-        return;
+
     }
 
-    public String getPorcentajeFormateado() {
-        return String.format("%.2f%%", porcentaje);
-    }
 }

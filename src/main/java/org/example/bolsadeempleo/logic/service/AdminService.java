@@ -1,15 +1,8 @@
 package org.example.bolsadeempleo.logic.service;
 
-import org.example.bolsadeempleo.logic.Administrador;
-import org.example.bolsadeempleo.logic.Caracteristica;
-import org.example.bolsadeempleo.logic.Empresa;
-import org.example.bolsadeempleo.logic.Oferente;
-import org.example.bolsadeempleo.logic.Puesto;
-import org.example.bolsadeempleo.data.AdministradorRepository;
-import org.example.bolsadeempleo.data.CaracteristicaRepository;
-import org.example.bolsadeempleo.data.EmpresaRepository;
-import org.example.bolsadeempleo.data.OferenteRepository;
-import org.example.bolsadeempleo.data.PuestoRepository;
+
+import org.example.bolsadeempleo.data.*;
+import org.example.bolsadeempleo.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +17,7 @@ import java.util.Optional;
 public class AdminService {
 
     @Autowired
-    private AdministradorRepository adminRepository;
+    private AdministradorRepository administradorRepository;
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -38,85 +31,64 @@ public class AdminService {
     @Autowired
     private PuestoRepository puestoRepository;
 
-
-    public Administrador login(String identificacion, String clave) {
-        return adminRepository.findByIdentificacionAndPassword(identificacion, clave).orElse(null);
+    public Administrador login(String identificacion, String clave){
+        return administradorRepository.findByIdentificacionAndPassword(identificacion, clave).orElse(null);
     }
 
-    public List<Empresa> listarEmpresasPendientes() {
+    public List<Empresa> getEmpresasPendientes() {
         return empresaRepository.findByAprobada(false);
     }
 
-    public boolean autorizarEmpresa(Long id) {
+    public boolean autorizarEmpresa(Long id){
         Optional<Empresa> empresa = empresaRepository.findById(id);
-        if (empresa.isEmpty()) return false;
-        empresa.get().setAprobado(true);
+        if(empresa.isEmpty()) return false;
+        empresa.get().setAprobada(true);
         empresaRepository.save(empresa.get());
         return true;
     }
 
-
-    public List<Oferente> listarOferentesPendientes() {
+    public List<Oferente> getOferentesPendientes() {
         return oferenteRepository.findByAprobado(false);
     }
-
-    public boolean autorizarOferente(String identificacion) {
-        Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(identificacion);
-        if (oferente.isEmpty()) return false;
+    public boolean autorizarOferente(String id){
+        Optional<Oferente> oferente = oferenteRepository.findByIdentificacion(id);
+        if(oferente.isEmpty()) return false;
         oferente.get().setAprobado(true);
         oferenteRepository.save(oferente.get());
         return true;
     }
-
-
-    public List<Caracteristica> listarCaracteristicasRaiz() {
+    public List<Caracteristica> getCaracteristicasRaiz() {
         return caracteristicaRepository.findByParentIsNull();
     }
-
-    public List<Caracteristica> listarTodasCaracteristicas() {
-        return caracteristicaRepository.findAll();
-    }
-
-    public Caracteristica registrarCaracteristica(String nombre, Long padreId) {
-        Caracteristica caracteristica = new Caracteristica();
+    public Caracteristica registrarCaracteristica(String nombre, Long padreId){
+        Caracteristica caracteristica = new  Caracteristica();
         caracteristica.setNombre(nombre);
 
-        if (padreId != null) {
-            caracteristicaRepository.findById(padreId)
-                    .ifPresent(caracteristica::setParent); // ← CORREGIDO: setParent en vez de setPadre
+        if(padreId != null){
+            caracteristicaRepository.findById(padreId).ifPresent(caracteristica::setParent);
         }
-
         return caracteristicaRepository.save(caracteristica);
     }
-
-    public Optional<Caracteristica> obtenerCaracteristica(Long id) {
+    public Optional<Caracteristica> obtenerCaracteristica(Long id){
         return caracteristicaRepository.findById(id);
     }
-
-    public boolean eliminarCaracteristica(Long id) {
-        if (!caracteristicaRepository.existsById(id)) return false;
+    public boolean eliminarCaracteristica(Long id){
+        if(!caracteristicaRepository.existsById(id)) return false;
         caracteristicaRepository.deleteById(id);
         return true;
     }
-
-    public boolean tieneHijos(Long id) {
-        return caracteristicaRepository.existsByParent_Id(id);
-    }
-
-    public List<Caracteristica> listarHijos(Long padreId) {
+    public List<Caracteristica> listarHijos(Long padreId){
         return caracteristicaRepository.findByParentId(padreId);
     }
-
-    public List<Caracteristica> obtenerRuta(Long id) {
+    public List<Caracteristica> getRuta(Long Id){
         List<Caracteristica> ruta = new ArrayList<>();
-        Optional<Caracteristica> actual = caracteristicaRepository.findById(id);
-        while (actual.isPresent() && actual.get().getParent() != null) {
-            ruta.add(0, actual.get().getParent());
+        Optional<Caracteristica> actual = caracteristicaRepository.findById(Id);
+        while (actual.isPresent() && actual.get().getParent() != null){
+            ruta.add(0, actual.get());
             actual = Optional.ofNullable(actual.get().getParent());
         }
         return ruta;
     }
-
     public List<Puesto> puestosPorMes(int mes, int annio){
         YearMonth annioMes = YearMonth.of(annio, mes);
         Instant desde = annioMes.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -126,5 +98,10 @@ public class AdminService {
 
     public Object todosLosPuestos() {
         return puestoRepository.findAll();
+    }
+
+
+    public List<Caracteristica> getCaracteristicas() {
+        return caracteristicaRepository.findAll();
     }
 }

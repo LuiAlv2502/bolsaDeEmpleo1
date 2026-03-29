@@ -1,9 +1,6 @@
 CREATE DATABASE bolsa_empleo;
 USE bolsa_empleo;
 
--- =========================
--- EMPRESAS
--- =========================
 CREATE TABLE empresa (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     clave VARCHAR(250) NOT NULL,
@@ -15,9 +12,6 @@ CREATE TABLE empresa (
     aprobada BOOLEAN DEFAULT FALSE
 );
 
--- =========================
--- OFERENTES
--- =========================
 CREATE TABLE oferente (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     clave VARCHAR(250) NOT NULL,
@@ -32,9 +26,6 @@ CREATE TABLE oferente (
     cv_pdf VARCHAR(255)
 );
 
--- =========================
--- ADMINISTRADORES
--- =========================
 CREATE TABLE administrador (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     identificacion VARCHAR(50) UNIQUE,
@@ -43,9 +34,6 @@ CREATE TABLE administrador (
     password VARCHAR(255)
 );
 
--- =========================
--- CARACTERISTICAS (JERARQUICAS)
--- =========================
 CREATE TABLE caracteristica (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -53,11 +41,6 @@ CREATE TABLE caracteristica (
     FOREIGN KEY (parent_id) REFERENCES caracteristica(id)
 );
 
--- =========================
--- PUESTOS
--- =========================
--- CORRECCIÓN: se eliminó tipo_publicacion ENUM y se agregó columna publica BOOLEAN
--- para que coincida con la entidad Puesto.java
 CREATE TABLE puesto (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     moneda VARCHAR(3) NOT NULL DEFAULT 'CRC',
@@ -70,9 +53,6 @@ CREATE TABLE puesto (
     FOREIGN KEY (empresa_id) REFERENCES empresa(id)
 );
 
--- =========================
--- REQUISITOS DEL PUESTO
--- =========================
 CREATE TABLE puesto_caracteristica (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     puesto_id BIGINT,
@@ -82,9 +62,6 @@ CREATE TABLE puesto_caracteristica (
     FOREIGN KEY (caracteristica_id) REFERENCES caracteristica(id)
 );
 
--- =========================
--- HABILIDADES DEL OFERENTE
--- =========================
 CREATE TABLE habilidad (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     oferente_id BIGINT,
