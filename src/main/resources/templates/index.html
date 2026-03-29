@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +7,6 @@
     <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
-
-<!-- HEADER -->
 <header>
     <h1>Bolsa de Empleo</h1>
     <nav>
@@ -19,86 +17,75 @@
     </nav>
 </header>
 
-<!-- HERO -->
-<section class="hero">
-    <h2>Encuentra tu próximo empleo o empleado</h2>
-    <div class="hero-buttons">
-        <a href="/empresa/registro" class="btn btn-primary">Registrar Empresa</a>
-        <a href="/oferente/registro" class="btn btn-secondary">Registrar como Oferente</a>
+<section class="banner">
+    <h2> Bolsa de Empleo </h2>
+    <div class="banner-buttons">
+        <a href="/empresa/registro" class="btn btn-primay">Registrar Empresa</a>
+        <a href="/oferente/registro" class="btn btn-secondary">Registrar Oferente</a>
     </div>
 </section>
-
 <main>
-
-    <!-- BÚSQUEDA DE PUESTOS -->
     <section class="search-section">
-        <h3>Buscar Puestos</h3>
-        <form class="search-form" action="/puestos/buscar" method="get">
+        <h3>Buscar Puestos de Trabajo</h3>
+        <form class="search-form" action="/puestoos/buscar" method="get">
             <div class="form-group">
-                <label for="palabraClave">Palabra clave</label>
+                <label for="palabraClave"> Palabra Clave </label>
                 <input type="text" id="palabraClave" name="palabra"
                        th:value="${palabra}" placeholder="Ej: Desarrollador Java">
             </div>
             <div class="form-group">
-                <label for="caracteristica">Característica</label>
+                <label for="caracteristica"> Características </label>
                 <select id="caracteristica" name="caracteristica">
-                    <option value="">-- Todas --</option>
-                    <option th:each="c : ${caracteristicas}"
+                    <option value=""> Todas </option>
+                    <option th:each="c: ${caracteristicas}"
                             th:value="${c.id}"
                             th:selected="${c.id == caracteristicaId}"
-                            th:text="${c.nombre}">Característica</option>
+                            th:text="${c.nombre}"> Característica
+                    </option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="salarioMin">Salario mínimo</label>
+                <label for="salarioMin"> Salario Mínimo </label>
                 <input type="number" id="salarioMin" name="salarioMin"
                        th:value="${salarioMin}" placeholder="Ej: 1000">
             </div>
-            <button type="submit" class="btn-search">Buscar</button>
+            <button type="submit" class="btn-search"> Buscar </button>
         </form>
     </section>
 
-    <!-- PUESTOS: resultados o recientes -->
     <section class="puestos-section">
-
-        <!-- Título dinámico -->
         <h3 th:if="${resultados != null}">
             Resultados de búsqueda
-            <span style="font-size:0.85rem; color:#888;"
-                  th:text="'(' + ${#lists.size(resultados)} + ' encontrados)'"></span>
+            <span style="font-size: 14px; color:#888888;"
+                  th:text="'(' + ${#lists.size(resultados)} + 'encontrados)'"></span>
         </h3>
-        <h3 th:unless="${resultados != null}">Puestos Publicados Recientemente</h3>
+        <h3 th:unless="${resultados != null}"> Puestos Publicados Recientemente
+        </h3>
 
-        <!-- Sin resultados -->
         <p th:if="${resultados != null and #lists.isEmpty(resultados)}"
-           style="color:#aaa; font-size:0.9rem;">
-            No se encontraron puestos con esos criterios.
+           style="color: #aaaaaa; font-size:16px;">
+            No se encontraron puestos.
         </p>
 
         <div class="puestos-grid">
-
-            <!-- Puestos recientes (cuando no hay búsqueda activa) -->
             <th:block th:unless="${resultados != null}">
                 <p th:if="${#lists.isEmpty(puestosRecientes)}"
-                   style="color:#aaa; font-size:0.9rem;">
-                    No hay puestos disponibles en este momento.
-                </p>
-                <div class="puesto-card" th:each="p : ${puestosRecientes}">
-                    <h4 th:text="${p.descripcion}">Nombre del puesto</h4>
+                   style="color:#aaaaaa; font-size:16px;">No hay puestos disponibles. </p>
+                <div class="puesto-card" th:each="p: ${puestosRecientes}">
+                    <h4 th:text="${p.descripcion}"> Nombre del Puesto </h4>
                     <p class="empresa-nombre"
-                       th:text="${p.empresa != null ? p.empresa.nombre : '—'}">Empresa S.A.</p>
+                       th:text="${p.empresa != null ? p.empresa.nombre: '-'}"> Empresa S.A </p>
                     <p class="salario">
                         <span th:text="${p.moneda == 'CRC' ? '₡' : '$'}"></span>
                         <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
                     </p>
-                    <p class="fecha"
-                       th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '—'}">
-                        01/01/2025
+                    <p class="fecha" th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '-'}">
+                        01/01/2026
                     </p>
                     <div class="tooltip">
                         <h5>Características requeridas</h5>
                         <p th:if="${p.puestoCaracteristicas.isEmpty()}"
-                           style="color:#ccc; font-size:0.82rem;">Sin requisitos especificados.</p>
+                           style="color:#cccccc; font-size:15px;">Sin requisitos especificados.</p>
                         <ul>
                             <li th:each="pc : ${p.puestoCaracteristicas}"
                                 th:text="${pc.caracteristica.nombre} + ' — Nivel ' + ${pc.nivelRequerido}">
@@ -108,25 +95,19 @@
                     </div>
                 </div>
             </th:block>
-
-            <!-- Resultados de búsqueda -->
             <th:block th:if="${resultados != null and not #lists.isEmpty(resultados)}">
-                <div class="puesto-card" th:each="p : ${resultados}">
-                    <h4 th:text="${p.descripcion}">Nombre del puesto</h4>
-                    <p class="empresa-nombre"
-                       th:text="${p.empresa != null ? p.empresa.nombre : '—'}">Empresa S.A.</p>
+                <div class="puesto-card" th:each="p: ${resultados}">
+                    <h4 th:text="${p.descripcion}"> Nombre del puesto </h4>
+                    <p class="empresa-nombre" th:text="${p.empresa != null ? p.empresa.nombre : '-'}"> Empresa S.A.</p>
                     <p class="salario">
                         <span th:text="${p.moneda == 'CRC' ? '₡' : '$'}"></span>
                         <span th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}">0.00</span>
                     </p>
-                    <p class="fecha"
-                       th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy') : '—'}">
-                        01/01/2025
-                    </p>
+                    <p class="fecha" th:text="${p.fechaPublicacion != null ? #temporals.format(p.fechaPublicacion, 'dd/MM/yyyy'): '-'}">01/01/2026</p>
                     <div class="tooltip">
                         <h5>Características requeridas</h5>
                         <p th:if="${p.puestoCaracteristicas.isEmpty()}"
-                           style="color:#ccc; font-size:0.82rem;">Sin requisitos especificados.</p>
+                           style="color:#cccccc; font-size:15px;">Sin requisitos especificados.</p>
                         <ul>
                             <li th:each="pc : ${p.puestoCaracteristicas}"
                                 th:text="${pc.caracteristica.nombre} + ' — Nivel ' + ${pc.nivelRequerido}">
@@ -136,16 +117,12 @@
                     </div>
                 </div>
             </th:block>
-
         </div>
     </section>
-
 </main>
 
-<!-- FOOTER -->
 <footer>
-    <p>&copy; 2025 Bolsa de Empleo. Todos los derechos reservados.</p>
+    <p> 2026 Bolsa de Empleo. Todos los derechos reservados. </p>
 </footer>
-
 </body>
 </html>

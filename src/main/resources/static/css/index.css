@@ -34,25 +34,25 @@ nav a:hover{
     text-decoration: underline;
 }
 
-.hero{
+.banner{
     background-color: #34495e;
     color: #ffffff;
     text-align: center;
     padding: 60px 20px;
 }
 
-.hero h2{
+.banner h2{
     font-size: 32px;
     margin-bottom: 10px;
 }
 
-.hero p{
+.banner p{
     font-size: 16px;
     margin-bottom: 30px;
     color: #cccccc;
 }
 
-.hero-buttons{
+.banner-buttons{
     display: flex;
     justify-content: center;
     gap: 20px;
