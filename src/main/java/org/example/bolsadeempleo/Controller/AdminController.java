@@ -68,7 +68,7 @@ public class AdminController {
             model.addAttribute("caracteristicas", adminService.getCaracteristicasRaiz());
             model.addAttribute("ruta", List.of());
         }
-        model.addAttribute("todasCaracteristicas", adminService.listarTodasCaracteristicas());
+        model.addAttribute("todasCaracteristicas", adminService.getCaracteristicas());
         return "admin/panel";
     }
         @GetMapping("/empresas/pendientes")

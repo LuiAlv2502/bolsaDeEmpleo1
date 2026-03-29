@@ -101,6 +101,7 @@ public class AdminService {
     }
 
 
-
-
+    public List<Caracteristica> getCaracteristicas() {
+        return caracteristicaRepository.findAll();
+    }
 }
