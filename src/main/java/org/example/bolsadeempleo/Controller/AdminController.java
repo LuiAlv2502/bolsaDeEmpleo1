@@ -53,8 +53,8 @@ public class AdminController {
         if (!esAdmin(session)) return "redirect:/login";
 
         model.addAttribute("nombre", session.getAttribute("adminNombre"));
-        model.addAttribute("empresasPendientes", adminService.listarEmpresasPendientes());
-        model.addAttribute("oferentesPendientes", adminService.listarOferentesPendientes());
+        model.addAttribute("empresasPendientes", adminService.getEmpresasPendientes());
+        model.addAttribute("oferentesPendientes", adminService.getOferentesPendientes());
         model.addAttribute("puestos", adminService.todosLosPuestos());
 
         if (actualId != null) {
@@ -62,10 +62,10 @@ public class AdminController {
             actual.ifPresent(c -> {
                 model.addAttribute("actual", c);
                 model.addAttribute("caracteristicas", adminService.listarHijos(actualId));
-                model.addAttribute("ruta", adminService.obtenerRuta(actualId));
+                model.addAttribute("ruta", adminService.getRuta(actualId));
             });
         } else {
-            model.addAttribute("caracteristicas", adminService.listarCaracteristicasRaiz());
+            model.addAttribute("caracteristicas", adminService.getCaracteristicasRaiz());
             model.addAttribute("ruta", List.of());
         }
         model.addAttribute("todasCaracteristicas", adminService.listarTodasCaracteristicas());
