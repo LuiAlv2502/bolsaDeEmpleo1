@@ -91,7 +91,7 @@ public class EmpresaController {
     public String puestos(HttpSession session, Model model) {
         Long empresaId = getEmpresaId(session);
 
-        model.addAttribute("puestos", empresaService.listarPuestosPorEmpresa(empresaId));
+        model.addAttribute("puestos", empresaService.getPuestosPorEmpresa(empresaId));
         model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
         model.addAttribute("nombre", session.getAttribute("empresaNombre"));
         return "empresa/Puestos";
@@ -136,7 +136,7 @@ public class EmpresaController {
     @GetMapping("/puestos/{id}/detalle")
     public String detallePuesto(@PathVariable Long id, HttpSession session, Model model) {
         Long empresaId = getEmpresaId(session);
-        Puesto puesto = empresaService.obtenerPuesto(id);
+        Puesto puesto = empresaService.getPuesto(id);
         if(puesto == null || !puesto.getEmpresa().getId().equals(empresaId)) {
             return "redirect:/empresa/puestos";
         }
@@ -149,8 +149,7 @@ public class EmpresaController {
 
     @PostMapping("/puestos/{id}/desactivar")
     public String desactivarPuesto(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttrs) {
-        Long empresaId = getEmpresaId(session);
-        empresaService.desactivarPuesto(id, empresaId);
+        empresaService.desactivarPuesto(id);
         redirectAttrs.addFlashAttribute("success", "Puesto desactivado");
         return "redirect:/empresa/puestos";
 
@@ -158,7 +157,7 @@ public class EmpresaController {
     @GetMapping("/candidatos/buscar")
     public String buscarCandidatos(@RequestParam("puestoId") Long puestoId, HttpSession session, Model model) {
         Long empresaId = getEmpresaId(session);
-        Puesto puesto = empresaService.obtenerPuesto(puestoId);
+        Puesto puesto = empresaService.getPuesto(puestoId);
 
         model.addAttribute("puesto", puesto);
         model.addAttribute("candidatos", empresaService.buscarCandidatos(puestoId));
@@ -168,7 +167,7 @@ public class EmpresaController {
     @GetMapping("/perfil")
     public String perfil(HttpSession session, Model model) {
         Long empresaId = getEmpresaId(session);
-        model.addAttribute("empresa", empresaService.obtenerPorId(empresaId));
+        model.addAttribute("empresa", empresaService.getById(empresaId));
         return "empresa/perfil";
 
     }
