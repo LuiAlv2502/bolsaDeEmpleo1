@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @Controller
 public class PublicoController {
-    //
+
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
     @Autowired
