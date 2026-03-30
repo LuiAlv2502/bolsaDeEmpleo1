@@ -97,10 +97,9 @@
     <div class="section-card">
         <h3>Gestion de Caracteristicas</h3>
 
-        <!-- ruta de raices / padre / hijp -->
-        <div class="ruta-nav">
+        <div class="ruta-nav" th:if="${actual != null}">
       <span class="badge">
-        <a th:href="@{/admin/panel}">Raices</a>
+        <a th:href="@{/admin/panel}">Todas las Características</a>
       </span>
             <th:block th:each="nodo : ${ruta}">
                 <span class="ruta-separador">/</span>
@@ -118,6 +117,9 @@
         <p class="subcategoria-label" th:if="${actual != null}">
             Subcategorías de: <strong th:text="${actual.nombre}"></strong>
         </p>
+        <p class="subcategoria-label" th:if="${actual == null}">
+            Mostrando todas las características del sistema
+        </p>
 
         <div th:if="${#lists.isEmpty(caracteristicas)}" class="empty-msg">
             No hay caracteristicas en este nivel.
@@ -134,7 +136,8 @@
             <tbody>
             <tr th:each="c : ${caracteristicas}">
                 <td>
-                    <a class="caracteristica-link"
+                    <span th:if="${actual == null}" th:text="${c.nombre}">Característica</span>
+                    <a th:if="${actual != null}" class="caracteristica-link"
                        th:href="@{/admin/panel(actualId=${c.id})}"
                        th:text="${c.nombre}">Java</a>
                 </td>
@@ -241,9 +244,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="anio">Anio</label>
-                    <select id="anio" name="anio" required>
-                        <option value="">Seleccione un anio</option>
+                    <label for="año">año</label>
+                    <select id="año" name="año" required>
+                        <option value="">Seleccione un año</option>
                         <option value="2026">2026</option>
                         <option value="2025">2025</option>
                         <option value="2024">2024</option>

@@ -35,7 +35,7 @@ public class EmpresaService {
     private PasswordEncoder passwordEncoder;
 
     public boolean registrar(Empresa empresa){
-        if(empresaRepository.existsById(empresa.getId()))return false;
+        if(empresaRepository.existsByCorreo(empresa.getCorreo())) return false;
         String hash = passwordEncoder.encode(empresa.getPassword());
         empresa.setPassword(hash);
 

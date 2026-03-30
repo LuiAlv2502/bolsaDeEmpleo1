@@ -29,7 +29,6 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    private OferenteService oferenteService;
 
     private boolean esAdmin(HttpSession session){
         return session.getAttribute("adminId") != null;
@@ -64,7 +63,8 @@ public class AdminController {
                 model.addAttribute("ruta", adminService.getRuta(actualId));
             });
         } else {
-            model.addAttribute("caracteristicas", adminService.getCaracteristicasRaiz());
+            // Mostrar TODAS las características por defecto
+            model.addAttribute("caracteristicas", adminService.getCaracteristicas());
             model.addAttribute("ruta", List.of());
         }
         model.addAttribute("todasCaracteristicas", adminService.getCaracteristicas());

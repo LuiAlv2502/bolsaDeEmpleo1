@@ -77,10 +77,6 @@ public class OferenteController {
         model.addAttribute("oferente", new Oferente());
         return "oferente/registro";
     }
-    @GetMapping("/login")
-    public String login() {
-        return "redirect:/login";
-    }
 
     private String getOferenteId(HttpSession session) {
         Object id = session.getAttribute("oferenteId");

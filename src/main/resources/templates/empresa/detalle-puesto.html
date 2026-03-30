@@ -93,19 +93,19 @@
         <tbody>
         <tr th:each="c, iter : ${candidatos}">
             <td th:text="${iter.index + 1}">1</td>
-            <td th:text="${c.nombre + ' ' + c.apellido}">Nombre</td>
-            <td th:text="${c.identificacion}">ID</td>
-            <td th:text="${c.correo}">correo@mail.com</td>
+            <td th:text="${c.oferente.nombre + ' ' + c.oferente.apellido}">Nombre</td>
+            <td th:text="${c.oferente.identificacion}">ID</td>
+            <td th:text="${c.oferente.correo}">correo@mail.com</td>
             <td>
-                <span class="match-pct" th:text="${c.porcentajeFormateado}">0%</span>
+                <span class="match-pct" th:text="${c.porcentaje + '%'}">0%</span>
             </td>
             <td>
-                <a th:if="${c.cvPdf != null and !c.cvPdf.isBlank()}"
-                   th:href="@{/oferente/cv/ver/{id}(id=${c.identificacion})}"
+                <a th:if="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
+                   th:href="@{/oferente/cv/ver/{id}(id=${c.oferente.identificacion})}"
                    target="_blank" class="btn-detalle" style="font-size:0.8rem;">
                     Ver CV
                 </a>
-                <span th:unless="${c.cvPdf != null and !c.cvPdf.isBlank()}"
+                <span th:unless="${c.oferente.cvPdf != null and !c.oferente.cvPdf.isBlank()}"
                       style="color:#aaaaaa; font-size:15px;">Sin CV</span>
             </td>
         </tr>

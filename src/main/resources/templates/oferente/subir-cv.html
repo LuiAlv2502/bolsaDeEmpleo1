@@ -28,8 +28,7 @@
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 
-        <form th:action="@{/oferente/cv/subir}" method="post" enctype="multipart/form-data" class="auth-form" id="cvForm">
-            enctype="multipart/form-data" class="auth-form" id="cvForm">
+        <form th:action="@{/oferente/cv/subir}" method="post" enctype="multipart/form-data">
 
             <div class="cv-drop-area" id="dropArea" onclick="document.getElementById('archivo').click()">
                 <span class="cv-icon"></span>

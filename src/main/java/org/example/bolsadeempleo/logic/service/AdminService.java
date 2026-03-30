@@ -74,18 +74,28 @@ public class AdminService {
     }
     public boolean eliminarCaracteristica(Long id){
         if(!caracteristicaRepository.existsById(id)) return false;
+        
+        if(caracteristicaRepository.existsByParent_Id(id)) {
+            return false;
+        }
+        
         caracteristicaRepository.deleteById(id);
         return true;
     }
     public List<Caracteristica> listarHijos(Long padreId){
         return caracteristicaRepository.findByParentId(padreId);
     }
-    public List<Caracteristica> getRuta(Long Id){
+    public List<Caracteristica> getRuta(Long id){
         List<Caracteristica> ruta = new ArrayList<>();
-        Optional<Caracteristica> actual = caracteristicaRepository.findById(Id);
-        while (actual.isPresent() && actual.get().getParent() != null){
-            ruta.add(0, actual.get());
-            actual = Optional.ofNullable(actual.get().getParent());
+        Optional<Caracteristica> actual = caracteristicaRepository.findById(id);
+        
+        while (actual.isPresent()){
+            if (actual.get().getParent() != null) {
+                ruta.add(0, actual.get().getParent());
+                actual = Optional.ofNullable(actual.get().getParent());
+            } else {
+                break;
+            }
         }
         return ruta;
     }
