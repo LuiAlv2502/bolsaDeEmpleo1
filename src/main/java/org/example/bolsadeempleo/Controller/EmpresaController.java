@@ -7,16 +7,16 @@ import org.example.bolsadeempleo.logic.service.EmpresaService;
 import org.example.bolsadeempleo.logic.service.OferenteService;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-@Controller
-@RequestMapping("/empresa")
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/empresa")
 public class EmpresaController {
 
     @Autowired
@@ -26,152 +26,137 @@ public class EmpresaController {
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
 
-    @GetMapping("/registro")
-    public String mostrarRegistro(Model model) {
-        model.addAttribute("empresa", new Empresa());
-        return "empresa/registro";
+    private Long getEmpresaId(HttpSession session) {
+        Object id = session.getAttribute("empresaId");
+        return id == null ? null : (Long) id;
+    }
+
+    private ResponseEntity<?> noAutorizado() {
+        return ResponseEntity.status(401).body(Map.of("error", "No autorizado."));
     }
 
     @PostMapping("/registro")
-    public String registro(@ModelAttribute("empresa") Empresa empresa, @RequestParam("password") String password,
-                           @RequestParam("confirmarPassword") String confirmarPassword, Model model) {
+    public ResponseEntity<?> registro(@RequestBody Map<String, String> body) {
+        String nombre = body.get("nombre");
+        String correo = body.get("correo");
+        String password = body.get("password");
+        String confirmarPassword = body.get("confirmarPassword");
 
-        if (!password.equals(confirmarPassword)) {
-            model.addAttribute("error", "Las contraseñas no coinciden.");
-            return "empresa/registro";
+        if (nombre == null || nombre.isEmpty())
+            return ResponseEntity.badRequest().body(Map.of("error", "El nombre es obligatorio."));
+        if (correo == null || correo.isEmpty())
+            return ResponseEntity.badRequest().body(Map.of("error", "El correo es obligatorio."));
 
-        } else if (password.length() < 8) {
-            model.addAttribute("error", "La contraseña debe tener al menos 8 caracteres.");
-            return "empresa/registro";
+        // Normalización + validación de formato de correo
+        correo = correo.trim().toLowerCase();
+        if (!correo.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El correo no tiene un formato válido."));
+        }
 
-        }
-        if (empresa.getNombre() == null || empresa.getNombre().isEmpty()) {
-            model.addAttribute("error", "El nombre es obligatorio.");
-            return "empresa/registro";
-        }
-        if (empresa.getCorreo() == null || empresa.getCorreo().isEmpty()) {
-            model.addAttribute("error", "El correo es obligatorio.");
-            return "empresa/registro";
-        }
+        if (password == null || !password.equals(confirmarPassword))
+            return ResponseEntity.badRequest().body(Map.of("error", "Las contraseñas no coinciden."));
+        if (password.length() < 8)
+            return ResponseEntity.badRequest().body(Map.of("error", "La contraseña debe tener al menos 8 caracteres."));
+
+        Empresa empresa = new Empresa();
+        empresa.setNombre(nombre);
+        empresa.setCorreo(correo);
         empresa.setClave(password);
         empresa.setAprobado(false);
 
-        if (!empresaService.registrar(empresa)) {
-            model.addAttribute("error", "Ya existe una cuenta con ese correo.");
-            return "empresa/registro";
-        }
+        if (!empresaService.registrar(empresa))
+            return ResponseEntity.badRequest().body(Map.of("error", "Ya existe una cuenta (empresa u oferente) con ese correo."));
 
-        model.addAttribute("success", "Se logró registrar la empresa");
-        model.addAttribute("empresa", new Empresa());
-        return "empresa/registro";
-    }
-
-
-    private Long getEmpresaId(HttpSession session) {
-        Object id = session.getAttribute("empresaId");
-        if (id == null) {
-            return null;
-        }
-        return (Long) id;
+        return ResponseEntity.ok(Map.of("mensaje", "Se logró registrar la empresa."));
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public ResponseEntity<?> dashboard(HttpSession session) {
         Long empresaId = getEmpresaId(session);
-        if (empresaId == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("nombre", session.getAttribute("empresaNombre"));
-        return "empresa/dashboard";
-
+        if (empresaId == null) return noAutorizado();
+        return ResponseEntity.ok(Map.of("nombre", session.getAttribute("empresaNombre")));
     }
 
     @GetMapping("/puestos")
-    public String puestos(HttpSession session, Model model) {
+    public ResponseEntity<?> puestos(HttpSession session) {
         Long empresaId = getEmpresaId(session);
-
-        model.addAttribute("puestos", empresaService.getPuestosPorEmpresa(empresaId));
-        model.addAttribute("caracteristicas", caracteristicaRepository.findAll());
-        model.addAttribute("nombre", session.getAttribute("empresaNombre"));
-        return "empresa/Puestos";
-
+        if (empresaId == null) return noAutorizado();
+        return ResponseEntity.ok(Map.of(
+                "puestos", empresaService.getPuestosPorEmpresa(empresaId),
+                "caracteristicas", caracteristicaRepository.findAll(),
+                "nombre", session.getAttribute("empresaNombre")
+        ));
     }
 
     @PostMapping("/publicarPuesto")
-    public String publicarPuesto(HttpSession session,
-                                 @RequestParam("descripcion") String descripcion,
-                                 @RequestParam("salario") BigDecimal salario,
-                                 @RequestParam("publica") boolean publica,
-                                 @RequestParam(value = "caracteristicaIds", required = false) List<String> caracteristicaIdsStr,
-                                 @RequestParam(value = "niveles", required = false) List<Integer> niveles,
-                                 @RequestParam("moneda") String moneda,
-                                 RedirectAttributes redirectAttrs) {
+    public ResponseEntity<?> publicarPuesto(HttpSession session, @RequestBody Map<String, Object> body) {
+        Long empresaId = getEmpresaId(session);
+        if (empresaId == null) return noAutorizado();
+
+        String descripcion = (String) body.get("descripcion");
+        BigDecimal salario = new BigDecimal(body.get("salario").toString());
+        boolean publica = Boolean.parseBoolean(body.get("publica").toString());
+        String moneda = (String) body.get("moneda");
+
         List<Long> caracteristicaIds = new ArrayList<>();
         List<Integer> nivelesValidos = new ArrayList<>();
-        if (caracteristicaIdsStr != null) {
-            for (int i = 0; i < caracteristicaIdsStr.size(); i++) {
-                String idStr = caracteristicaIdsStr.get(i);
-                if (idStr != null && !idStr.isBlank()) {
+
+        if (body.get("caracteristicaIds") instanceof List<?> ids) {
+            List<?> niveles = body.get("niveles") instanceof List<?> n ? n : List.of();
+            for (int i = 0; i < ids.size(); i++) {
+                String idStr = ids.get(i) != null ? ids.get(i).toString() : "";
+                if (!idStr.isBlank()) {
                     try {
                         caracteristicaIds.add(Long.parseLong(idStr));
-                        nivelesValidos.add(niveles != null && i < niveles.size() ? niveles.get(i) : 1);
-                    } catch (NumberFormatException ignored) {
-                    }
+                        nivelesValidos.add(i < niveles.size() && niveles.get(i) != null
+                                ? Integer.parseInt(niveles.get(i).toString()) : 1);
+                    } catch (NumberFormatException ignored) {}
                 }
             }
         }
-        Long empresaId = getEmpresaId(session);
+
         Puesto puesto = empresaService.publicarPuesto(empresaId, descripcion, salario, publica, moneda, caracteristicaIds, nivelesValidos);
-
-        if(puesto == null) {
-            redirectAttrs.addFlashAttribute("error", "No se pudo publicar el puesto");
-            return "redirect:/empresa/puestos";
-        }
-        redirectAttrs.addFlashAttribute("succes", "Puesto publicado exitosamente");
-        return  "redirect:/empresa/puestos";
-
+        if (puesto == null)
+            return ResponseEntity.badRequest().body(Map.of("error", "No se pudo publicar el puesto."));
+        return ResponseEntity.ok(puesto);
     }
 
     @GetMapping("/puestos/{id}/detalle")
-    public String detallePuesto(@PathVariable Long id, HttpSession session, Model model) {
+    public ResponseEntity<?> detallePuesto(@PathVariable Long id, HttpSession session) {
         Long empresaId = getEmpresaId(session);
+        if (empresaId == null) return noAutorizado();
         Puesto puesto = empresaService.getPuesto(id);
-        if(puesto == null || !puesto.getEmpresa().getId().equals(empresaId)) {
-            return "redirect:/empresa/puestos";
-        }
-
-        model.addAttribute("puesto", puesto);
-        model.addAttribute("nombre", session.getAttribute("empresaNombre"));
-        model.addAttribute("candidatos", empresaService.buscarCandidatos(id));
-        return "empresa/detalle-puesto";
+        if (puesto == null || !puesto.getEmpresa().getId().equals(empresaId))
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado."));
+        return ResponseEntity.ok(Map.of(
+                "puesto", puesto,
+                "candidatos", empresaService.buscarCandidatos(id)
+        ));
     }
 
     @PostMapping("/puestos/{id}/desactivar")
-    public String desactivarPuesto(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttrs) {
-        empresaService.desactivarPuesto(id);
-        redirectAttrs.addFlashAttribute("success", "Puesto desactivado");
-        return "redirect:/empresa/puestos";
-
-    }
-    @GetMapping("/candidatos/buscar")
-    public String buscarCandidatos(@RequestParam("puestoId") Long puestoId, HttpSession session, Model model) {
+    public ResponseEntity<?> desactivarPuesto(@PathVariable Long id, HttpSession session) {
         Long empresaId = getEmpresaId(session);
-        Puesto puesto = empresaService.getPuesto(puestoId);
+        if (empresaId == null) return noAutorizado();
+        empresaService.desactivarPuesto(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Puesto desactivado."));
+    }
 
-        model.addAttribute("puesto", puesto);
-        model.addAttribute("candidatos", empresaService.buscarCandidatos(puestoId));
-        return "empresa/buscar-candidatos";
+    @GetMapping("/candidatos/buscar")
+    public ResponseEntity<?> buscarCandidatos(@RequestParam("puestoId") Long puestoId, HttpSession session) {
+        Long empresaId = getEmpresaId(session);
+        if (empresaId == null) return noAutorizado();
+        Puesto puesto = empresaService.getPuesto(puestoId);
+        return ResponseEntity.ok(Map.of(
+                "puesto", puesto,
+                "candidatos", empresaService.buscarCandidatos(puestoId)
+        ));
     }
 
     @GetMapping("/perfil")
-    public String perfil(HttpSession session, Model model) {
+    public ResponseEntity<?> perfil(HttpSession session) {
         Long empresaId = getEmpresaId(session);
-        model.addAttribute("empresa", empresaService.getById(empresaId));
-        return "empresa/perfil";
-
+        if (empresaId == null) return noAutorizado();
+        return ResponseEntity.ok(empresaService.getById(empresaId));
     }
-
-
-
-
 }

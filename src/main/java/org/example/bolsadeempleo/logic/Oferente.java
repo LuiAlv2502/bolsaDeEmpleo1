@@ -1,5 +1,7 @@
 package org.example.bolsadeempleo.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
 @Entity
@@ -56,9 +59,11 @@ public class Oferente {
     @Column(name = "cv_pdf")
     private String cvPdf;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "oferente")
     private Set<Habilidad> habilidads = new LinkedHashSet<>();
 
+    @JsonIgnore
     @Size(max = 255)
     @NotNull
     @Column(name = "clave", nullable = false)

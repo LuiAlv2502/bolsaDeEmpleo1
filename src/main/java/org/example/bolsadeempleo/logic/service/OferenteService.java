@@ -1,6 +1,7 @@
 package org.example.bolsadeempleo.logic.service;
 
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
+import org.example.bolsadeempleo.data.EmpresaRepository;
 import org.example.bolsadeempleo.data.HabilidadRepository;
 import org.example.bolsadeempleo.data.OferenteRepository;
 import org.example.bolsadeempleo.logic.Caracteristica;
@@ -27,6 +28,9 @@ public class OferenteService {
     private OferenteRepository oferenteRepository;
 
     @Autowired
+    private EmpresaRepository empresaRepository;
+
+    @Autowired
     private HabilidadRepository habilidadRepository;
 
     @Autowired
@@ -39,7 +43,11 @@ public class OferenteService {
     private String cvUploadDir;
 
     public boolean registrar (Oferente oferente){
-        if(oferenteRepository.existsByCorreo(oferente.getCorreo()))return false;
+        String correo = oferente.getCorreo();
+        if (correo == null || correo.isBlank()) return false;
+
+        // Evitar duplicados de correo entre Oferente y Empresa
+        if (oferenteRepository.existsByCorreo(correo) || empresaRepository.existsByCorreo(correo)) return false;
         if(oferenteRepository.existsByIdentificacion(oferente.getIdentificacion()))return false;
 
         String hash = passwordEncoder.encode(oferente.getPassword());
