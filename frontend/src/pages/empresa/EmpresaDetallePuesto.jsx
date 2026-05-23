@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiGet, fmtSalario, fmtFecha } from '../../api';
+import Spinner from '../../components/Spinner';
+import Alert from '../../components/Alert';
 
 export default function EmpresaDetallePuesto() {
     const { id } = useParams();
@@ -16,11 +18,7 @@ export default function EmpresaDetallePuesto() {
         });
     }, [id, navigate]);
 
-    if (!puesto) return (
-        <main className="auth-main">
-            <div className="auth-card"><h2>Cargando...</h2></div>
-        </main>
-    );
+    if (!puesto) return <Spinner />;
 
     return (
         <div className="panel-main">
@@ -105,8 +103,7 @@ export default function EmpresaDetallePuesto() {
                 </table>
             </div>
 
-            <a href="#/empresa/puestos" className="back-link">← Volver a Mis Puestos</a>
+            <Link to="/empresa/puestos" className="back-link">← Volver a Mis Puestos</Link>
         </div>
     );
 }
-

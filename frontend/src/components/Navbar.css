@@ -1,0 +1,41 @@
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 15px;
+    transition: opacity 0.15s;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+nav a.active {
+    text-decoration: underline;
+    font-weight: 700;
+    opacity: 1;
+}
+
+.nav-bienvenida {
+    margin-left: 20px;
+    font-size: 15px;
+    color: #ecf0f1;
+}
+
+.nav-logout {
+    margin-left: 20px;
+    background: transparent;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 5px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-logout:hover {
+    background: #e74c3c;
+    color: #ffffff;
+}
+

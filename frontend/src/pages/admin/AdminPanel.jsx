@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { apiGet, apiPost, apiDelete, fmtSalario, fmtFecha } from '../../api';
+import Spinner from '../../components/Spinner';
+import Alert from '../../components/Alert';
+import GraficasAdmin from '../../components/GraficasAdmin';
 
 export default function AdminPanel() {
     const navigate = useNavigate();
@@ -24,14 +27,7 @@ export default function AdminPanel() {
         });
     }, [actualId, navigate]);
 
-    if (!data) return (
-        <main className="auth-main">
-            <div className="auth-card">
-                <h2>Cargando panel de administrador...</h2>
-                <p style={{ color: '#7f8c8d' }}>Espere un momento.</p>
-            </div>
-        </main>
-    );
+    if (!data) return <Spinner texto="Cargando panel de administrador..." />;
 
     const aprobar = async (tipo, id) => {
         const url = tipo === 'empresa' ? `/api/admin/empresa/aprobar/${id}` : `/api/admin/oferente/aprobar/${id}`;
@@ -79,7 +75,10 @@ export default function AdminPanel() {
                 <h2>Panel de Administrador</h2>
                 <span>Bienvenido, <strong>{data.nombre}</strong></span>
             </div>
-            {msg && <div className={`alert alert-${msg.tipo}`}>{msg.texto}</div>}
+            <Alert tipo={msg?.tipo} onClose={() => setMsg(null)}>{msg?.texto}</Alert>
+
+            {/* ── GRÁFICAS ── */}
+            <GraficasAdmin puestos={data.puestos || []} />
 
             {/* Empresas pendientes */}
             <div className="section-card">
