@@ -112,8 +112,15 @@ public class OferenteController {
                 : null;
 
         boolean esPrivada = "privada".equalsIgnoreCase(tipo);
+        boolean esTodos = "todos".equalsIgnoreCase(tipo);
 
-        if (esPrivada) {
+        if (esTodos) {
+            return ResponseEntity.ok(Map.of(
+                    "resultados", busquedaservice.buscarTodosLosPuestos(palabra, salarioMin, caracteristicaId),
+                    "puestosRecientes", busquedaservice.getUltimos5Puestos(),
+                    "caracteristicas", caracteristicaRepository.findAll()
+            ));
+        } else if (esPrivada) {
             return ResponseEntity.ok(Map.of(
                     "resultados", busquedaservice.buscarPuestosPrivados(palabra, salarioMin, caracteristicaId),
                     "puestosRecientes", busquedaservice.getUltimos5PuestosPrivados(),
