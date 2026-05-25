@@ -3,6 +3,7 @@ package org.example.bolsadeempleo.Controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.bolsadeempleo.logic.Oferente;
 import org.example.bolsadeempleo.logic.service.OferenteService;
+import org.example.bolsadeempleo.logic.service.Busquedaservice;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -29,6 +32,9 @@ public class OferenteController {
 
     @Autowired
     private CaracteristicaRepository caracteristicaRepository;
+
+    @Autowired
+    private Busquedaservice busquedaservice;
 
     @Value("${cv.upload.dir:uploads/cv}")
     private String cvUploadDir;
@@ -90,7 +96,40 @@ public class OferenteController {
         ));
     }
 
+    @GetMapping("/puestos/buscar")
+    public ResponseEntity<?> buscarPuestos(
+            HttpSession session,
+            @RequestParam(value = "tipo", defaultValue = "publica") String tipo,
+            @RequestParam(value = "palabra", required = false) String palabra,
+            @RequestParam(value = "salarioMin", required = false) BigDecimal salarioMin,
+            @RequestParam(value = "caracteristica", required = false) String caracteristica) {
+
+        String id = getOferenteId(session);
+        if (id == null) return noAutorizado();
+
+        Long caracteristicaId = (caracteristica != null && !caracteristica.isBlank())
+                ? Long.valueOf(caracteristica)
+                : null;
+
+        boolean esPrivada = "privada".equalsIgnoreCase(tipo);
+
+        if (esPrivada) {
+            return ResponseEntity.ok(Map.of(
+                    "resultados", busquedaservice.buscarPuestosPrivados(palabra, salarioMin, caracteristicaId),
+                    "puestosRecientes", busquedaservice.getUltimos5PuestosPrivados(),
+                    "caracteristicas", caracteristicaRepository.findAll()
+            ));
+        } else {
+            return ResponseEntity.ok(Map.of(
+                    "resultados", busquedaservice.buscarPuestosPublicos(palabra, salarioMin, caracteristicaId),
+                    "puestosRecientes", busquedaservice.getUltimos5PuestosPublicos(),
+                    "caracteristicas", caracteristicaRepository.findAll()
+            ));
+        }
+    }
+
     @GetMapping("/perfil")
+
     public ResponseEntity<?> perfil(HttpSession session) {
         String id = getOferenteId(session);
         if (id == null) return noAutorizado();

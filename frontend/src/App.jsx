@@ -13,6 +13,8 @@ import OferenteRegistro from './pages/oferente/OferenteRegistro';
 import OferenteDashboard from './pages/oferente/OferenteDashboard';
 import OferenteHabilidades from './pages/oferente/OferenteHabilidades';
 import OferenteCV from './pages/oferente/OferenteCV';
+import OferenteBusqueda from './pages/oferente/OferenteBusqueda';
+
 import AdminPanel from './pages/admin/AdminPanel';
 import './index.css';
 import './auth.css';
@@ -56,6 +58,10 @@ export default function App() {
                         <Route path="/oferente/cv" element={
                             <ProtectedRoute roles={['oferente']}><OferenteCV /></ProtectedRoute>
                         } />
+                        <Route path="/oferente/busqueda" element={
+                            <ProtectedRoute roles={['oferente']}><OferenteBusqueda /></ProtectedRoute>
+                        } />
+
 
                         {/* Rutas protegidas - Admin */}
                         <Route path="/admin/panel" element={

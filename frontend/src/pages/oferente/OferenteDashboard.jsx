@@ -34,6 +34,11 @@ export default function OferenteDashboard() {
                         <p>Suba su currículum en formato PDF para que las empresas lo puedan encontrar.</p>
                         <Link to="/oferente/cv" className="btn btn-primary">Subir CV</Link>
                     </div>
+                    <div className="registro-card">
+                        <h3>Buscar Puestos</h3>
+                        <p>Explore puestos públicos y privados disponibles para su perfil.</p>
+                        <Link to="/oferente/busqueda" className="btn btn-secondary">Buscar Puestos</Link>
+                    </div>
                 </div>
             </div>
         </main>

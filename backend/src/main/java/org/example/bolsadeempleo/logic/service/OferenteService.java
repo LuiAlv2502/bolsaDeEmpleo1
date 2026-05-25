@@ -60,7 +60,7 @@ public class OferenteService {
         Optional<Oferente> oferente = oferenteRepository.findByCorreo(correo);
         if(oferente.isEmpty())return null;
         if(!passwordEncoder.matches(clave, oferente.get().getClave()))return null;
-        if(!oferente.get().isAprobado())return null;
+        // if(!oferente.get().isAprobado())return null;
         return oferente.get();
     }
 

@@ -360,3 +360,80 @@ footer{
     font-weight: 600;
 }
 .btn-submit { margin-top: 18px; }
+
+/* ── Búsqueda Oferente ─────────────────────────────────────── */
+.busqueda-oferente-header {
+    text-align: center;
+    padding: 30px 20px 10px;
+}
+
+.busqueda-oferente-header h2 {
+    font-size: 26px;
+    color: #2c3e50;
+    margin-bottom: 6px;
+}
+
+.busqueda-oferente-sub {
+    color: #777;
+    font-size: 15px;
+}
+
+.busqueda-tabs {
+    display: flex;
+    gap: 0;
+    margin: 20px auto 0;
+    max-width: 480px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #2980b9;
+}
+
+.busqueda-tab {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: #ffffff;
+    color: #2980b9;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.busqueda-tab:hover {
+    background: #d6eaf8;
+}
+
+.busqueda-tab--active {
+    background: #2980b9;
+    color: #ffffff;
+}
+
+.busqueda-privada-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 700px;
+    margin: 16px auto 0;
+    background: #fff8e1;
+    border: 1px solid #f9a825;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #7b5800;
+}
+
+.busqueda-privada-notice span {
+    font-size: 20px;
+}
+
+.badge-privado {
+    display: inline-block;
+    font-size: 11px;
+    background: #fdecea;
+    color: #c0392b;
+    border-radius: 12px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}

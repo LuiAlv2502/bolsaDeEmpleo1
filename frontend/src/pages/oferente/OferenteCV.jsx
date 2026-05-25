@@ -51,7 +51,7 @@ export default function OferenteCV() {
                 <Alert tipo={msg?.tipo} onClose={() => setMsg(null)}>{msg?.texto}</Alert>
                 <form onSubmit={subir}>
                     <div className="cv-drop-area" onClick={() => inputRef.current?.click()}>
-                        <span className="cv-icon">📄</span>
+                        <span className="cv-icon"></span>
                         <label>Seleccionar archivo PDF</label>
                         <input ref={inputRef} type="file" accept=".pdf" required
                                onChange={e => setArchivo(e.target.files[0] || null)} />
