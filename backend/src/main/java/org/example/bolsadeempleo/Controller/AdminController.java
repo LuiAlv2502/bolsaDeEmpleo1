@@ -7,14 +7,15 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.properties.UnitValue;
-import jakarta.servlet.http.HttpSession;
 import org.example.bolsadeempleo.logic.Caracteristica;
 import org.example.bolsadeempleo.logic.Puesto;
 import org.example.bolsadeempleo.logic.service.AdminService;
+import org.example.bolsadeempleo.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
@@ -30,21 +31,11 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    private boolean esAdmin(HttpSession session) {
-        return session.getAttribute("adminId") != null;
-    }
-
-    private ResponseEntity<?> noAutorizado() {
-        return ResponseEntity.status(401).body(Map.of("error", "No autorizado."));
-    }
-
     @GetMapping("/panel")
-    public ResponseEntity<?> panel(HttpSession session,
+    public ResponseEntity<?> panel(@AuthenticationPrincipal CustomUserDetails admin,
                                    @RequestParam(value = "actualId", required = false) Long actualId) {
-        if (!esAdmin(session)) return noAutorizado();
-
         Map<String, Object> data = new java.util.HashMap<>();
-        data.put("nombre", session.getAttribute("adminNombre"));
+        data.put("nombre", admin.getNombre());
         data.put("empresasPendientes", adminService.getEmpresasPendientes());
         data.put("oferentesPendientes", adminService.getOferentesPendientes());
         data.put("puestos", adminService.todosLosPuestos());
@@ -65,24 +56,21 @@ public class AdminController {
     }
 
     @PostMapping("/empresa/aprobar/{id}")
-    public ResponseEntity<?> aprobarEmpresa(@PathVariable Long id, HttpSession session) {
-        if (!esAdmin(session)) return noAutorizado();
+    public ResponseEntity<?> aprobarEmpresa(@PathVariable Long id) {
         boolean ok = adminService.autorizarEmpresa(id);
         if (ok) return ResponseEntity.ok(Map.of("mensaje", "Empresa aprobada."));
         return ResponseEntity.status(404).body(Map.of("error", "No se encontró la empresa."));
     }
 
     @PostMapping("/oferente/aprobar/{identificacion}")
-    public ResponseEntity<?> aprobarOferente(@PathVariable String identificacion, HttpSession session) {
-        if (!esAdmin(session)) return noAutorizado();
+    public ResponseEntity<?> aprobarOferente(@PathVariable String identificacion) {
         boolean ok = adminService.autorizarOferente(identificacion);
         if (ok) return ResponseEntity.ok(Map.of("mensaje", "Oferente aprobado."));
         return ResponseEntity.status(404).body(Map.of("error", "No se encontró el oferente."));
     }
 
     @PostMapping("/caracteristica/nueva")
-    public ResponseEntity<?> crearCaracteristica(@RequestBody Map<String, Object> body, HttpSession session) {
-        if (!esAdmin(session)) return noAutorizado();
+    public ResponseEntity<?> crearCaracteristica(@RequestBody Map<String, Object> body) {
         String nombre = (String) body.get("nombre");
         if (nombre == null || nombre.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "El nombre no puede estar vacío."));
@@ -93,18 +81,14 @@ public class AdminController {
     }
 
     @DeleteMapping("/caracteristica/{id}")
-    public ResponseEntity<?> eliminarCaracteristica(@PathVariable Long id, HttpSession session) {
-        if (!esAdmin(session)) return noAutorizado();
+    public ResponseEntity<?> eliminarCaracteristica(@PathVariable Long id) {
         boolean eliminado = adminService.eliminarCaracteristica(id);
         if (eliminado) return ResponseEntity.ok(Map.of("mensaje", "Característica eliminada."));
         return ResponseEntity.status(400).body(Map.of("error", "No se puede eliminar ya que es padre de otras características."));
     }
 
     @GetMapping("/reporte/puestos")
-    public ResponseEntity<byte[]> reportePuestos(@RequestParam int mes, @RequestParam int anio,
-                                                 HttpSession session) {
-        if (!esAdmin(session)) return ResponseEntity.status(401).build();
-
+    public ResponseEntity<byte[]> reportePuestos(@RequestParam int mes, @RequestParam int anio) {
         List<Puesto> puestos = adminService.puestosPorMes(mes, anio);
         String[] meses = {"", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                 "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};

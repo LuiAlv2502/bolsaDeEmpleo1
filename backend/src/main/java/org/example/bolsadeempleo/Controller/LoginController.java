@@ -1,12 +1,13 @@
 package org.example.bolsadeempleo.Controller;
 
-import jakarta.servlet.http.HttpSession;
 import org.example.bolsadeempleo.logic.Administrador;
 import org.example.bolsadeempleo.logic.Empresa;
 import org.example.bolsadeempleo.logic.Oferente;
 import org.example.bolsadeempleo.logic.service.AdminService;
 import org.example.bolsadeempleo.logic.service.EmpresaService;
 import org.example.bolsadeempleo.logic.service.OferenteService;
+import org.example.bolsadeempleo.security.CustomUserDetails;
+import org.example.bolsadeempleo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,52 +17,86 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class LoginController {
-    @Autowired
-    private AdminService adminService;
-    @Autowired
-    private EmpresaService empresaService;
-    @Autowired
-    private OferenteService oferenteService;
+
+    @Autowired private AdminService adminService;
+    @Autowired private EmpresaService empresaService;
+    @Autowired private OferenteService oferenteService;
+    @Autowired private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> validarLogin(@RequestBody Map<String, String> body, HttpSession session) {
+    public ResponseEntity<?> validarLogin(@RequestBody Map<String, String> body) {
         String credencial = body.get("credencial");
-        String password = body.get("password");
+        String password   = body.get("password");
 
         if (credencial == null || credencial.isEmpty() || password == null || password.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Por favor, ingrese su usuario y contraseña."));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Por favor, ingrese su usuario y contraseña."));
         }
 
+        // ── Admin ──────────────────────────────────────────────────────────
         Administrador admin = adminService.login(credencial, password);
         if (admin != null) {
-            session.setAttribute("adminId", admin.getId());
-            session.setAttribute("adminNombre", admin.getNombre());
-            session.setAttribute("tipoUsuario", "admin");
-            return ResponseEntity.ok(Map.of("tipo", "admin", "nombre", admin.getNombre(), "id", admin.getId()));
+            CustomUserDetails details = new CustomUserDetails(
+                    admin.getIdentificacion(),
+                    admin.getPassword() != null ? admin.getPassword() : "",
+                    "ROLE_ADMIN",
+                    String.valueOf(admin.getId()),
+                    admin.getNombre()
+            );
+            String token = jwtUtil.generateToken(details);
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "tipo", "admin",
+                    "nombre", admin.getNombre(),
+                    "id", admin.getId()
+            ));
         }
 
+        // ── Empresa ────────────────────────────────────────────────────────
         Empresa empresa = empresaService.login(credencial, password);
         if (empresa != null) {
-            session.setAttribute("empresaId", empresa.getId());
-            session.setAttribute("empresaNombre", empresa.getNombre());
-            session.setAttribute("tipoUsuario", "empresa");
-            return ResponseEntity.ok(Map.of("tipo", "empresa", "nombre", empresa.getNombre(), "id", empresa.getId()));
+            CustomUserDetails details = new CustomUserDetails(
+                    empresa.getCorreo(),
+                    empresa.getClave(),
+                    "ROLE_EMPRESA",
+                    String.valueOf(empresa.getId()),
+                    empresa.getNombre()
+            );
+            String token = jwtUtil.generateToken(details);
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "tipo", "empresa",
+                    "nombre", empresa.getNombre(),
+                    "id", empresa.getId()
+            ));
         }
 
+        // ── Oferente ───────────────────────────────────────────────────────
         Oferente oferente = oferenteService.login(credencial, password);
         if (oferente != null) {
-            session.setAttribute("oferenteId", oferente.getIdentificacion());
-            session.setAttribute("oferenteNombre", oferente.getNombre());
-            session.setAttribute("tipoUsuario", "oferente");
-            return ResponseEntity.ok(Map.of("tipo", "oferente", "nombre", oferente.getNombre(), "id", oferente.getIdentificacion()));
+            CustomUserDetails details = new CustomUserDetails(
+                    oferente.getCorreo(),
+                    oferente.getClave(),
+                    "ROLE_OFERENTE",
+                    oferente.getIdentificacion(),
+                    oferente.getNombre()
+            );
+            String token = jwtUtil.generateToken(details);
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "tipo", "oferente",
+                    "nombre", oferente.getNombre(),
+                    "id", oferente.getIdentificacion()
+            ));
         }
 
-        return ResponseEntity.status(401).body(Map.of("error", "No se ha encontrado un usuario o la cuenta no ha sido aprobada."));
+        return ResponseEntity.status(401)
+                .body(Map.of("error", "No se ha encontrado un usuario o la cuenta no ha sido aprobada."));
     }
 
+    /** Logout del lado del cliente: el frontend descarta el token. */
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session) {
-        session.invalidate();
+    public ResponseEntity<?> logout() {
         return ResponseEntity.ok(Map.of("mensaje", "Sesión cerrada correctamente."));
     }
 }

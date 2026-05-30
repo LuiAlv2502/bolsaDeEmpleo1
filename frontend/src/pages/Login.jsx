@@ -15,7 +15,7 @@ export default function Login() {
         setError('');
         const { ok, data } = await apiPost('/api/auth/login', { credencial, password });
         if (!ok) { setError(data.error || 'Error al iniciar sesión.'); return; }
-        login({ tipo: data.tipo, nombre: data.nombre, id: data.id });
+        login({ token: data.token, tipo: data.tipo, nombre: data.nombre, id: data.id });
         if (data.tipo === 'admin')        navigate('/admin/panel');
         else if (data.tipo === 'empresa') navigate('/empresa/dashboard');
         else                              navigate('/oferente/dashboard');

@@ -9,12 +9,15 @@ export function AuthProvider({ children }) {
     });
 
     const login = (data) => {
+        // data incluye { token, tipo, nombre, id }
         sessionStorage.setItem('usuario', JSON.stringify(data));
+        if (data.token) sessionStorage.setItem('token', data.token);
         setUsuario(data);
     };
 
     const logout = () => {
         sessionStorage.removeItem('usuario');
+        sessionStorage.removeItem('token');
         setUsuario(null);
     };
 
@@ -26,4 +29,3 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
-

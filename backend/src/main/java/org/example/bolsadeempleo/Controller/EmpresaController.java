@@ -1,13 +1,14 @@
 package org.example.bolsadeempleo.Controller;
 
-import jakarta.servlet.http.HttpSession;
 import org.example.bolsadeempleo.logic.Empresa;
 import org.example.bolsadeempleo.logic.Puesto;
 import org.example.bolsadeempleo.logic.service.EmpresaService;
 import org.example.bolsadeempleo.logic.service.OferenteService;
 import org.example.bolsadeempleo.data.CaracteristicaRepository;
+import org.example.bolsadeempleo.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -19,21 +20,9 @@ import java.util.Map;
 @RequestMapping("/api/empresa")
 public class EmpresaController {
 
-    @Autowired
-    private EmpresaService empresaService;
-    @Autowired
-    private OferenteService oferenteService;
-    @Autowired
-    private CaracteristicaRepository caracteristicaRepository;
-
-    private Long getEmpresaId(HttpSession session) {
-        Object id = session.getAttribute("empresaId");
-        return id == null ? null : (Long) id;
-    }
-
-    private ResponseEntity<?> noAutorizado() {
-        return ResponseEntity.status(401).body(Map.of("error", "No autorizado."));
-    }
+    @Autowired private EmpresaService empresaService;
+    @Autowired private OferenteService oferenteService;
+    @Autowired private CaracteristicaRepository caracteristicaRepository;
 
     @PostMapping("/registro")
     public ResponseEntity<?> registro(@RequestBody Map<String, String> body) {
@@ -71,28 +60,24 @@ public class EmpresaController {
     }
 
     @GetMapping("/dashboard")
-    public ResponseEntity<?> dashboard(HttpSession session) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
-        return ResponseEntity.ok(Map.of("nombre", session.getAttribute("empresaNombre")));
+    public ResponseEntity<?> dashboard(@AuthenticationPrincipal CustomUserDetails empresa) {
+        return ResponseEntity.ok(Map.of("nombre", empresa.getNombre()));
     }
 
     @GetMapping("/puestos")
-    public ResponseEntity<?> puestos(HttpSession session) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
+    public ResponseEntity<?> puestos(@AuthenticationPrincipal CustomUserDetails empresa) {
+        Long empresaId = Long.valueOf(empresa.getUserId());
         return ResponseEntity.ok(Map.of(
                 "puestos", empresaService.getPuestosPorEmpresa(empresaId),
                 "caracteristicas", caracteristicaRepository.findAll(),
-                "nombre", session.getAttribute("empresaNombre")
+                "nombre", empresa.getNombre()
         ));
     }
 
     @PostMapping("/publicarPuesto")
-    public ResponseEntity<?> publicarPuesto(HttpSession session, @RequestBody Map<String, Object> body) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
-
+    public ResponseEntity<?> publicarPuesto(@AuthenticationPrincipal CustomUserDetails empresa,
+                                             @RequestBody Map<String, Object> body) {
+        Long empresaId = Long.valueOf(empresa.getUserId());
         String descripcion = (String) body.get("descripcion");
         BigDecimal salario = new BigDecimal(body.get("salario").toString());
         boolean publica = Boolean.parseBoolean(body.get("publica").toString());
@@ -115,16 +100,17 @@ public class EmpresaController {
             }
         }
 
-        Puesto puesto = empresaService.publicarPuesto(empresaId, descripcion, salario, publica, moneda, caracteristicaIds, nivelesValidos);
+        Puesto puesto = empresaService.publicarPuesto(empresaId, descripcion, salario, publica, moneda,
+                caracteristicaIds, nivelesValidos);
         if (puesto == null)
             return ResponseEntity.badRequest().body(Map.of("error", "No se pudo publicar el puesto."));
         return ResponseEntity.ok(puesto);
     }
 
     @GetMapping("/puestos/{id}/detalle")
-    public ResponseEntity<?> detallePuesto(@PathVariable Long id, HttpSession session) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
+    public ResponseEntity<?> detallePuesto(@PathVariable Long id,
+                                            @AuthenticationPrincipal CustomUserDetails empresa) {
+        Long empresaId = Long.valueOf(empresa.getUserId());
         Puesto puesto = empresaService.getPuesto(id);
         if (puesto == null || !puesto.getEmpresa().getId().equals(empresaId))
             return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado."));
@@ -135,17 +121,13 @@ public class EmpresaController {
     }
 
     @PostMapping("/puestos/{id}/desactivar")
-    public ResponseEntity<?> desactivarPuesto(@PathVariable Long id, HttpSession session) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
+    public ResponseEntity<?> desactivarPuesto(@PathVariable Long id) {
         empresaService.desactivarPuesto(id);
         return ResponseEntity.ok(Map.of("mensaje", "Puesto desactivado."));
     }
 
     @GetMapping("/candidatos/buscar")
-    public ResponseEntity<?> buscarCandidatos(@RequestParam("puestoId") Long puestoId, HttpSession session) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
+    public ResponseEntity<?> buscarCandidatos(@RequestParam("puestoId") Long puestoId) {
         Puesto puesto = empresaService.getPuesto(puestoId);
         return ResponseEntity.ok(Map.of(
                 "puesto", puesto,
@@ -154,9 +136,7 @@ public class EmpresaController {
     }
 
     @GetMapping("/perfil")
-    public ResponseEntity<?> perfil(HttpSession session) {
-        Long empresaId = getEmpresaId(session);
-        if (empresaId == null) return noAutorizado();
-        return ResponseEntity.ok(empresaService.getById(empresaId));
+    public ResponseEntity<?> perfil(@AuthenticationPrincipal CustomUserDetails empresa) {
+        return ResponseEntity.ok(empresaService.getById(Long.valueOf(empresa.getUserId())));
     }
 }
