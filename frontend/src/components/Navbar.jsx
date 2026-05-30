@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiPost } from '../api';
 
@@ -15,19 +15,19 @@ export default function Navbar() {
 
     if (!usuario) return (
         <nav>
-            <a href="#/">Inicio</a>
-            <a href="#/login">Iniciar Sesión</a>
-            <a href="#/empresa/registro">Registrar Empresa</a>
-            <a href="#/oferente/registro">Registrar Oferente</a>
+            <Link to="/">Inicio</Link>
+            <Link to="/login">Iniciar Sesión</Link>
+            <Link to="/empresa/registro">Registrar Empresa</Link>
+            <Link to="/oferente/registro">Registrar Oferente</Link>
         </nav>
     );
 
     return (
         <nav>
-            <a href="#/">Inicio</a>
-            {usuario.tipo === 'empresa'  && <a href="#/empresa/dashboard">Dashboard</a>}
-            {usuario.tipo === 'oferente' && <a href="#/oferente/dashboard">Dashboard</a>}
-            {usuario.tipo === 'admin'    && <a href="#/admin/panel">Panel Admin</a>}
+            <Link to="/">Inicio</Link>
+            {usuario.tipo === 'empresa'  && <Link to="/empresa/dashboard">Dashboard</Link>}
+            {usuario.tipo === 'oferente' && <Link to="/oferente/dashboard">Dashboard</Link>}
+            {usuario.tipo === 'admin'    && <Link to="/admin/panel">Panel Admin</Link>}
             <span>Bienvenido, <strong>{usuario.nombre}</strong></span>
             <a href="#" onClick={cerrarSesion}>Cerrar Sesión</a>
         </nav>
